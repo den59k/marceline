@@ -122,6 +122,7 @@ if (props.multiline) {
     width: 20px
     color: var(--text-color)
     font-size: 13px
+    border-radius: 7px
 
     &::placeholder
       color: var(--placeholder-color)

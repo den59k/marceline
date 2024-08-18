@@ -7,6 +7,7 @@
           {{ getName(item.meta.name as string) }}
         </router-link>
       </template>
+      <slot name="header"></slot>
     </div>
     <slot></slot>
   </div>
@@ -40,6 +41,7 @@ const getName = (name: string) => {
   if (!name.startsWith("#") || !props.values) return name
   const val = props.values[name.slice(1)]
   if (val) return val
+  if (name.startsWith("#")) return ""
   return name
 }
 
@@ -72,4 +74,10 @@ const getName = (name: string) => {
   
   a.active
     color: var(--text-color)
+
+  .v-button
+    margin-left: auto 
+    margin-top: -4px
+    margin-bottom: -12px
+  
 </style>

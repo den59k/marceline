@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 import send from '@fastify/send'
 import { FlatDB } from './flatdb'
-import { View } from './types'
+import { Form, View } from './types'
 import { PrismaClient } from 'prisma/prisma-client'
 
 type Options = {
@@ -14,6 +14,9 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
 
   const views = new FlatDB<View>({ path: process.cwd() + "/marceline/views" })
   await views.init()
+
+  const forms = new FlatDB<Form>({ path: process.cwd() + "/marceline/forms" })
+  await forms.init()
 
   const frontendPath = process.cwd() + "/dist/frontend"
   fastify.get((options.root ?? "/")+"*", async (req, reply) => {
@@ -39,7 +42,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   }  
 
   return {
-    views
+    views,
+    forms
   }
 }
 

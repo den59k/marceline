@@ -6,7 +6,7 @@ import { getUniqueName } from "../utils/getUniqueName";
 
 export default async (fastify: FastifyInstance) => {
 
-  fastify.get("/api/tables", async () => {
+  fastify.get("/api/admin/tables", async () => {
     return {
       models: Prisma.dmmf.datamodel.models
     }
@@ -14,26 +14,26 @@ export default async (fastify: FastifyInstance) => {
 
   const params = schema({ viewId: "string" })
   /** Get available views */
-  fastify.get("/api/views", async () => {
+  fastify.get("/api/admin/views", async () => {
     return fastify.marceline.views.getItems()
   })
 
   /** Create new view */
   const createTableSchema = schema({ name: "string", systemTable: "string", columns: { type: "array?" } })
-  fastify.post("/api/views", sc(createTableSchema, "body"), async (req, reply) => {
-    const { name, systemTable } = req.body as SchemaType<typeof createTableSchema>
+  fastify.post("/api/admin/views", sc(createTableSchema, "body"), async (req, reply) => {
+    const { name, systemTable, columns } = req.body as SchemaType<typeof createTableSchema>
     
     if (!Prisma.dmmf.datamodel.models.find(item => item.name === systemTable)) {
       return reply.code(400).send(`Table ${systemTable} not found`)
     }
     
     const id = getUniqueName(systemTable, (name: string) => !fastify.marceline.views.hasItem(name))
-    const view = fastify.marceline.views.createItem({ id, name, systemTable, columns: [] })
+    const view = fastify.marceline.views.createItem({ id, name, systemTable, columns: columns ?? [] })
     return view
   })
 
   /** Edit view */
-  fastify.post("/api/views/:viewId", sc(params, createTableSchema), async (req, reply) => {
+  fastify.post("/api/admin/views/:viewId", sc(params, createTableSchema), async (req, reply) => {
     const { viewId } = req.params as SchemaType<typeof params>
     const { name, systemTable, columns } = req.body as SchemaType<typeof createTableSchema>
 

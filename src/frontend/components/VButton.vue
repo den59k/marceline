@@ -31,9 +31,10 @@ const props = defineProps<{
   font-size: 13px
   font-weight: 500
   gap: 6px
-
+  
   &:hover
     background-color: var(--primary-color-hover)
+    text-decoration: none
 
   &:active
     background-color: var(--primary-color-pressed)

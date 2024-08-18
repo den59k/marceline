@@ -8,7 +8,7 @@ export default async (fastify: FastifyInstance) => {
   const params = schema({ viewId: "string" })
   
   /** Get data */
-  fastify.get("/api/data/:viewId", sc(params), async (req, reply) => {
+  fastify.get("/api/admin/data/:viewId", sc(params), async (req, reply) => {
     const { viewId } = req.params as SchemaType<typeof params>
     const view = fastify.marceline.views.getItem(viewId)
 

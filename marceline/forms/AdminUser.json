@@ -1,0 +1,23 @@
+{
+  "id": "AdminUser",
+  "name": "Создание системного пользователя",
+  "systemTable": "AdminUser",
+  "fields": [
+    {
+      "children": [
+        {
+          "fieldId": "login",
+          "name": "Логин",
+          "format": "input",
+          "placeholder": "Введите логин"
+        },
+        {
+          "fieldId": "password",
+          "name": "Пароль",
+          "format": "input",
+          "placeholder": "Введите пароль"
+        }
+      ]
+    }
+  ]
+}

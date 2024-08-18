@@ -41,7 +41,6 @@ const pages = computed(() => {
   if (!views.value) return []
   return [
     { to: "/", title: "Статистика", icon: "home" },
-    { to: "/data/users", title: "Пользователи", icon: "users" },
     ...(views.value ?? []).map((item: any) => ({
       title: item.name, icon: "table", to: `/data/${item.id}`
     })),
@@ -49,6 +48,7 @@ const pages = computed(() => {
     "Для разработчиков",
     { to: "/dev/views", title: "Таблицы", icon: "table" },
     { to: "/dev/forms", title: "Формы", icon: "note-edit" },
+    { to: "/dev/endpoints", title: "Эндпоинты", icon: "code" },
     { to: "/dev/components", title: "Компоненты", icon: "component" },
   ]
 })
@@ -84,7 +84,7 @@ const addTable = (e: MouseEvent) => {
     font-weight: 700
     font-size: 16px
     padding: 16px
-    margin-bottom: 20px
+    margin-bottom: 12px
 
   .spacer
     flex: 1 1 auto
