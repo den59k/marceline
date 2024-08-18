@@ -1,0 +1,27 @@
+{
+  "id": "AdminUser",
+  "name": "Пользователи системы",
+  "systemTable": "AdminUser",
+  "columns": [
+    {
+      "name": "id",
+      "format": "string",
+      "systemColumn": "id"
+    },
+    {
+      "name": "createdAt",
+      "format": "dateTime",
+      "systemColumn": "createdAt"
+    },
+    {
+      "name": "Дата добавления",
+      "format": "date",
+      "systemColumn": "createdAt"
+    },
+    {
+      "name": "Количество открытых сессий",
+      "format": "count",
+      "systemColumn": "sessions"
+    }
+  ]
+}

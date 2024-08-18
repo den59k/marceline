@@ -1,0 +1,22 @@
+{
+  "id": "AdminUserSession",
+  "name": "Users Sessions",
+  "systemTable": "AdminUserSession",
+  "columns": [
+    {
+      "name": "ID сессии",
+      "format": "string",
+      "systemColumn": "id"
+    },
+    {
+      "name": "IP адрес",
+      "format": "string",
+      "systemColumn": "ip"
+    },
+    {
+      "name": "Логин пользователя",
+      "format": "string",
+      "systemColumn": "adminUser.login"
+    }
+  ]
+}

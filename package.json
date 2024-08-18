@@ -1,0 +1,45 @@
+{
+  "name": "marceline",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/run.js",
+    "collect": "node scripts/registerComponents.js src/frontend",
+    "build:frontend": "vite build -c vite.frontend.config.ts",
+    "build:backend": "vite build -c vite.backend.config.ts",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.18.0",
+    "@types/node": "^22.3.0",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "@vueuse/core": "^10.11.1",
+    "builtin-modules": "^4.0.0",
+    "dotenv": "^16.4.5",
+    "pinia": "^2.2.1",
+    "sass": "^1.77.8",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1",
+    "vite-node": "^2.0.5",
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3",
+    "vue-tsc": "^2.0.29",
+    "vuesix": "^1.0.24"
+  },
+  "dependencies": {
+    "@fastify/send": "^3.1.0",
+    "@fastify/static": "^7.0.4",
+    "compact-json-schema": "^0.0.9",
+    "dayjs": "^1.11.12",
+    "fastify": "^4.28.1",
+    "fastify-plugin": "^4.5.1",
+    "prisma": "^5.18.0",
+    "uid": "^2.0.2",
+    "vitest": "^2.0.5"
+  },
+  "prisma": {
+    "schema": "src/app/prisma/schema.prisma"
+  }
+}
