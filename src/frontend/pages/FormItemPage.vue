@@ -19,7 +19,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { mutateRequest, useForm, useRequest } from 'vuesix';
+import { mutateRequest, useForm, useRequest, useRequestWatch } from 'vuesix';
 import { utilsApi } from '../api/utils';
 import VInput from '../components/forms/VInput.vue';
 import VSelect from '../components/forms/VSelect.vue';
@@ -30,19 +30,13 @@ import { formsApi } from '../api/formsApi';
 import { parseItemId } from '../utils/parseItemId';
 import { useRouter } from 'vue-router';
 
-const { data } = useRequest(utilsApi.getModels)
 
 const router = useRouter()
 const formId = computed(() => parseItemId(router.currentRoute.value.params.formId))
 
-const { data: formInfo, setReturnData } = useRequest(formsApi.getForm, formId.value)
+const { data: formInfo, setReturnData } = useRequestWatch(formsApi.getForm, formId)
 setReturnData(formId => {
   if (formId === null) return { systemTable: null, name: "", fields: [] }
-})
-
-const models = computed(() => {
-  if (!data.value) return []
-  return data.value.models.map(item => ({ id: item.name, title: item.name }))
 })
 
 const { register, values, handleSubmit, hasChange, updateDefaultValues, updateDefaultValuesWatch } = useForm({
@@ -73,12 +67,17 @@ const save = handleSubmit(async (values) => {
   updateDefaultValues(values)
 })
 
+const { data } = useRequest(utilsApi.getModels)
+const models = computed(() => {
+  if (!data.value) return []
+  return data.value.models.map(item => ({ id: item.name, title: item.name }))
+})
+
 </script>
 
 <style lang="sass">
 .form-item-page__form-editor
   margin-top: 12px
-  
   border-radius: 12px
   border: 1px solid var(--border-color)
   flex: 1 1 auto

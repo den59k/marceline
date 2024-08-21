@@ -40,7 +40,7 @@ const error = computed(() => {
   if (!props.error) return ""
   const code = props.error["code"]
   if (code) {
-    return props.error.message ?? ""
+    return props.error.code ?? ""
   }
   return props.error.message ?? "Произошла ошибка"
 })

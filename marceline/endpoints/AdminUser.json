@@ -1,0 +1,56 @@
+{
+  "id": "AdminUser",
+  "path": "/admin-users",
+  "systemTable": "AdminUser",
+  "data": [
+    {
+      "id": "list",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ],
+        "bodyModifier": [],
+        "postEffect": []
+      }
+    },
+    {
+      "id": "get",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      }
+    },
+    {
+      "id": "create",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      },
+      "form": null
+    },
+    {
+      "id": "edit",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      },
+      "form": null
+    },
+    {
+      "id": "delete",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      }
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import DataPage from './pages/DataPage.vue'
 import FormsPage from './pages/FormsPage.vue'
 import FormItemPage from './pages/FormItemPage.vue'
 import EndpointsPage from './pages/EndpointsPage.vue'
+import EndpointItemPage from './pages/EndpointItemPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,7 @@ export const router = createRouter({
     { path: "/dev/forms/:formId", component: FormItemPage, meta: { name: "#form" } },
 
     { path: "/dev/endpoints", component: EndpointsPage, meta: { name: "Эндпоинты" } },
+    { path: "/dev/endpoints/:endpointId", component: EndpointItemPage, meta: { name: "#endpoint" } },
   ]
 })
 

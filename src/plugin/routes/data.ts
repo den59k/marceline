@@ -1,6 +1,5 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance } from "fastify";
-import { MarcelineOptions } from "../types";
 import { generateSelect } from "../utils/generateSelect";
 
 export default async (fastify: FastifyInstance) => {
@@ -8,7 +7,7 @@ export default async (fastify: FastifyInstance) => {
   const params = schema({ viewId: "string" })
   
   /** Get data */
-  fastify.get("/api/admin/data/:viewId", sc(params), async (req, reply) => {
+  fastify.get("/data/:viewId", sc(params), async (req, reply) => {
     const { viewId } = req.params as SchemaType<typeof params>
     const view = fastify.marceline.views.getItem(viewId)
 

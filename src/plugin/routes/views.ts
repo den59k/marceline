@@ -1,12 +1,12 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance } from "fastify";
-import { Prisma } from "prisma/prisma-client";
 import { FlatDB } from "../flatdb";
 import { getUniqueName } from "../utils/getUniqueName";
+import { Prisma } from "@prisma/client";
 
 export default async (fastify: FastifyInstance) => {
 
-  fastify.get("/api/admin/tables", async () => {
+  fastify.get("/tables", async () => {
     return {
       models: Prisma.dmmf.datamodel.models
     }
@@ -14,13 +14,13 @@ export default async (fastify: FastifyInstance) => {
 
   const params = schema({ viewId: "string" })
   /** Get available views */
-  fastify.get("/api/admin/views", async () => {
+  fastify.get("/views", async () => {
     return fastify.marceline.views.getItems()
   })
 
   /** Create new view */
   const createTableSchema = schema({ name: "string", systemTable: "string", columns: { type: "array?" } })
-  fastify.post("/api/admin/views", sc(createTableSchema, "body"), async (req, reply) => {
+  fastify.post("/views", sc(createTableSchema, "body"), async (req, reply) => {
     const { name, systemTable, columns } = req.body as SchemaType<typeof createTableSchema>
     
     if (!Prisma.dmmf.datamodel.models.find(item => item.name === systemTable)) {
@@ -33,7 +33,7 @@ export default async (fastify: FastifyInstance) => {
   })
 
   /** Edit view */
-  fastify.post("/api/admin/views/:viewId", sc(params, createTableSchema), async (req, reply) => {
+  fastify.post("/views/:viewId", sc(params, createTableSchema), async (req, reply) => {
     const { viewId } = req.params as SchemaType<typeof params>
     const { name, systemTable, columns } = req.body as SchemaType<typeof createTableSchema>
 

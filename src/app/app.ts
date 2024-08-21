@@ -13,9 +13,13 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     await app.register(plugin)
   }
 
-  app.register(marceline, { 
+  await app.register(marceline, { 
     root: "/",
     prisma: app.prisma
+  })
+
+  app.marceline.registerHook("checkUserAccess", "onRequest", (req, reply) => {
+    if (!req) return reply.code(403).send("Forbidden")
   })
 
   const routePrefix = "/api"

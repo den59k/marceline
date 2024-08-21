@@ -33,6 +33,13 @@ export type Form = {
   fields: FormField[]
 }
 
+export type Endpoint = {
+  id: string,
+  path: string,
+  systemTable: string
+  data: { id: string, hooks: string[] }[]
+}
+
 export type MarcelineOptions = {
   prisma: PrismaClient,
   views: FlatDB<View>
