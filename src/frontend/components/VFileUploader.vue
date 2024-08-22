@@ -31,6 +31,7 @@ import lightIcon from '../assets/images/emptyFile.svg'
 import darkIcon from '../assets/images/emptyFileDark.svg'
 import VFormControl, { pickProps, VFormControlProps } from './VFormControl.vue';
 import VIconButton from './VIconButton.vue';
+import VButton from './VButton.vue';
 
 const props = defineProps<{ 
   modelValue?: string,

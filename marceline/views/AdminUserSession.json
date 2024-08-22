@@ -22,15 +22,15 @@
   "icon": "list",
   "data": {
     "create": {
-      "enabled": true,
+      "enabled": false,
       "form": null
     },
     "edit": {
-      "enabled": true,
+      "enabled": false,
       "form": null
     },
     "delete": {
-      "enabled": true
+      "enabled": false
     }
   }
 }

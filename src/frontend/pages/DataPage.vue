@@ -7,7 +7,11 @@
     <template v-else-if="!data"></template>
     <template v-else>
       <div class="tables-controls">
-        <VButton v-if="data.form" @click="addItem">
+        <VButton v-if="selectedItems.length > 0" @click="deleteItems">
+          <VIcon icon="delete" />
+          {{ selectedItems.length > 1? "Удалить элементы": "Удалить элемент" }}
+        </VButton>
+        <VButton v-else-if="data.form" @click="addItem">
           <VIcon icon="add" /> Добавить элемент
         </VButton>
         <VInput placeholder="Поиск..."/>
@@ -15,6 +19,8 @@
       <div class="views-page__layout">
         <VTable 
           v-if="data"
+          v-model:checked="selectedItems"
+          :checkable="data.view.data.delete?.enabled"
           :columns="columns" 
           :data="data.data" 
           :row-component="data.form? 'button': 'div'" 
@@ -37,7 +43,7 @@ import VLayout from '../components/VLayout.vue';
 import VTable from '../components/VTable.vue';
 import { dataApi } from '../api/data';
 import { useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import AddColumnPopover from '../components/AddColumnPopover.vue';
 import { viewsApi } from '../api/views';
 import dayjs from 'dayjs';
@@ -45,6 +51,8 @@ import VIconButton from '../components/VIconButton.vue';
 import { useDialogStore } from '../stores/dialogStore';
 import TableSettingsDialog from '../components/dialogs/TableSettingsDialog.vue';
 import AddDataItemDialog from '../components/dialogs/AddDataItemDialog.vue';
+import ConfirmDialog from '../components/dialogs/ConfirmDialog.vue';
+import { num } from '../../plugin/utils/lang';
 
 const contextMenu = useContextMenu(() => [])
 
@@ -97,7 +105,8 @@ const columns = computed(() => {
     [ "_addColumn", { 
       sortable: false, 
       headerProps: { class: "data-page__add-column", onClick: (e: MouseEvent) => contextMenu.open(e) }, 
-      width: "150px" 
+      width: "120px",
+      columnProps: { class: "data-page__more-cell" }
     }]
   ]
     
@@ -123,6 +132,22 @@ const onItemClick = (item: any) => {
   dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.form, systemTable: data.value.view.systemTable })
 }
 
+const selectedItems = ref<any>([])
+watch(data, () => {
+  selectedItems.value = []
+})
+const deleteItems = () => {
+  dialogStore.open(ConfirmDialog, {
+    title: `Удалить ${num(selectedItems.value.length, "элемент", "элемента", "элементов")}?`,
+    text: "Отменить действие будет невозможно",
+    confirmTitle: "Удалить",
+    async onConfirm() {
+      await dataApi.deleteElements(viewId.value, selectedItems.value.map((item: any) => item.id))
+      mutateRequest(dataApi.getData, viewId.value)
+    }
+  })
+}
+
 </script>
 
 <style lang="sass">
@@ -131,6 +156,7 @@ const onItemClick = (item: any) => {
   justify-content: center
   cursor: pointer
   border-radius: 0 12px 0 0 
+  padding-right: 16px
 
   &:hover
     background-color: var(--hover-color)

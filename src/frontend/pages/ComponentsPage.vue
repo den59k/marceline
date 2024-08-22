@@ -23,15 +23,20 @@ import { shallowRef, watchEffect } from 'vue';
 import VInput from '../components/VInput.vue';
 import VLayout from '../components/VLayout.vue';
 import VSelect from '../components/VSelect.vue';
+import VFileUploader from '../components/VFileUploader.vue';
 
 const components = [
   { 
-    title: "Input",
+    title: "input",
     component: VInput
   },
   {
-    title: "Select",
+    title: "select",
     component: VSelect
+  },
+  {
+    title: "file",
+    component: VFileUploader
   }
 ]
 

@@ -1,6 +1,12 @@
 <template>
   <div class="v-table" :style="gridStyle">
     <div class="v-table__header">
+      <div v-if="props.checkable" @click.stop="selectAllClick">
+        <div class="v-checkbox__icon" :class="{ active: checkedItems.size > 0 }">
+          <VIcon v-if="checkedItems.size < props.data.length" icon="minus" />
+          <VIcon v-else icon="check"/>
+        </div>
+      </div>
       <div v-for="(item, key) in columns" v-bind="item.headerProps">
         {{ item.title }}
         <VIcon v-if="key === '_addColumn'" icon="add" />
@@ -21,6 +27,11 @@
       @click="emit('itemclick', item)"
       @contextmenu="emit('itemcontext', $event, item)"
     >
+      <div v-if="props.checkable" @click.stop="checkItem(item)">
+        <div class="v-checkbox__icon" :class="{ active: checkedItems.has(item) }" >
+          <VIcon icon="check"/>
+        </div>
+      </div>
       <div v-for="(column, key) in columns" :key="key" v-bind="column.columnProps">
         <slot :name="key" :item="item" :cell="item[key as keyof T]">
           {{ column.map? column.map(item): item[key as keyof T] }}
@@ -31,7 +42,7 @@
 </template>
 
 <script lang="ts" setup generic="T">
-import { CSSProperties, HTMLAttributes, computed } from 'vue';
+import { CSSProperties, HTMLAttributes, computed, reactive, watch } from 'vue';
 import VIconButton from './VIconButton.vue';
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
@@ -41,16 +52,20 @@ const props = defineProps<{
   rowComponent?: string,
   rowProps?: (obj: T) => Record<string, any>,
   columns: Columns<T>,
-  sortedColumn?: string | null
+  sortedColumn?: string | null,
+  checkable?: boolean,
+  checked?: T[]
 }>()
 
-const emit = defineEmits([ "itemclick", "itemcontext", "update:sortedColumn" ])
+const emit = defineEmits([ "itemclick", "itemcontext", "update:sortedColumn", "update:checked" ])
 
 const sortedColumn = useVModel(props, "sortedColumn", emit, { passive: true, defaultValue: null })
 
 const gridStyle = computed<CSSProperties>(() => {
+  const columns = Object.values(props.columns).map(item => item.width ?? '1fr')
+  if (props.checkable) columns.unshift("40px")
   return {
-    gridTemplateColumns: Object.values(props.columns).map(item => item.width ?? '1fr').join(" ")
+    gridTemplateColumns: columns.join(" ")
   }
 })
 
@@ -88,6 +103,41 @@ const data = computed(() => {
   return props.data
 })
 
+const checkedItems = reactive(new Set())
+const checkItem = (item: any) => {
+  if (checkedItems.has(item)) {
+    checkedItems.delete(item)
+  } else {
+    checkedItems.add(item)
+  }
+  updateChecked()
+}
+
+const selectAllClick = () => {
+  if (checkedItems.size > 0) {
+    checkedItems.clear()
+  } else {
+    for (let item of props.data) {
+      checkedItems.add(item)
+    }
+  }
+  updateChecked()
+}
+
+let cachedArr: any[] = []
+const updateChecked = () => {
+  const arr = data.value.filter(item => checkedItems.has(item))
+  cachedArr = arr
+  emit("update:checked", arr)
+}
+watch(() => props.checked, () => {
+  if (!props.checked || props.checked === cachedArr) return
+  checkedItems.clear()
+  for (let item of props.checked) {
+    checkedItems.add(item)
+  }
+}, { immediate: true })
+
 </script>
 
 <script lang="ts">
@@ -111,6 +161,10 @@ export type Columns<T> = Record<string, Column<T>>
   display: grid
   grid-template-columns: 1fr 1fr 1fr
 
+  .v-checkbox__icon
+    border-color: var(--input-border-color)
+    cursor: pointer
+
 .v-table__header, .v-table__row
   display: grid
   grid-template-columns: subgrid
@@ -121,7 +175,7 @@ export type Columns<T> = Record<string, Column<T>>
     height: 100%
     display: flex 
     align-items: center
-    padding: 0 16px
+    padding-left: 16px
     // border-left: 1px solid var(--border-color)
 
     // &:first-child

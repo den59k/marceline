@@ -3,7 +3,7 @@
     <div v-if="labelPosition === 'left'" class="v-checkbox__label left">
       <slot name="label">{{ props.label }}</slot>
     </div>
-    <div class="v-checkbox__icon">
+    <div class="v-checkbox__icon" :class="{ active: model }">
       <VIcon icon="check"/>
     </div>
     <div v-if="labelPosition === 'right'" class="v-checkbox__label">
@@ -54,20 +54,20 @@ const labelPosition = computed(() => {
     &.left
       margin-left: 0
 
-  &.active
-    .v-checkbox__icon
-      color: white
-      background-color: var(--primary-color)
-      border-color: var(--primary-color)
 
-      svg
-        opacity: 1
+.v-checkbox__icon.active
+  color: white
+  background-color: var(--primary-color)
+  border-color: var(--primary-color)
 
-      &:hover
-        background-color: var(--primary-color-hover)
+  svg
+    opacity: 1
 
-      &:active
-        background-color: var(--primary-color-active)
+  &:hover
+    background-color: var(--primary-color-hover)
+
+  &:active
+    background-color: var(--primary-color-active)
 
 .v-checkbox__icon
   width: 16px

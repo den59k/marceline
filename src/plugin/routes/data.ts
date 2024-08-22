@@ -94,13 +94,17 @@ export default async (fastify: FastifyInstance) => {
   })
 
   /** Delete element */
-  fastify.delete("/data/:viewId/items", sc(itemParams), async (req, reply) => {
+  fastify.delete("/data/:viewId/items/:itemId", sc(itemParams), async (req, reply) => {
     const { itemId } = req.params as SchemaType<typeof itemParams>
+    
     if (!req.view.data.delete.enabled) return reply.code(400).send(`Method "delete" for view ${req.view.id} is not supported`)
 
     const idField = getIdField(req.view)
-    await (fastify.prisma as any)[req.view.systemTable].delete({
-      where: { [idField.name]: parseIdField(idField, itemId) }
+    await (fastify.prisma as any)[req.view.systemTable].deleteMany({
+      where: { 
+        [idField.name]: { in: itemId.split(",").map(itemId => parseIdField(idField, itemId))  } 
+      }
     })
   })
+
 }
