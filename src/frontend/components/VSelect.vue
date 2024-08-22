@@ -14,6 +14,7 @@
             {{ item.title }}
           </slot>
         </button>
+        <div v-if="items.length === 0" class="v-select__empty-label">Нет доступных элементов</div>
       </div>
     </VPopover>
     <slot name="end-adornment"></slot>
@@ -24,8 +25,8 @@
 import { Ref, computed, ref } from 'vue';
 import VFormControl, { VFormControlProps, pickProps } from './VFormControl.vue';
 import { useVModel } from '@vueuse/core';
-import VIcon from '../VIcon.vue';
-import VPopover from '../VPopover.vue';
+import VIcon from './VIcon.vue';
+import VPopover from './VPopover.vue';
 
 type Item = { id: string | number, title: string }
 
@@ -97,4 +98,11 @@ const onItemClick = (item: Item) => {
     &:hover
       background-color: var(--hover-color)
 
+.v-select__empty-label
+  padding: 0 16px
+  height: 36px
+  display: flex
+  align-items: center
+  color: var(--text-secondary-color)
+  
 </style>

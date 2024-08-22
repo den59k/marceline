@@ -32,8 +32,8 @@ import { computed } from 'vue';
 import { Field } from './FormEditor.vue';
 import { FormItem } from '../../api/formsApi';
 import VIconButton from '../VIconButton.vue';
-import VSelect from '../forms/VSelect.vue'
-import VInput from '../forms/VInput.vue'
+import VSelect from '../VSelect.vue'
+import VInput from '../VInput.vue'
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 

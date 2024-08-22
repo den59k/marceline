@@ -23,8 +23,8 @@ import { parseItemId } from '../utils/parseItemId';
 import { mutateRequest, useForm, useRequest, useRequestWatch } from 'vuesix';
 import { endpointsApi } from '../api/endpoints';
 import { utilsApi } from '../api/utils';
-import VInput from '../components/forms/VInput.vue';
-import VSelect from '../components/forms/VSelect.vue';
+import VInput from '../components/VInput.vue';
+import VSelect from '../components/VSelect.vue';
 import EndpointEditor from '../components/EndpointEditor.vue';
 import VButton from '../components/VButton.vue';
 

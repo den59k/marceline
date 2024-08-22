@@ -21,8 +21,8 @@
 import { computed } from 'vue';
 import { mutateRequest, useForm, useRequest, useRequestWatch } from 'vuesix';
 import { utilsApi } from '../api/utils';
-import VInput from '../components/forms/VInput.vue';
-import VSelect from '../components/forms/VSelect.vue';
+import VInput from '../components/VInput.vue';
+import VSelect from '../components/VSelect.vue';
 import VLayout from '../components/VLayout.vue';
 import FormEditor from '../components/FormEditor/FormEditor.vue';
 import VButton from '../components/VButton.vue';

@@ -21,7 +21,7 @@
 
 <script lang="ts" setup>
 import { useRequest } from 'vuesix';
-import VInput from '../components/forms/VInput.vue';
+import VInput from '../components/VInput.vue';
 import VButton from '../components/VButton.vue';
 import VIcon from '../components/VIcon.vue';
 import VLayout from '../components/VLayout.vue';

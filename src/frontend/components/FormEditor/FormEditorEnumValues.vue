@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import { useVModel } from '@vueuse/core';
 import { Ref, reactive, shallowRef } from 'vue';
-import VInput from '../forms/VInput.vue';
+import VInput from '../VInput.vue';
 import VIconButton from '../VIconButton.vue';
 import VCollapse from '../VCollapse.vue';
 

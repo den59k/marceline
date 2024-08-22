@@ -1790,10 +1790,10 @@ vue@^3.4.38:
     "@vue/server-renderer" "3.4.38"
     "@vue/shared" "3.4.38"
 
-vuesix@^1.0.24:
-  version "1.0.24"
-  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.24.tgz#54181a989ad238bc0bf6724a10d26213e35a3bbb"
-  integrity sha512-CReCK96PlVogtBUgo2Vk12MRb7vWP7xKDDVP0HDsurgVoLtS+5jqmKy/QKmslhH0x7AYrZ46qE6zeBVlCxTurw==
+vuesix@^1.0.25:
+  version "1.0.25"
+  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.25.tgz#75dd2df78ecb5a98211a6e027711362816b0bce8"
+  integrity sha512-hKb7B7OK9Af5eenvBpigrFrkVqEY51tmD6jxLF+yG7mkHBwgmygMbM0MhRJawEWqpNDFu2+cWSpmXE4b4QIUqg==
 
 which@^2.0.1:
   version "2.0.2"

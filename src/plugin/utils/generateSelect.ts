@@ -4,6 +4,8 @@ type Select = Record<string, boolean | { select: Select }>
 
 export const generateSelect = (columns: ViewColumn[]) => {
 
+  if (!columns || columns.length === 0) return undefined
+
   const targetObject: Select = {}
   for (let item of columns) {
 

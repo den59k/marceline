@@ -16,8 +16,8 @@
 
 <script lang="ts" setup>
 import { useForm, useRequest } from 'vuesix';
-import VInput from '../forms/VInput.vue';
-import VSelect from '../forms/VSelect.vue';
+import VInput from '../VInput.vue';
+import VSelect from '../VSelect.vue';
 import VDialog from '../VDialog.vue';
 import { utilsApi } from '../../api/utils';
 import { computed } from 'vue';

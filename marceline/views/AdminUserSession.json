@@ -1,6 +1,6 @@
 {
   "id": "AdminUserSession",
-  "name": "Users Sessions",
+  "name": "Сессии пользователей",
   "systemTable": "AdminUserSession",
   "columns": [
     {
@@ -18,5 +18,19 @@
       "format": "string",
       "systemColumn": "adminUser.login"
     }
-  ]
+  ],
+  "icon": "list",
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": null
+    },
+    "edit": {
+      "enabled": true,
+      "form": null
+    },
+    "delete": {
+      "enabled": true
+    }
+  }
 }

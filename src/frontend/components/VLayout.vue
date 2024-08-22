@@ -79,5 +79,11 @@ const getName = (name: string) => {
     margin-left: auto 
     margin-top: -4px
     margin-bottom: -12px
+
+  .v-icon-button
+    width: 36px
+    height: 36px
+    margin-top: -10px
+    margin-bottom: -10px
   
 </style>

@@ -13,7 +13,7 @@ export default async (fastify: FastifyInstance) => {
 
   fastify.get("/forms/:formId", sc(params), async (req) => {
     const { formId } = req.params as SchemaType<typeof params>
-    return fastify.marceline.forms.getItem(formId)
+    return fastify.marceline.forms.getItem(formId) ?? null
   })
 
   /** Create new view */

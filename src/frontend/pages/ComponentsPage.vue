@@ -20,9 +20,9 @@
 
 <script lang="ts" setup>
 import { shallowRef, watchEffect } from 'vue';
-import VInput from '../components/forms/VInput.vue';
+import VInput from '../components/VInput.vue';
 import VLayout from '../components/VLayout.vue';
-import VSelect from '../components/forms/VSelect.vue';
+import VSelect from '../components/VSelect.vue';
 
 const components = [
   { 

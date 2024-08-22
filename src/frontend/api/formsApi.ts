@@ -4,7 +4,6 @@ export type Form = {
   id: string,
   name: string,
   systemTable: string,
-  endpoint: string
   idField: string,
   fields: FormItem[]
 }

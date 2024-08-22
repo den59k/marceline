@@ -42,7 +42,7 @@ const pages = computed(() => {
   return [
     { to: "/", title: "Статистика", icon: "home" },
     ...(views.value ?? []).map((item: any) => ({
-      title: item.name, icon: "table", to: `/data/${item.id}`
+      title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
     })),
     { title: "Добавить таблицу", icon: "add", onClick: addTable },
     "Для разработчиков",

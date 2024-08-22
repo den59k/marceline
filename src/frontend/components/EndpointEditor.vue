@@ -26,7 +26,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import VIcon from './VIcon.vue';
 import VCheckbox from './VCheckbox.vue';
-import VSelect from './forms/VSelect.vue';
+import VSelect from './VSelect.vue';
 import { useRequest } from 'vuesix';
 import { formsApi } from '../api/formsApi';
 import ListEditor from './ListEditor.vue';

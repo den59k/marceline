@@ -74,9 +74,15 @@ const data = computed(() => {
   if (sortedColumn.value) {
     const columnId = sortedColumn.value.slice(1)
     const column = props.columns[columnId]
-    const key = column.sortableColumn ?? columnId
     const k = sortedColumn.value.startsWith("-")? -1: 1
-    const arr = [ ...props.data ].sort((a: any, b: any) => k*compare(a[key], b[key]))
+
+    const getKey = typeof column.sortableKey === "function"? 
+      column.sortableKey: 
+      ((item: any) => item[column.sortableKey as string ?? columnId])
+
+    const arr = [ ...props.data ].sort((a: any, b: any) => {
+      return k*compare(getKey(a), getKey(b))
+    })
     return arr
   }
   return props.data
@@ -90,7 +96,7 @@ type Column<T> = {
   title?: string,
   width?: string,
   sortable?: boolean,
-  sortableColumn?: string,
+  sortableKey?: string | ((item: T) => string | any),
   map?: (item: T) => string,
   headerProps?: HTMLAttributes
   columnProps?: HTMLAttributes

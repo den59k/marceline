@@ -10,8 +10,8 @@
 
 <script lang="ts" setup>
 import { useRequest } from 'vuesix';
-import VInput from '../components/forms/VInput.vue';
-import VSelect from '../components/forms/VSelect.vue';
+import VInput from '../components/VInput.vue';
+import VSelect from '../components/VSelect.vue';
 import VLayout from '../components/VLayout.vue';
 import { utilsApi } from '../api/utils';
 import { computed } from 'vue';

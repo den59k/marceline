@@ -1,11 +1,14 @@
 <template>
   <VLayout :values="{ view: data?.view.name }">
+    <template #header>
+      <VIconButton icon="settings" class="data-page__edit-button" @click="editTable"/>
+    </template>
     <template v-if="!data && error">Нет такой страницы</template>
     <template v-else-if="!data"></template>
     <template v-else>
       <div class="tables-controls">
-        <VButton>
-          <VIcon icon="add" /> Добавить пользователя
+        <VButton v-if="data.form" @click="addItem">
+          <VIcon icon="add" /> Добавить элемент
         </VButton>
         <VInput placeholder="Поиск..."/>
       </div>
@@ -14,7 +17,8 @@
           v-if="data"
           :columns="columns" 
           :data="data.data" 
-          row-component="button" 
+          :row-component="data.form? 'button': 'div'" 
+          @itemclick="onItemClick"
         >
         </VTable>
       </div>
@@ -25,7 +29,7 @@
 
 <script lang="ts" setup>
 import { mutateRequest, useRequestWatch } from 'vuesix';
-import VInput from '../components/forms/VInput.vue';
+import VInput from '../components/VInput.vue';
 import VButton from '../components/VButton.vue';
 import { useContextMenu } from '../components/VContextMenu.vue';
 import VIcon from '../components/VIcon.vue';
@@ -37,12 +41,16 @@ import { computed } from 'vue';
 import AddColumnPopover from '../components/AddColumnPopover.vue';
 import { viewsApi } from '../api/views';
 import dayjs from 'dayjs';
+import VIconButton from '../components/VIconButton.vue';
+import { useDialogStore } from '../stores/dialogStore';
+import TableSettingsDialog from '../components/dialogs/TableSettingsDialog.vue';
+import AddDataItemDialog from '../components/dialogs/AddDataItemDialog.vue';
 
 const contextMenu = useContextMenu(() => [])
 
 const router = useRouter()
 const viewId = computed(() => router.currentRoute.value.params.viewId as string)
-const { data, error, pending } = useRequestWatch(dataApi.getData, viewId)
+const { data, error } = useRequestWatch(dataApi.getData, viewId)
 
 const getByKey = (item: any, keys: string[]) => {
   let value = item
@@ -66,6 +74,14 @@ const getMapMethod = (column: any) => {
   }
 }
 
+const getSortableKey = (column: any) => {
+  const keys = column.systemColumn.split(".")
+  return (item: any) => {
+    const value = getByKey(item, keys)
+    return value ?? 0
+  }
+}
+
 const columns = computed(() => {
   if (!data.value) return {}
 
@@ -73,6 +89,7 @@ const columns = computed(() => {
     ...data.value.view.columns.map((column: any, index: number) => [
       "column-"+index,
       { 
+        sortableKey: getSortableKey(column),
         title: column.name,
         map: getMapMethod(column)
       }
@@ -93,6 +110,19 @@ const addColumn = async (newColumn: { name: string, format: string, systemColumn
   mutateRequest(dataApi.getData, viewId.value)
 }
 
+const dialogStore = useDialogStore()
+const editTable = () => {
+  dialogStore.open(TableSettingsDialog, { viewId: viewId.value })
+}
+
+const addItem = () => {
+  dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.form, systemTable: data.value.view.systemTable })
+}
+
+const onItemClick = (item: any) => {
+  dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.form, systemTable: data.value.view.systemTable })
+}
+
 </script>
 
 <style lang="sass">
@@ -104,5 +134,8 @@ const addColumn = async (newColumn: { name: string, format: string, systemColumn
 
   &:hover
     background-color: var(--hover-color)
+
+.data-page__edit-button
+  color: var(--text-secondary-color)
 
 </style>

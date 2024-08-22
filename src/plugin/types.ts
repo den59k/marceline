@@ -11,6 +11,12 @@ export type View = {
   id: string,
   name: string,
   systemTable: string,
+  idField?: string,
+  data: {
+    create: { enabled: boolean, form?: string | null },
+    edit: { enabled: boolean, form?: string | null },
+    delete: { enabled: boolean },
+  }
   columns: ViewColumn[]
 }
 

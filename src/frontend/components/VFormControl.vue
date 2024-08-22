@@ -88,6 +88,7 @@ const error = computed(() => {
   white-space: nowrap
   font-weight: 500
   user-select: none
+  line-height: 16px
 
 .v-form-control__required-marker
   color: var(--primary-color)

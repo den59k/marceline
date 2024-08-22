@@ -33,8 +33,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { FormItem } from '../../api/formsApi';
-import VInput from '../forms/VInput.vue';
-import VSelect from '../forms/VSelect.vue';
+import VInput from '../VInput.vue';
+import VSelect from '../VSelect.vue';
 import { Field } from './FormEditor.vue';
 import FormEditorEnumValues from './FormEditorEnumValues.vue';
 

@@ -2,26 +2,35 @@
   "id": "AdminUser",
   "name": "Пользователи системы",
   "systemTable": "AdminUser",
+  "icon": "users",
   "columns": [
     {
-      "name": "id",
+      "name": "ID",
       "format": "string",
       "systemColumn": "id"
     },
     {
-      "name": "createdAt",
+      "name": "Логин",
+      "format": "string",
+      "systemColumn": "login"
+    },
+    {
+      "name": "Дата создания",
       "format": "dateTime",
       "systemColumn": "createdAt"
-    },
-    {
-      "name": "Дата добавления",
-      "format": "date",
-      "systemColumn": "createdAt"
-    },
-    {
-      "name": "Количество открытых сессий",
-      "format": "count",
-      "systemColumn": "sessions"
     }
-  ]
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "AdminUser"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "AdminUser"
+    },
+    "delete": {
+      "enabled": true
+    }
+  }
 }

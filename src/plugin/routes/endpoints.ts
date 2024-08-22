@@ -12,7 +12,7 @@ export default async (fastify: FastifyInstance) => {
   const params = schema({ itemId: "string" })
   fastify.get("/endpoints/:itemId", sc(params), async (req) => {
     const { itemId } = req.params as SchemaType<typeof params>
-    return fastify.marceline.endpoints.getItem(itemId)
+    return fastify.marceline.endpoints.getItem(itemId) ?? null
   })
 
   const createTableSchema = schema({ path: "string", systemTable: "string", data: { type: "array" } })

@@ -31,12 +31,12 @@
 import { useForm, useRequest } from 'vuesix';
 import VPopover from './VPopover.vue';
 import { utilsApi } from '../api/utils';
-import VInput from './forms/VInput.vue';
+import VInput from './VInput.vue';
 import VButton from './VButton.vue';
-import { computed, reactive, shallowRef } from 'vue';
-import VFormControl from './forms/VFormControl.vue';
+import { computed, reactive } from 'vue';
+import VFormControl from './VFormControl.vue';
 import VIcon from './VIcon.vue';
-import VSelect from './forms/VSelect.vue';
+import VSelect from './VSelect.vue';
 
 const { register, values } = useForm({
   name: "",
