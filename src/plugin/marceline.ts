@@ -32,7 +32,7 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const endpoints = new FlatDB<Endpoint>({ path: process.cwd() + "/marceline/endpoints" })
   await endpoints.init()
 
-  const frontendPath = __dirname + "/../frontend"
+  const frontendPath = (globalThis.__dirname ?? import.meta.dirname) + "/../frontend"
   const rootPath = (options.root ?? "/")
 
   if (rootPath !== "/") {
