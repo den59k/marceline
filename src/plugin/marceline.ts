@@ -3,11 +3,13 @@ import fp from 'fastify-plugin'
 import send from '@fastify/send'
 import { FlatDB } from './flatdb'
 import { Endpoint, Form, View } from './types'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import { resolve } from 'path'
+import fs from 'fs'
 
 type Options = {
   root?: string,
-  prisma: PrismaClient
+  prisma?: PrismaClient
 }
 
 type HookType = "onRequest" | "bodyModifier" | "postEffect"
@@ -30,17 +32,36 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const endpoints = new FlatDB<Endpoint>({ path: process.cwd() + "/marceline/endpoints" })
   await endpoints.init()
 
-  const frontendPath = process.cwd() + "/dist/frontend"
-  fastify.get((options.root ?? "/")+"*", async (req, reply) => {
+  const frontendPath = __dirname + "/../frontend"
+  const rootPath = (options.root ?? "/")
 
+  if (rootPath !== "/") {
+    fastify.get(rootPath.slice(0, -1), (req, reply) => {
+      return reply.redirect(rootPath, 303)
+    })
+  }
+
+  fastify.get(rootPath+"*", async (req, reply) => {
     if (import.meta.env.DEV) {
       return reply.callNotFound()
     }
 
-    const path = req.url.includes(".")? (frontendPath+req.url): frontendPath+ "/index.html"
-    const { statusCode, headers, stream, type } = await send(req.raw, path, { index: false })
-    
+    if (req.url.includes("..")) return reply.code(403).send("Forbidden")
+
+    // Send index.html file on root
+    if (!req.url.includes(".")) {
+      let content = await fs.promises.readFile(frontendPath+"/index.html", "utf-8")
+      if (options.root !== '/') { 
+        content = content.replace(`<base href="/" >`, `<base href="${options.root}">`)
+      }
+      return reply.headers({ "content-type": "text/html", "content-length": content.length }).send(content)
+    }
+
+    const path = resolve(frontendPath, req.url.slice(rootPath.length)) 
+    const { statusCode, headers, stream, type, metadata } = await send(req.raw, path, { index: false })
+
     if (type === "error" || type === "directory") {
+      if ("error" in metadata) console.error(metadata.error)
       return reply.code(statusCode).send({ error: `Route ${req.method}:${req.url} not found` })
     }
 
@@ -79,13 +100,15 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   }
 }
 
-export default fp(async (fastify, options: Options) => {
+export const marceline = fp(async (fastify, options: Options) => {
   const plugin = await marcelinePlugin(fastify, options)
   fastify.decorate("marceline", plugin)
 })
 
+export type MarcelinePlugin = Awaited<ReturnType<typeof marcelinePlugin>>
+
 declare module 'fastify' {
   interface FastifyInstance {
-    marceline: Awaited<ReturnType<typeof marcelinePlugin>>
+    marceline: MarcelinePlugin
   }
 }

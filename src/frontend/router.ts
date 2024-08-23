@@ -9,8 +9,9 @@ import FormItemPage from './pages/FormItemPage.vue'
 import EndpointsPage from './pages/EndpointsPage.vue'
 import EndpointItemPage from './pages/EndpointItemPage.vue'
 
+const basePath = document.head.querySelector("base")?.getAttribute("href")
 export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(basePath ?? undefined),
   routes: [
     { path: "/", component: HomePage, meta: { name: "Главная" } },
 

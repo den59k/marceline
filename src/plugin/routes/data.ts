@@ -1,16 +1,14 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
-import { FastifyInstance, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { generateSelect } from "../utils/generateSelect";
 import { parseBody } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { pick } from "vuesix";
 import { Form, View } from "../types";
 
-declare module 'fastify' {
-	interface FastifyRequest {
-		view: View,
-    form: Form | null
-	}
+interface FastifyRequestExt extends FastifyRequest {
+  view: View,
+  form: Form | null
 }
 
 export default async (fastify: FastifyInstance) => {
@@ -20,7 +18,8 @@ export default async (fastify: FastifyInstance) => {
   fastify.decorateRequest("view", null)
   fastify.decorateRequest("form", null)
   
-  fastify.addHook("onRequest", async (req, reply) => {
+  fastify.addHook("onRequest", async (_req, reply) => {
+    const req = _req as FastifyRequestExt
     const { viewId } = req.params as SchemaType<typeof params>
 
     const view = fastify.marceline.views.getItem(viewId)
@@ -35,7 +34,8 @@ export default async (fastify: FastifyInstance) => {
   })
 
   /** Get data */
-  fastify.get("/data/:viewId/items", sc(params), async (req, reply) => {
+  fastify.get("/data/:viewId/items", sc(params), async (_req, reply) => {
+    const req = _req as FastifyRequestExt
     const select = generateSelect(req.view.columns)
     const idField = getIdField(req.view)
     const resp = await (fastify.prisma as any)[req.view.systemTable].findMany({
@@ -60,7 +60,8 @@ export default async (fastify: FastifyInstance) => {
   })
 
   /** Add element */
-  fastify.post("/data/:viewId/items", sc(params), async (req, reply) => {
+  fastify.post("/data/:viewId/items", sc(params), async (_req, reply) => {
+    const req = _req as FastifyRequestExt
     const body = req.body as any
     if (!req.form) return reply.code(400).send(`Method "create" for view ${req.view.id} is not supported`)
 
@@ -76,7 +77,8 @@ export default async (fastify: FastifyInstance) => {
 
   const itemParams = schema({ viewId: "string", itemId: "string" })
   /** Update element */
-  fastify.post("/data/:viewId/items/:itemId", sc(itemParams), async (req, reply) => {
+  fastify.post("/data/:viewId/items/:itemId", sc(itemParams), async (_req, reply) => {
+    const req = _req as FastifyRequestExt
     const body = req.body as any
     const { itemId } = req.params as SchemaType<typeof itemParams>
     if (!req.form) return reply.code(400).send(`Method "update" for view ${req.view.id} is not supported`)
@@ -93,8 +95,9 @@ export default async (fastify: FastifyInstance) => {
     return pick(resp, idField.name)
   })
 
-  /** Delete element */
-  fastify.delete("/data/:viewId/items/:itemId", sc(itemParams), async (req, reply) => {
+  /** Delete elements */
+  fastify.delete("/data/:viewId/items/:itemId", sc(itemParams), async (_req, reply) => {
+    const req = _req as FastifyRequestExt
     const { itemId } = req.params as SchemaType<typeof itemParams>
     
     if (!req.view.data.delete.enabled) return reply.code(400).send(`Method "delete" for view ${req.view.id} is not supported`)

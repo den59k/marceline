@@ -1,9 +1,12 @@
 {
   "name": "marceline",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
+  "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
+  "author": {
+    "name": "den59k"
+  },
   "scripts": {
     "dev": "node scripts/run.js",
     "collect": "node scripts/registerComponents.js src/frontend",
@@ -20,26 +23,33 @@
     "dotenv": "^16.4.5",
     "pinia": "^2.2.1",
     "sass": "^1.77.8",
-    "typescript": "^5.5.4",
+    "typescript": "5.4.2",
     "vite": "^5.4.1",
     "vite-node": "^2.0.5",
+    "vite-plugin-dts": "^4.0.3",
+    "vitest": "^2.0.5",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.25"
+    "vuesix": "^1.0.25",
+    "prisma": "^5.18.0"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",
-    "@fastify/static": "^7.0.4",
     "compact-json-schema": "^0.0.9",
     "dayjs": "^1.11.12",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
-    "prisma": "^5.18.0",
-    "uid": "^2.0.2",
-    "vitest": "^2.0.5"
+    "uid": "^2.0.2"
   },
   "prisma": {
     "schema": "src/app/prisma/schema.prisma"
-  }
+  },
+  "exports": {
+    "import": "./dist/plugin/index.js",
+    "require": "./dist/plugin/index.cjs"
+  },
+  "files": [
+    "dist"
+  ]
 }

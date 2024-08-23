@@ -2,10 +2,11 @@ import { defineConfig } from 'vite'
 import pkg from './package.json';
 import builtins from 'builtin-modules'
 import { join } from 'path';
+import dts from 'vite-plugin-dts'
 
 export default defineConfig((env) => {
   return {
-    plugins: [],
+    plugins: [ dts({ rollupTypes: true }) ],
     // root: join(process.cwd(), getRoot(env.mode)),
     build: {
       target: "node18",
@@ -13,10 +14,10 @@ export default defineConfig((env) => {
       sourcemap: true,
       lib: {
         entry: {
-          "app": "src/app/index.ts",
+          "index": "src/plugin/marceline.ts",
         },
-        formats: [ "es" ], 
-        name: "app",
+        formats: [ "es", "cjs" ], 
+        name: "index",
       },
       modulePreload: {
         polyfill: false
@@ -32,7 +33,7 @@ export default defineConfig((env) => {
           ...builtins
         ]
       },
-      outDir: join(__dirname, "dist/backend"),
+      outDir: join(__dirname, "dist/plugin"),
       emptyOutDir: true
     },
   }

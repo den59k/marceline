@@ -8,6 +8,7 @@ import path from 'path'
 export default defineConfig({
   root: "src/frontend",
   plugins: [vue(), svgPlugin()],
+  base: "./",
   build: {
     outDir: path.join(__dirname, "./dist/frontend"),
     emptyOutDir: true,

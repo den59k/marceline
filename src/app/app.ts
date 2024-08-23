@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import fastify, { FastifyServerOptions } from 'fastify'
-import marceline from '../plugin/marceline'
+import { marceline } from '../plugin/marceline'
 
 const plugins = import.meta.glob<any>('./plugins/**/*.ts', { eager: true })
 const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
