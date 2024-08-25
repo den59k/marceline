@@ -1,10 +1,13 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance } from "fastify";
-import { FlatDB } from "../flatdb";
 import { getUniqueName } from "../utils/getUniqueName";
 import { Prisma } from "@prisma/client";
 
-export default async (fastify: FastifyInstance) => {
+export default async (fastify: FastifyInstance, { onRequest }: any) => {
+
+  if (onRequest) {
+    fastify.addHook("onRequest", onRequest)
+  }
 
   fastify.get("/tables", async () => {
     return {

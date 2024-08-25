@@ -8,12 +8,15 @@ import FormsPage from './pages/FormsPage.vue'
 import FormItemPage from './pages/FormItemPage.vue'
 import EndpointsPage from './pages/EndpointsPage.vue'
 import EndpointItemPage from './pages/EndpointItemPage.vue'
+import LoginPage from './pages/LoginPage.vue'
+import { useAccountStore } from './stores/accountStore'
 
 const basePath = document.head.querySelector("base")?.getAttribute("href")
 export const router = createRouter({
   history: createWebHistory(basePath ?? undefined),
   routes: [
     { path: "/", component: HomePage, meta: { name: "Главная" } },
+    { path: "/auth/login", component: LoginPage, meta: { public: true, showSidebar: false } },
 
     { path: "/data/:viewId", component: DataPage, meta: { name: "#view" } },
 
@@ -31,9 +34,12 @@ export const router = createRouter({
 })
 
 export const beforeEach = (to: RouteLocationNormalized) => {
-  // const accountStore = useAccountStore()
+  const accountStore = useAccountStore()
+  if (to.path === "/auth/login" && accountStore.status === "authorized") {
+    return "/"
+  }
   if (to.path === "/auth" || to.path === "/auth/") return "/auth/login"
 
-  // if (!to.meta.public && accountStore.status === "not-authorized") return "/auth/login"
+  if (!to.meta.public && accountStore.status === "not-authorized") return "/auth/login"
 }
 router.beforeEach(beforeEach)

@@ -7,6 +7,10 @@
   "author": {
     "name": "den59k"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/den59k/marceline.git"
+  },
   "scripts": {
     "dev": "node scripts/run.js",
     "collect": "node scripts/registerComponents.js src/frontend",
@@ -21,6 +25,7 @@
     "@vueuse/core": "^10.11.1",
     "builtin-modules": "^4.0.0",
     "dotenv": "^16.4.5",
+    "jwt-runner": "^0.0.2",
     "pinia": "^2.2.1",
     "prisma": "^5.18.0",
     "sass": "^1.77.8",
@@ -32,7 +37,7 @@
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.25"
+    "vuesix": "^1.0.28"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",

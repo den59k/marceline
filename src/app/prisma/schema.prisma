@@ -12,15 +12,6 @@ model AdminUser {
   createdAt         DateTime            @default(now())
   login             String              @unique
   password          Bytes
-  token             String?
-  sessions          AdminUserSession[]
+  token             String?             @unique
 }
 
-model AdminUserSession {
-  id                BigInt    @id @default(autoincrement())
-  adminUserId       Int
-  adminUser         AdminUser @relation(fields: [adminUserId], references: [id])
-  ip                String
-  updatedAt         DateTime  @default(now())
-  refreshToken      String    @unique
-}

@@ -1300,6 +1300,11 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+jwt-runner@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/jwt-runner/-/jwt-runner-0.0.2.tgz#2858d47827b999ee906289c521d459a91c83bf67"
+  integrity sha512-XoGA/aKmqPa/XunPVrw2qjpfiDgY6iz6TY0QVtIPZypcL8ggEeWdmrvTdg2Ci1jfEIskM6xjfmQ1GIE7bcsXYg==
+
 kolorist@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/kolorist/-/kolorist-1.8.0.tgz#edddbbbc7894bc13302cdf740af6374d4a04743c"
@@ -1973,10 +1978,10 @@ vue@^3.4.38:
     "@vue/server-renderer" "3.4.38"
     "@vue/shared" "3.4.38"
 
-vuesix@^1.0.25:
-  version "1.0.25"
-  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.25.tgz#75dd2df78ecb5a98211a6e027711362816b0bce8"
-  integrity sha512-hKb7B7OK9Af5eenvBpigrFrkVqEY51tmD6jxLF+yG7mkHBwgmygMbM0MhRJawEWqpNDFu2+cWSpmXE4b4QIUqg==
+vuesix@^1.0.28:
+  version "1.0.28"
+  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.28.tgz#01aaa42f8139178a0c4b4c066a9b4152285ba83b"
+  integrity sha512-pvwCD88p24620aT+ROviDMbYemnUAdYtwZ2gIyU5+ICiGUX6QYhYELzrS5GZYrMkNhdKj1uHmz51Xp5AFQ6ZqQ==
 
 which@^2.0.1:
   version "2.0.2"

@@ -3,7 +3,11 @@ import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance } from "fastify";
 import { getUniqueName } from "../utils/getUniqueName";
 
-export default async (fastify: FastifyInstance) => {
+export default async (fastify: FastifyInstance, { onRequest }: any) => {
+
+  if (onRequest) {
+    fastify.addHook("onRequest", onRequest)
+  }
 
   fastify.get("/endpoints", async () => {
     return fastify.marceline.endpoints.getItems()

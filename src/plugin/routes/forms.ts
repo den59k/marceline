@@ -3,7 +3,11 @@ import { FastifyInstance } from "fastify";
 import { getUniqueName } from "../utils/getUniqueName";
 import { Prisma } from "@prisma/client";
 
-export default async (fastify: FastifyInstance) => {
+export default async (fastify: FastifyInstance, { onRequest }: any) => {
+
+  if (onRequest) {
+    fastify.addHook("onRequest", onRequest)
+  }
 
   const params = schema({ formId: "string" })
   /** Get available views */

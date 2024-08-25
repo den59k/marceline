@@ -11,7 +11,11 @@ interface FastifyRequestExt extends FastifyRequest {
   form: Form | null
 }
 
-export default async (fastify: FastifyInstance) => {
+export default async (fastify: FastifyInstance, { onRequest }: any) => {
+
+  if (onRequest) {
+    fastify.addHook("onRequest", onRequest)
+  }
 
   const params = schema({ viewId: "string" })
 

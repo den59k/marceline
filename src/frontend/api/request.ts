@@ -14,7 +14,11 @@ export class HTTPError extends Error {
 }
 
 setUseFormErrorHandler((e, errors) => {
-  if (e instanceof HTTPError && typeof e.body?.error === "object") {
+  if (!(e instanceof HTTPError)) {
+    (errors as any)["_global"] = "Произошла ошибка"
+    return
+  }
+  if (typeof e.body?.error === "object") {
     for (let [key, error] of Object.entries(e.body.error)) {
       if (typeof error === "string") {
         (errors as any)[key] = error as string
@@ -22,6 +26,8 @@ setUseFormErrorHandler((e, errors) => {
         (errors as any)[key] = error
       }
     }
+  } else if (typeof e.body === "string") {
+    (errors as any)["_global"] = e.body
   }
 })
 

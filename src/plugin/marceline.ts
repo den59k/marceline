@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import { FastifyInstance, FastifyReply, FastifyRequest, onRequestHookHandler } from 'fastify'
 import fp from 'fastify-plugin'
 import send from '@fastify/send'
 import { FlatDB } from './flatdb'
@@ -9,7 +9,10 @@ import fs from 'fs'
 
 type Options = {
   root?: string,
-  prisma?: PrismaClient
+  prisma?: PrismaClient,
+  auth?: {
+    onRequest: onRequestHookHandler
+  }
 }
 
 type HookType = "onRequest" | "bodyModifier" | "postEffect"
@@ -17,6 +20,8 @@ type Hook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply |
 type TableName = Exclude<keyof PrismaClient, `$${string}`>
 
 type AddHookSettings = { table?: TableName | TableName[] }
+
+type AuthHook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply | { accessToken: string, refreshToken?: string }>
 
 const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   
@@ -71,7 +76,7 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
   for (let route of Object.values(routes)) {
     if (typeof route.default !== "function") continue
-    fastify.register(route, { prefix: "/api/admin" })
+    fastify.register(route, { prefix: "/api/admin", onRequest: options.auth?.onRequest })
   }  
   
   const registerHook = (name: string, type: HookType, hook: Hook, options: AddHookSettings = {}) => {
@@ -80,6 +85,20 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     }
     hooks[type].set(name, { hook, options })
   }
+
+  let authMethod: AuthHook | null = null
+  const addAuthMethod = (method: AuthHook) => {
+    authMethod = method
+  }
+
+  fastify.post("/api/admin/login", async (req, reply) => {
+    if (authMethod === null) return reply.code(403).send("Auth method is not defined")
+    return await authMethod(req, reply)
+  })
+
+  fastify.post("/api/admin/logout", async (req, reply) => {
+    
+  })
 
   const getHooks = () => {
     const arr = []
@@ -96,7 +115,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     forms,
     endpoints,
     registerHook,
-    getHooks
+    getHooks,
+    addAuthMethod
   }
 }
 

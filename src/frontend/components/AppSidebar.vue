@@ -19,7 +19,7 @@
       <a class="app-sidebar__item" href="#">
         <VIcon icon="help"/> Помощь
       </a>
-      <button class="app-sidebar__item logout-button">
+      <button class="app-sidebar__item logout-button" @click="logout">
         <VIcon icon="logout"/> Выйти из аккаунта
       </button>
     </div>
@@ -34,6 +34,8 @@ import { useDialogStore } from '../stores/dialogStore';
 import CreateTableDialog from './dialogs/CreateTableDialog.vue';
 import { useRequest } from 'vuesix';
 import { viewsApi } from '../api/views';
+import { useAccountStore } from '../stores/accountStore';
+import { accountApi } from '../api/account';
 
 const { data: views } = useRequest(viewsApi.getViews)
 
@@ -69,6 +71,16 @@ const addTable = (e: MouseEvent) => {
   dialogStore.open(CreateTableDialog)
 }
 
+const accountStore = useAccountStore()
+const logout = async () => {
+  try {
+    await accountApi.logout()
+  } catch(e) {
+    console.warn(e)
+  }
+  await accountStore.logout()
+  router.push("/auth/login")
+}
 
 </script>
 
