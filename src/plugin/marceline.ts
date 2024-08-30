@@ -56,8 +56,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     // Send index.html file on root
     if (!req.url.includes(".")) {
       let content = await fs.promises.readFile(frontendPath+"/index.html", "utf-8")
-      if (options.root !== '/') { 
-        content = content.replace(`<base href="/" >`, `<base href="${options.root}">`)
+      if (rootPath !== '/') { 
+        content = content.replace(`<base href="/" >`, `<base href="${rootPath}">`)
       }
       return reply.headers({ "content-type": "text/html", "content-length": content.length }).send(content)
     }
