@@ -95,6 +95,7 @@ const logout = async () => {
   border-right: 1px solid var(--border-color)
   display: flex
   flex-direction: column
+  flex-shrink: 0
 
   .title
     font-weight: 700

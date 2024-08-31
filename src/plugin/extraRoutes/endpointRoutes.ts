@@ -52,6 +52,7 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
             select: { [idField.name]: true },
             data: req.modifiedBody
           })
+          Object.assign(req.modifiedBody, newObject)
 
           if (entry.hooks.postEffect && entry.hooks.postEffect.length > 0) {
             await fastify.marceline.applyHooks("postEffect", entry.hooks.postEffect, req, reply)
@@ -80,6 +81,7 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
             data: req.modifiedBody,
             where: { id: parseIdField(idField, (req as any).params.itemId) }
           })
+          Object.assign(req.modifiedBody, newObject)
 
           if (entry.hooks.postEffect && entry.hooks.postEffect.length > 0) {
             await fastify.marceline.applyHooks("postEffect", entry.hooks.postEffect, req, reply)

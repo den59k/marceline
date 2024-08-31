@@ -19,7 +19,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
   await app.register(marceline, { 
     root: "/",
     prisma: app.prisma,
-    title: "Лизинг: админ-панель",
+    title: "Админ-панель",
     auth: {
       onRequest: useAdminAuth
     }
