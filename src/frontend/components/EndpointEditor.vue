@@ -87,8 +87,7 @@ const endpointData = computed(() => endpointsData[currentTab.value])
 const { data: hooksData } = useRequest(utilsApi.getHooks)
 const getHooks = (type: string) => {
   if (!hooksData.value) return []
-  return hooksData.value.filter((item: any) => {
-    if (item.type !== type) return false
+  return hooksData.value[type].filter((item: any) => {
     if (!item.table) return true
     return Array.isArray(item.table)? item.table.includes(props.systemTable): item.table === props.systemTable
   }).map((item: any) => item.name)

@@ -3,6 +3,7 @@ import fastify, { FastifyServerOptions } from 'fastify'
 import { marceline } from '../plugin/marceline'
 import { useAdminAuth } from './hooks/useAdminAuth'
 import { generateHash, generateAccessToken } from './utils/hashPassword'
+import { uid } from 'uid/secure'
 
 const plugins = import.meta.glob<any>('./plugins/**/*.ts', { eager: true })
 const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
@@ -18,6 +19,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
   await app.register(marceline, { 
     root: "/",
     prisma: app.prisma,
+    title: "Лизинг: админ-панель",
     auth: {
       onRequest: useAdminAuth
     }
@@ -53,8 +55,22 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     create: { login: "root", password: rootPassword }
   })
 
-  app.marceline.registerHook("checkUserAccess", "onRequest", (req, reply) => {
+  app.marceline.registerHook("onRequest", "checkUserAccess", (req, reply) => {
     if (!req) return reply.code(403).send("Forbidden")
+  })
+
+  app.marceline.registerHook("fieldModifier", "hashPassword", async (req, reply) => {
+    const password = req.currentField
+    if (password === undefined || password === null) return
+    req.currentField = await generateHash(password)
+  })
+
+  app.marceline.registerHook("bodyModifier", "generateUuid", async (req, reply) => {
+    req.modifiedBody.uuid = uid()
+  })
+
+  app.marceline.registerHook("postEffect", "printConsole", async (req, reply) => {
+    console.log(req.body)
   })
 
   const routePrefix = "/api"

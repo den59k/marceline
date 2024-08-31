@@ -1,6 +1,11 @@
 <template>
   <div class="form-editor-field-props">
-    <template v-if="props.item && activeFormItemField">
+    <template v-if="!props.item">
+      <div class="subtitle">Данные формы</div>
+      <ListEditor v-model="props.bodyModifiers" :items="bodyModifiers" addLabel="Добавить модификатор" label="Модификаторы объекта"/>
+      <ListEditor :items="[]" addLabel="Добавить хук" label="Хуки postEffect"/>
+    </template>
+    <template v-else-if="props.item && activeFormItemField">
       <div class="subtitle">Поле "{{ props.item.fieldId }}"</div>
       <VSelect 
         label="Отображение" 
@@ -26,6 +31,12 @@
         :items="customFieldItems"
         label="Действие для кастомного поля"
       />
+      <ListEditor
+        v-model="props.item.modifiers"
+        :items="fieldModifiers" 
+        addLabel="Добавить модификатор поля" 
+        label="Модификаторы поля"
+      />
     </template>
   </div>
 </template>
@@ -37,8 +48,11 @@ import VInput from '../VInput.vue';
 import VSelect from '../VSelect.vue';
 import { Field } from './FormEditor.vue';
 import FormEditorEnumValues from './FormEditorEnumValues.vue';
+import ListEditor from '../ListEditor.vue';
+import { useRequest } from 'vuesix';
+import { utilsApi } from '../../api/utils';
 
-const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field> }>()
+const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[] }>()
 
 const customField: Field = { name: 'custom', type: 'custom', kind: 'custom' }
 
@@ -71,6 +85,16 @@ const customFieldValue = computed({
     }
     props.item.jsonField = value
   }
+})
+
+const { data: hooksData } = useRequest(utilsApi.getHooks)
+const fieldModifiers = computed(() => {
+  if (!hooksData.value) return []
+  return hooksData.value.fieldModifier.map((item: any) => item.name)
+})
+const bodyModifiers = computed(() => {
+  if (!hooksData.value) return []
+  return hooksData.value.bodyModifier.map((item: any) => item.name)
 })
 
 </script>

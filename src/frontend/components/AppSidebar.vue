@@ -1,6 +1,6 @@
 <template>
   <div class="app-sidebar">
-    <div class="title">Marceline</div>
+    <div class="title">{{ title }}</div>
     <div class="app-sidebar__items">
       <template v-for="item in pages">
         <div v-if="typeof item === 'string'" class="app-sidebar__group-title">
@@ -48,7 +48,7 @@ const pages = computed(() => {
     })),
     { title: "Добавить таблицу", icon: "add", onClick: addTable },
     "Для разработчиков",
-    { to: "/dev/views", title: "Таблицы", icon: "table" },
+    // { to: "/dev/views", title: "Таблицы", icon: "table" },
     { to: "/dev/forms", title: "Формы", icon: "note-edit" },
     { to: "/dev/endpoints", title: "Эндпоинты", icon: "code" },
     { to: "/dev/components", title: "Компоненты", icon: "component" },
@@ -64,6 +64,10 @@ const currentRoute = computed(() => {
     if (router.currentRoute.value.path.startsWith(route.to)) targetRoute = route
   }
   return targetRoute
+})
+
+const title = computed(() => {
+  return document.title
 })
 
 const dialogStore = useDialogStore()

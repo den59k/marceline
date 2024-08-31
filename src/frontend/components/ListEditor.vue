@@ -7,9 +7,9 @@
       <VIconButton icon="close" class="delete-button" @click="deleteItem(index)"/>
     </div>
     <VPopover v-model:open="popoverOpen" placement="bottom-start" fit-anchor class="list-editor__add-item-popover">
-      <template #activator="{ props }">
-        <button v-bind="props" class="list-editor__add-button">
-          <VIcon icon="add"/> Добавить хук
+      <template #activator="{ props: activatorProps }">
+        <button v-bind="activatorProps" class="list-editor__add-button">
+          <VIcon icon="add"/> {{ props.addLabel ?? "Добавить" }}
         </button>
       </template>
       <button v-for="item in props.items" @click="addItem(item)">{{ item }}</button>
@@ -21,10 +21,10 @@
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
 import VPopover from './VPopover.vue';
-import { Ref, ref, watch } from 'vue';
+import { ref } from 'vue';
 import VIconButton from './VIconButton.vue';
 
-const props = defineProps<{ label?: string, modelValue?: string[], items: string[] }>()
+const props = defineProps<{ label?: string, modelValue?: string[], addLabel?: string, items: string[] }>()
 const emit = defineEmits([ "update:modelValue" ])
 
 const values = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] })
@@ -36,6 +36,7 @@ const addItem = (item: string) => {
   }
   values.value.push(item)
   popoverOpen.value = false
+  emit("update:modelValue", values.value)
 }
 
 const deleteItem = (index: number) => {

@@ -132,7 +132,9 @@ const init = async () => {
     app.addHook("onRequest", onRequestHook)
     
     app.setNotFoundHandler(async (req, reply) => {
-      if (req.originalUrl.startsWith("/api")) return reply.code(404).send({ error: `Route ${req.method}:${req.url} not found` })
+      if (req.method !== "GET" || req.originalUrl.startsWith("/api")) {
+        return reply.code(404).send({ error: `Route ${req.method}:${req.url} not found` })
+      }
 
       let template = fs.readFileSync(resolve(process.cwd(), "src/frontend/index.html"), "utf-8")
       template = template.replaceAll("./", '/src/frontend/')

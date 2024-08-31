@@ -30,7 +30,7 @@
         </div>
       </template>
     </div>
-    <FormEditorFieldProps :item="activeFormItem" :fieldsMap="fieldsMap" />
+    <FormEditorFieldProps :item="activeFormItem" :fieldsMap="fieldsMap" :bodyModifiers="bodyModifiers"/>
   </div>
 </template>
 
@@ -43,7 +43,7 @@ import { FormItem } from '../../api/formsApi';
 import { traverseFormFields } from '../../utils/traverse';
 import FormEditorFieldProps, { getFormats } from './FormEditorFieldProps.vue';
 
-const props = defineProps<{ modelValue?: FormItem[], fields: Field[] }>()
+const props = defineProps<{ modelValue?: FormItem[], fields: Field[], bodyModifiers?: string[] }>()
 const emit = defineEmits([ "update:modelValue" ])
 
 const fieldsMap = computed(() => {
@@ -224,7 +224,7 @@ export class BlockDropEvent extends Event {
   cursor: pointer
 
   &:hover, &.drag
-    background: var(--background-active-color)
+    background: var(--paper-color)
     border-color: var(--primary-color)
   &.drag
     z-index: 100

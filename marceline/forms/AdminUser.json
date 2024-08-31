@@ -15,9 +15,13 @@
           "fieldId": "password",
           "name": "Пароль",
           "format": "password",
-          "placeholder": "Введите пароль"
+          "placeholder": "Введите пароль",
+          "modifiers": [
+            "hashPassword"
+          ]
         }
       ]
     }
-  ]
+  ],
+  "bodyModifiers": []
 }

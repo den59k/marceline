@@ -15,3 +15,23 @@ model AdminUser {
   token             String?             @unique
 }
 
+enum UserType {
+  creator
+  designer
+  reader
+  manager
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  email             String              @unique
+  password          Bytes
+  type              UserType            @default(reader)
+}
+
+model UserRegistrationRequest {
+  id                String              @id @default(uuid())
+  createdAt         DateTime            @default(now())
+  data              Json
+}

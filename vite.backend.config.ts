@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts'
 
 export default defineConfig((env) => {
   return {
-    plugins: [ dts({ rollupTypes: true }) ],
+    plugins: [ dts({ rollupTypes: true, exclude: "src/app/**/*" }) ],
     // root: join(process.cwd(), getRoot(env.mode)),
     build: {
       target: "node18",

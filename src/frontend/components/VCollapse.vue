@@ -26,6 +26,7 @@
 <script lang="ts" setup>
 import { useEventListener } from '@vueuse/core';
 import { nextTick, ref, watch } from 'vue';
+import VIcon from './VIcon.vue';
 
 const props = defineProps<{ open?: boolean, label?: string, withPadding?: boolean }>()
 const emit = defineEmits([ "update:open" ])

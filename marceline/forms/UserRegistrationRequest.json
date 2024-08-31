@@ -1,0 +1,36 @@
+{
+  "id": "UserRegistrationRequest",
+  "name": "Создание заявки на регистрацию",
+  "systemTable": "UserRegistrationRequest",
+  "fields": [
+    {
+      "children": [
+        {
+          "fieldId": "name",
+          "name": "Имя",
+          "format": "input",
+          "isCustom": true,
+          "placeholder": "Введите имя",
+          "jsonField": "data"
+        },
+        {
+          "fieldId": "surname",
+          "name": "Фамилия",
+          "format": "input",
+          "isCustom": true,
+          "placeholder": "Введите фамилию",
+          "jsonField": "data"
+        }
+      ]
+    },
+    {
+      "fieldId": "Email",
+      "name": "E-mail",
+      "format": "input",
+      "isCustom": true,
+      "placeholder": "Введите e-mail",
+      "jsonField": "data"
+    }
+  ],
+  "bodyModifiers": []
+}

@@ -1,0 +1,45 @@
+{
+  "id": "User",
+  "name": "Пользователь",
+  "systemTable": "User",
+  "fields": [
+    {
+      "fieldId": "type",
+      "name": "Тип поля",
+      "format": "select",
+      "enum": [
+        {
+          "id": "creator",
+          "title": "creator"
+        },
+        {
+          "id": "designer",
+          "title": "designer"
+        },
+        {
+          "id": "reader",
+          "title": "reader"
+        },
+        {
+          "id": "manager",
+          "title": "manager"
+        }
+      ]
+    },
+    {
+      "children": [
+        {
+          "fieldId": "email",
+          "name": "email",
+          "format": "input"
+        },
+        {
+          "fieldId": "password",
+          "name": "password",
+          "format": "input"
+        }
+      ]
+    }
+  ],
+  "bodyModifiers": []
+}

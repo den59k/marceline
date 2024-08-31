@@ -57,7 +57,7 @@ const fields = computed(() => {
   const tableName = relationItem.length > 0? relationItem[relationItem.length-1].type: props.table
   
   const table = data.value.models.find(item => item.name === tableName)
-  return table.fields
+  return table?.fields ?? []
 })
 
 const setField = (item: any) => {

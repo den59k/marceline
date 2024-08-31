@@ -7,13 +7,13 @@
       <VSelect v-bind="register('systemTable')" :items="models" label="Системная таблица"/>
       <VInput v-bind="register('name')" label="Название"/>
     </div>
-    <div v-if="!data || !values.systemTable" class="form-editor__layout form-item-page__form-editor">
+    <div v-if="!tablesData || !values.systemTable" class="form-editor__layout form-item-page__form-editor">
       <div class="form-editor__available-fields"></div>
       <div class="form-editor__work-area">
         <template v-if="formInfo">Выберите таблицу для создания формы</template>
       </div>
     </div>
-    <FormEditor v-model="values.fields" v-else :fields="fields" class="form-item-page__form-editor"/>
+    <FormEditor v-model="values.fields" v-else :fields="fields" :body-modifiers="values.bodyModifiers" class="form-item-page__form-editor"/>
   </VLayout>
 </template>
 
@@ -30,29 +30,39 @@ import { formsApi } from '../api/formsApi';
 import { parseItemId } from '../utils/parseItemId';
 import { useRouter } from 'vue-router';
 
-
 const router = useRouter()
 const formId = computed(() => parseItemId(router.currentRoute.value.params.formId))
 
 const { data: formInfo, setReturnData } = useRequestWatch(formsApi.getForm, formId)
 setReturnData(formId => {
-  if (formId === null) return { systemTable: null, name: "", fields: [] }
+  if (formId === null) return { systemTable: null, name: "", fields: [], bodyModifiers: [] }
 })
 
 const { register, values, handleSubmit, hasChange, updateDefaultValues, updateDefaultValuesWatch } = useForm({
   systemTable: null as string | null,
   name: "",
-  fields: []
+  fields: [],
+  bodyModifiers: []
 })
 updateDefaultValuesWatch(formInfo)
 
+const mapField = (field: any) => {
+  if (field.kind === "enum") {
+    const enumValues = tablesData.value!.enums.find(enumItem => enumItem.name === field.type)?.values.map(item => item.name)
+    if (enumValues) {
+      return { ...field, enum: enumValues }
+    }
+  }
+  return field
+}
+
 const fields = computed(() => {
-  if (!values.systemTable || !data.value) return []
+  if (!values.systemTable || !tablesData.value) return []
   
-  const table = data.value.models.find(item => item.name === values.systemTable)
+  const table = tablesData.value.models.find(item => item.name === values.systemTable)
   if (!table) return []
 
-  return table.fields
+  return table.fields.map(mapField)
 })
 
 const save = handleSubmit(async (values) => {
@@ -67,10 +77,10 @@ const save = handleSubmit(async (values) => {
   updateDefaultValues(values)
 })
 
-const { data } = useRequest(utilsApi.getModels)
+const { data: tablesData } = useRequest(utilsApi.getModels)
 const models = computed(() => {
-  if (!data.value) return []
-  return data.value.models.map(item => ({ id: item.name, title: item.name }))
+  if (!tablesData.value) return []
+  return tablesData.value.models.map(item => ({ id: item.name, title: item.name }))
 })
 
 </script>

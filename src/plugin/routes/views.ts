@@ -11,7 +11,8 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
 
   fastify.get("/tables", async () => {
     return {
-      models: Prisma.dmmf.datamodel.models
+      models: Prisma.dmmf.datamodel.models,
+      enums: Prisma.dmmf.datamodel.enums
     }
   })
 

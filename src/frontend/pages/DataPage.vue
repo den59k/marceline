@@ -11,7 +11,7 @@
           <VIcon icon="delete" />
           {{ selectedItems.length > 1? "Удалить элементы": "Удалить элемент" }}
         </VButton>
-        <VButton v-else-if="data.form" @click="addItem">
+        <VButton v-else-if="data.createForm" @click="addItem">
           <VIcon icon="add" /> Добавить элемент
         </VButton>
         <VInput placeholder="Поиск..."/>
@@ -23,7 +23,7 @@
           :checkable="data.view.data.delete?.enabled"
           :columns="columns" 
           :data="data.data" 
-          :row-component="data.form? 'button': 'div'" 
+          :row-component="data.editForm? 'button': 'div'" 
           @itemclick="onItemClick"
         >
         </VTable>
@@ -125,11 +125,11 @@ const editTable = () => {
 }
 
 const addItem = () => {
-  dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.form, systemTable: data.value.view.systemTable })
+  dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.createForm, systemTable: data.value.view.systemTable })
 }
 
 const onItemClick = (item: any) => {
-  dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.form, systemTable: data.value.view.systemTable })
+  dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm, systemTable: data.value.view.systemTable })
 }
 
 const selectedItems = ref<any>([])

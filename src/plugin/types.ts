@@ -29,21 +29,23 @@ export type FormField = {
   fileField?: string,
   jsonField?: string,
   isCustom?: boolean,
-  children?: FormField[]
+  children?: FormField[],
+  modifiers?: string[]
 }
 
 export type Form = {
   id: string,
   name: string,
   systemTable: string,
-  fields: FormField[]
+  fields: FormField[],
+  bodyModifiers?: string[]
 }
 
 export type Endpoint = {
   id: string,
   path: string,
   systemTable: string
-  data: { id: string, hooks: string[] }[]
+  data: { id: string, hooks: Record<string, string[]>, enabled?: boolean, form?: string }[]
 }
 
 export type MarcelineOptions = {

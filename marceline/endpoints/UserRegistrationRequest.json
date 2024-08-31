@@ -1,0 +1,57 @@
+{
+  "id": "UserRegistrationRequest",
+  "path": "/api/register-user",
+  "systemTable": "UserRegistrationRequest",
+  "data": [
+    {
+      "id": "list",
+      "enabled": false,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      }
+    },
+    {
+      "id": "get",
+      "enabled": false,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      }
+    },
+    {
+      "id": "create",
+      "enabled": true,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ],
+        "postEffect": [
+          "printConsole"
+        ]
+      },
+      "form": "UserRegistrationRequest"
+    },
+    {
+      "id": "edit",
+      "enabled": false,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      },
+      "form": null
+    },
+    {
+      "id": "delete",
+      "enabled": false,
+      "hooks": {
+        "onRequest": [
+          "checkUserAccess"
+        ]
+      }
+    }
+  ]
+}

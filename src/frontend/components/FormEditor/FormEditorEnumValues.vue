@@ -25,6 +25,7 @@ import { Ref, reactive, shallowRef } from 'vue';
 import VInput from '../VInput.vue';
 import VIconButton from '../VIconButton.vue';
 import VCollapse from '../VCollapse.vue';
+import VIcon from '../VIcon.vue';
 
 type Item = { id: string, title: string }
 

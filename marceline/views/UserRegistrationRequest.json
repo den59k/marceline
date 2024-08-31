@@ -1,0 +1,30 @@
+{
+  "id": "UserRegistrationRequest",
+  "name": "Запросы на рег.",
+  "systemTable": "UserRegistrationRequest",
+  "columns": [
+    {
+      "name": "Дата создания",
+      "format": "dateTime",
+      "systemColumn": "createdAt"
+    },
+    {
+      "name": "Данные",
+      "format": "string",
+      "systemColumn": "data"
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": false
+    },
+    "edit": {
+      "enabled": true,
+      "form": "UserRegistrationRequest"
+    },
+    "delete": {
+      "enabled": false
+    }
+  },
+  "icon": "list"
+}
