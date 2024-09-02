@@ -19,6 +19,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@fastify/multipart": "^8.3.0",
     "@prisma/client": "^5.18.0",
     "@types/node": "^22.3.0",
     "@vitejs/plugin-vue": "^5.1.2",

@@ -28,10 +28,20 @@ model User {
   email             String              @unique
   password          Bytes
   type              UserType            @default(reader)
+  files             File[]
 }
 
 model UserRegistrationRequest {
   id                String              @id @default(uuid())
   createdAt         DateTime            @default(now())
   data              Json
+}
+
+model File {
+  id                String              @id @default(uuid())
+  createdAt         DateTime            @default(now())
+  src               String
+  previewSrc        String?
+  size              Int
+  users             User[]
 }

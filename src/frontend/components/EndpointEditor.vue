@@ -8,15 +8,34 @@
     </div>
     <div class="endpoint-editor__work-area form-column">
       <div class="title">Свойства</div>
-
       <VCheckbox v-model="endpointData.enabled" label="Использовать эндпоинт"/>
+      <FieldsSelector 
+        v-if="currentTab === 'get' || currentTab === 'list'" 
+        v-model="endpointData.fields"
+        :table="props.systemTable" 
+        label="Выбрать поля"
+      />
       <template v-if="currentTab === 'create' || currentTab === 'edit'">
         <VSelect v-model="endpointData.form" :items="availableForms" label="Форма для изменения" />
       </template>
       <div v-if="hooksData" class="endpoint-editor__hooks">
-        <ListEditor v-model="endpointData.hooks['onRequest']" :items="getHooks('onRequest')" label="Хуки onRequest"/>
-        <ListEditor v-model="endpointData.hooks['bodyModifier']" :items="getHooks('bodyModifier')" label="Хуки bodyModifier"/>
-        <ListEditor v-model="endpointData.hooks['postEffect']" :items="getHooks('postEffect')" label="Хуки postEffect"/>
+        <ListEditor 
+          v-model="endpointData.hooks['onRequest']" 
+          :items="getHooks('onRequest')" 
+          label="Хуки onRequest"
+        />
+        <ListEditor 
+          v-if="currentTab !== 'get' && currentTab !== 'list'" 
+          v-model="endpointData.hooks['bodyModifier']" 
+          :items="getHooks('bodyModifier')" 
+          label="Хуки bodyModifier"
+        />
+        <ListEditor 
+          v-if="currentTab !== 'get' && currentTab !== 'list'" 
+          v-model="endpointData.hooks['postEffect']" 
+          :items="getHooks('postEffect')" 
+          label="Хуки postEffect"
+        />
       </div>
     </div>
   </div>
@@ -31,6 +50,7 @@ import { useRequest } from 'vuesix';
 import { formsApi } from '../api/formsApi';
 import ListEditor from './ListEditor.vue';
 import { utilsApi } from '../api/utils';
+import FieldsSelector from './FieldsSelector.vue';
 
 const props = defineProps<{ systemTable: string, data: any[] }>()
 
@@ -56,9 +76,9 @@ watch([ formsData, () => props.systemTable ], () => {
 }, { immediate: true })
 
 type HooksData = Record<string, string[]>
-const endpointsData: Record<EndpointType, { enabled: boolean, hooks: HooksData, form?: null | string }> = reactive({
-  list: { enabled: true, hooks: {}, },
-  get: { enabled: true, hooks: {}, },
+const endpointsData: Record<EndpointType, { enabled: boolean, hooks: HooksData, form?: null | string, fields?: any }> = reactive({
+  list: { enabled: true, hooks: {}, fields: {} },
+  get: { enabled: true, hooks: {}, fields: {} },
   create: { enabled: true, hooks: {}, form: null },
   edit: { enabled: true, hooks: {}, form: null },
   delete: { enabled: true, hooks: {}, },

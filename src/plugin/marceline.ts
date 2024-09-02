@@ -12,6 +12,9 @@ export type Options = {
   prisma?: PrismaClient,
   auth?: {
     onRequest: onRequestHookHandler
+  },
+  files?: {
+    systemTable: TableName
   }
 }
 

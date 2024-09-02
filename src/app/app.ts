@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import fastify, { FastifyServerOptions } from 'fastify'
+import fastifyMultipart from '@fastify/multipart'
 import { marceline } from '../plugin/marceline'
 import { useAdminAuth } from './hooks/useAdminAuth'
 import { generateHash, generateAccessToken } from './utils/hashPassword'
@@ -16,12 +17,17 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     await app.register(plugin)
   }
 
+  await app.register(fastifyMultipart, { limits: { fileSize: 1024 * 1024 * 200 }})
+
   await app.register(marceline, { 
     root: "/",
     prisma: app.prisma,
     title: "Админ-панель",
     auth: {
       onRequest: useAdminAuth
+    },
+    files: {
+      systemTable: "file"
     }
   })
 

@@ -4,8 +4,8 @@
       <VButton v-if="hasChange" @click="save">Сохранить изменения</VButton>
     </template>
     <div class="form-row">
-      <VInput v-bind="register('path')" label="Путь"/>
       <VSelect v-bind="register('systemTable')" :items="models" label="Системная таблица"/>
+      <VInput v-bind="register('path')" label="Путь"/>
     </div>
     <div v-if="!values.systemTable" class="endpoint-editor__layout">
       <div class="endpoint-editor__available-items"></div>

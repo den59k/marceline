@@ -1,0 +1,46 @@
+{
+  "id": "User",
+  "path": "/api/users",
+  "systemTable": "User",
+  "data": [
+    {
+      "id": "list",
+      "enabled": true,
+      "hooks": {},
+      "fields": {
+        "files": {
+          "createdAt": true,
+          "src": true,
+          "previewSrc": true
+        },
+        "id": true,
+        "type": true,
+        "email": true,
+        "createdAt": true
+      }
+    },
+    {
+      "id": "get",
+      "enabled": true,
+      "hooks": {},
+      "fields": {}
+    },
+    {
+      "id": "create",
+      "enabled": true,
+      "hooks": {},
+      "form": "User"
+    },
+    {
+      "id": "edit",
+      "enabled": true,
+      "hooks": {},
+      "form": "User"
+    },
+    {
+      "id": "delete",
+      "enabled": true,
+      "hooks": {}
+    }
+  ]
+}
