@@ -42,7 +42,8 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
           const where = getWhere(req, item.systemTable, entry.filters)
           req.endpointAction = "list"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
-            await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
           }
           const resp = await (fastify as any).prisma[item.systemTable].findMany({
             select,
@@ -58,7 +59,8 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
 
           req.endpointAction = "get"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
-            await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
           }
           const idField = getIdField(item)
           const resp = await (fastify as any).prisma[item.systemTable].findUnique({
@@ -72,7 +74,8 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
         fastify.post(item.path, async (req, reply) => { 
           req.endpointAction = "create"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
-            await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
           }
 
           if (typeof req.body !== "object") return reply.code(400).send({ error: "Body must be an object" })
@@ -81,7 +84,12 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
           if (!form) return reply.code(500).send("Contact with administrator. Error: Form not found")
 
           const resp = await parseBody(fastify, req, reply, form, req.body)
-          if (typeof resp === "object" && resp === reply) return resp            
+          if (typeof resp === "object" && resp === reply) return resp      
+          
+          if (entry.hooks.bodyModifier && entry.hooks.bodyModifier.length > 0) {
+            const resp = await fastify.marceline.applyHooks("bodyModifier", entry.hooks.bodyModifier, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
+          }
 
           const idField = getIdField(item)
           const newObject = await (fastify as any).prisma[item.systemTable].create({
@@ -100,7 +108,8 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
         fastify.post(item.path+"/:itemId", async (req, reply) => { 
           req.endpointAction = "edit"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
-            await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
           }
 
           if (typeof req.body !== "object") return reply.code(400).send({ error: "Body must be an object" })
@@ -110,6 +119,11 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
             
           const resp = await parseBody(fastify, req, reply, form, req.body)
           if (typeof resp === "object" && resp === reply) return resp  
+
+          if (entry.hooks.bodyModifier && entry.hooks.bodyModifier.length > 0) {
+            const resp = await fastify.marceline.applyHooks("bodyModifier", entry.hooks.bodyModifier, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp
+          }
 
           const idField = getIdField(item)
           const newObject = await (fastify as any).prisma[item.systemTable].update({
@@ -129,7 +143,8 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
         fastify.delete(item.path+"/:itemId", async (req, reply) => { 
           req.endpointAction = "delete"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
-            await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp      
           }
 
           const idField = getIdField(item)
