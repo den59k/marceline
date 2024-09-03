@@ -43,5 +43,6 @@ model File {
   src               String
   previewSrc        String?
   size              Int
-  users             User[]
+  authorId          Int
+  author            User               @relation(fields: [authorId], references: [id])
 }

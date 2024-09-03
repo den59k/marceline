@@ -34,6 +34,9 @@ import { FormItem } from '../../api/formsApi';
 import VIconButton from '../VIconButton.vue';
 import VSelect from '../VSelect.vue'
 import VInput from '../VInput.vue'
+import { makeRequest } from 'vuesix';
+import { dataApi } from '../../api/data';
+import { getItems } from '../../utils/getItems';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -53,6 +56,12 @@ const component = computed(() => {
 
 const additionalProps = computed(() => {
   if (props.item.format === 'select') {
+    if (props.item.relationType) {
+      return {
+        items: () => getItems(props.item.relationType!),
+        nullable: true
+      }
+    }
     return { 
       items: props.item.enum ?? [] 
     }

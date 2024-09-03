@@ -17,7 +17,9 @@ export type FormItem = {
   fileField?: string,
   jsonField?: string,
   isCustom?: boolean,
-  modifiers?: string[]
+  modifiers?: string[],
+  relationType?: string,
+  aliasFieldId?: string,
   children?: FormItem[]
 }
 

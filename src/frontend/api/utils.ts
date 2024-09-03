@@ -1,7 +1,15 @@
 import { request } from "./request";
 
+type PrismaField = {
+  kind: string
+  type: string
+  name: string
+  relationName?: string
+  isList: boolean
+}
+
 type PrismaModels = {
-  models: { name: string, fields: any[] }[], 
+  models: { name: string, fields: PrismaField[] }[], 
   enums: { name: string, values: { name: string }[] }[]
 }
 

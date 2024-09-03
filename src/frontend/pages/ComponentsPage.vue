@@ -43,7 +43,7 @@ const components = [
 const currentComponent = shallowRef<typeof components[number] | null>(null)
 
 watchEffect(() => {
-  console.log(currentComponent.value?.component.props)
+  console.info(currentComponent.value?.component.props)
 })
 
 </script>

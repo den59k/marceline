@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mutateRequest, useForm, useRequest } from 'vuesix';
+import { mutateRequest, mutateRequestFull, useForm, useRequest } from 'vuesix';
 import VDialog from '../VDialog.vue';
 import { viewsApi } from '../../api/views';
 import { computed } from 'vue';
@@ -77,7 +77,7 @@ const save = handleSubmit(async () => {
   await viewsApi.updateView(props.viewId, values)
   mutateRequest(viewsApi.getView, props.viewId)
   mutateRequest(viewsApi.getViews)
-  mutateRequest(dataApi.getData, props.viewId)
+  mutateRequestFull(dataApi.getData)
   dialogStore.close()
 })
 

@@ -5,6 +5,7 @@
         <button class="v-select__activator" :class="{ opened }" v-bind="activatorProps">
           <div v-if="currentItem">{{ currentItem.title }}</div>
           <div v-else class="v-select__placeholder">{{ props.placeholder ?? 'Выберите значение' }}</div>
+          <VIconButton v-if="props.nullable && model" icon="close" class="v-select__clear-button" @mousedown.stop @click.stop="resetValue"/>
           <VIcon icon="arrow-down" />
         </button>
       </template>
@@ -22,31 +23,55 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
+import { Ref, computed, onMounted, ref, shallowRef, watch } from 'vue';
 import VFormControl, { VFormControlProps, pickProps } from './VFormControl.vue';
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
 import VPopover from './VPopover.vue';
+import VIconButton from './VIconButton.vue';
 
 type Item = { id: string | number, title: string }
 
-const props = defineProps<{ items: Item[], modelValue?: string | number | null, placeholder?: string } & VFormControlProps>()
+const props = defineProps<{ 
+  items: Item[] | (() => Promise<Item[]>), 
+  modelValue?: string | number | null, 
+  placeholder?: string,
+  nullable?: boolean
+} & VFormControlProps>()
+
 const emit = defineEmits([ "update:modelValue" ])
 
 const model = useVModel(props, "modelValue", emit, { passive: true, defaultValue: null }) as Ref<string | number | null>
 
 const currentItem = computed(() => {
   if (model.value === null) return null
-  return props.items.find(item => item.id === model.value) ?? null
+  return items.value.find(item => item.id === model.value) ?? null
 })
 
+const cachedItems = shallowRef<Item[]>([])
+const pending = shallowRef(typeof props.items === "function")
+
 const items = computed(() => {
+  if (typeof props.items === "function") return cachedItems.value
   return props.items
 })
 
 const opened = ref(false)
+
+watch(opened, async (opened) => {
+  if (opened && typeof props.items === "function") {
+    cachedItems.value = await props.items()
+    pending.value = false
+  }
+})
+
 const onItemClick = (item: Item) => {
   model.value = item.id
+  opened.value = false
+}
+
+const resetValue = () => { 
+  model.value = null
   opened.value = false
 }
 
@@ -97,6 +122,13 @@ const onItemClick = (item: Item) => {
 
     &:hover
       background-color: var(--hover-color)
+
+.v-select__clear-button
+  width: 28px
+  height: 28px
+  color: var(--text-secondary-color)
+  margin-right: 2px
+
 
 .v-select__empty-label
   padding: 0 16px

@@ -3,12 +3,13 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { generateSelect } from "../utils/generateSelect";
 import { parseBody } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
-import { pick } from "vuesix";
 import { Form, View } from "../types";
 
 interface FastifyRequestExt extends FastifyRequest {
   view: View,
 }
+
+const PAGE_SIZE = 20
 
 export default async (fastify: FastifyInstance, { onRequest }: any) => {
 
@@ -30,9 +31,11 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
     req.view = view
   })
 
+  const getDataQuery = schema({ page: "number?" })
   /** Get data */
-  fastify.get("/data/:viewId/items", sc(params), async (_req, reply) => {
+  fastify.get("/data/:viewId/items", sc(params, getDataQuery, "query"), async (_req, reply) => {
     const req = _req as FastifyRequestExt
+    const { page } = req.query as SchemaType<typeof getDataQuery>
     const select = generateSelect(req.view.columns)
     const idField = getIdField(req.view)
     if (select) {
@@ -41,7 +44,9 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
 
     const resp = await (fastify as any).prisma[req.view.systemTable].findMany({
       select,
-      orderBy: { [idField.name]: "asc" }
+      orderBy: { [idField.name]: "asc" },
+      take: PAGE_SIZE,
+      skip: (page ?? 0) * PAGE_SIZE
     })
 
     if (resp.length > 0 && "_count" in resp[0]) {
@@ -60,12 +65,16 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
     if (req.view.data.edit.enabled && req.view.data.edit.form) {
       editForm = fastify.marceline.forms.getItem(req.view.data.edit.form) ?? null
     }
+    
+    const totalItems = await (fastify as any).prisma[req.view.systemTable].count({ 
+    })
 
     return {
       createForm,
       editForm,
       view: req.view,
-      data: resp
+      data: resp,
+      totalPages: Math.ceil(totalItems / PAGE_SIZE)
     }
   })
 

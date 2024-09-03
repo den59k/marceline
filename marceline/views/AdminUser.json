@@ -18,6 +18,11 @@
       "name": "Дата создания",
       "format": "dateTime",
       "systemColumn": "createdAt"
+    },
+    {
+      "name": "Токен",
+      "format": "string",
+      "systemColumn": "token"
     }
   ],
   "data": {

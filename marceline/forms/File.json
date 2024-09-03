@@ -1,0 +1,25 @@
+{
+  "id": "File",
+  "name": "Создание файла",
+  "systemTable": "File",
+  "fields": [
+    {
+      "fieldId": "src",
+      "name": "Путь к файлу",
+      "format": "input"
+    },
+    {
+      "fieldId": "size",
+      "name": "Размер файла",
+      "format": "inputNumber"
+    },
+    {
+      "fieldId": "author",
+      "name": "Автор",
+      "format": "select",
+      "relationType": "User",
+      "aliasFieldId": "authorId"
+    }
+  ],
+  "bodyModifiers": []
+}

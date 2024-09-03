@@ -19,6 +19,7 @@
 <script lang="ts" setup>
 import { FormItem as FormItemType } from '../../api/formsApi';
 import { computed, markRaw } from 'vue';
+import { getItems } from '../../utils/getItems';
 
 const props = defineProps<{ item: FormItemType, modelValue?: any }>()
 const emit = defineEmits([ "update:modelValue" ])
@@ -46,7 +47,15 @@ const component = computed(() => {
 })
 
 const additionalProps = computed(() => {
-  if (props.item.format === 'select') return { items: props.item.enum ?? [] }
+  if (props.item.format === 'select') {
+    if (props.item.relationType) {
+      return {
+        items: () => getItems(props.item.relationType!),
+        nullable: true
+      }
+    }
+    return { items: props.item.enum ?? [] }
+  }
   if (props.item.format === 'file' && props.item.fileField) {
     const obj = props.modelValue[props.item.fileField!]
     return { 

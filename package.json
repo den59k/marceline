@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "node scripts/run.js",
     "collect": "node scripts/registerComponents.js src/frontend",
-    "build:frontend": "vite build -c vite.frontend.config.ts",
+    "build:frontend": "tsc && vite build -c vite.frontend.config.ts",
     "build:backend": "vite build -c vite.backend.config.ts",
     "test": "vitest"
   },

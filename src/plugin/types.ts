@@ -30,7 +30,8 @@ export type FormField = {
   jsonField?: string,
   isCustom?: boolean,
   children?: FormField[],
-  modifiers?: string[]
+  modifiers?: string[],
+  aliasFieldId?: string,
 }
 
 export type Form = {
@@ -45,7 +46,18 @@ export type Endpoint = {
   id: string,
   path: string,
   systemTable: string
-  data: { id: string, hooks: Record<string, string[]>, enabled?: boolean, form?: string }[]
+  data: EndpointEntry[]
+}
+
+type Fields = { [key: string]: boolean | Fields }
+
+export type EndpointEntry = {
+  id: string, 
+  hooks: Record<string, string[]>, 
+  enabled?: boolean, 
+  form?: string,
+  fields: Fields, 
+  filters?: { param?: string, field?: string }[]
 }
 
 export type MarcelineOptions = {

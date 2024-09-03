@@ -36,6 +36,20 @@
           :items="getHooks('postEffect')" 
           label="Хуки postEffect"
         />
+        <ListEditor 
+          v-if="currentTab === 'get' || currentTab === 'list'" 
+          v-model="endpointData.filters" 
+          :items="availableFilters" 
+          label="Фильтры"
+        >
+          <template #item="{ item }">
+            <template v-if="item.param">
+              :{{ item.param }}
+              <VIcon icon="arrow-right" style="margin-left: 14px"/>
+              <VSelect v-model="item.field" :items="getFields()" placeholder="Выберите поле" class="endpoint-editor__field-select"/>
+            </template>
+          </template>
+        </ListEditor>
       </div>
     </div>
   </div>
@@ -52,7 +66,7 @@ import ListEditor from './ListEditor.vue';
 import { utilsApi } from '../api/utils';
 import FieldsSelector from './FieldsSelector.vue';
 
-const props = defineProps<{ systemTable: string, data: any[] }>()
+const props = defineProps<{ systemTable: string, data: any[], urlParams: string[] }>()
 
 type EndpointType = "list" | "get" | "create" | "edit" | "delete"
 const currentTab = ref<EndpointType>("list")
@@ -76,9 +90,10 @@ watch([ formsData, () => props.systemTable ], () => {
 }, { immediate: true })
 
 type HooksData = Record<string, string[]>
-const endpointsData: Record<EndpointType, { enabled: boolean, hooks: HooksData, form?: null | string, fields?: any }> = reactive({
-  list: { enabled: true, hooks: {}, fields: {} },
-  get: { enabled: true, hooks: {}, fields: {} },
+type EndpointData = { enabled: boolean, hooks: HooksData, form?: null | string, fields?: any, filters?: any }
+const endpointsData: Record<EndpointType, EndpointData> = reactive({
+  list: { enabled: true, hooks: {}, fields: {}, filters: [] },
+  get: { enabled: true, hooks: {}, fields: {}, filters: [] },
   create: { enabled: true, hooks: {}, form: null },
   edit: { enabled: true, hooks: {}, form: null },
   delete: { enabled: true, hooks: {}, },
@@ -113,6 +128,28 @@ const getHooks = (type: string) => {
   }).map((item: any) => item.name)
 }
 
+const availableFilters = computed(() => {
+  const arr: { param: string, field: null | string }[] = []
+  for (let item of props.urlParams) {
+    arr.push({ param: item, field: null })
+  }
+  return arr 
+})
+
+const { data: modelsData } = useRequest(utilsApi.getModels)
+const currentTable = computed(() => getTable(props.systemTable))
+
+const getTable = (table: string) => {
+  return modelsData.value?.models.find(item => item.name === table) ?? null
+}
+
+const getFields = () => {
+  if (!currentTable.value) return []
+  return currentTable.value.fields
+    .filter(item => item.kind !== 'object')
+    .map(item => ({ id: item.name, title: item.name }))
+}
+
 </script>
 
 <style lang="sass">
@@ -143,5 +180,12 @@ const getHooks = (type: string) => {
 
   .list-editor
     flex: 1 1 50px
+
+.endpoint-editor__field-select
+  flex: 1 1 auto
+  border: none
+
+  .v-form-control__outline
+    border: none
 
 </style>

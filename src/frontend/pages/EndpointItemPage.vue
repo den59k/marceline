@@ -11,7 +11,7 @@
       <div class="endpoint-editor__available-items"></div>
       <div class="endpoint-editor__work-area">Сначала выберите системную таблицу</div>
     </div>
-    <EndpointEditor v-else :data="values.data" :systemTable="values.systemTable" />
+    <EndpointEditor v-else :data="values.data" :systemTable="values.systemTable" :urlParams="urlParams"/>
   </VLayout>
 </template>
 
@@ -59,6 +59,14 @@ const save = handleSubmit(async (values) => {
   }
   mutateRequest(endpointsApi.getAll)
   updateDefaultValues(values)
+})
+
+const urlParams = computed(() => {
+  const params: string[] = []
+  for (let item of values.path.matchAll(/:\w+/g)) {
+    params.push(item[0].slice(1))
+  }
+  return params
 })
 
 </script>

@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { cloneDeep, mutateRequest } from 'vuesix';
+import { cloneDeep, mutateRequestFull } from 'vuesix';
 import { useDialogStore } from '../../stores/dialogStore';
 import VButton from '../VButton.vue';
 import VDialog from '../VDialog.vue';
@@ -38,8 +38,8 @@ const apply = async () => {
   } else {
     await dataApi.createElement(props.viewId, data.value)
   }
-  mutateRequest(dataApi.getData, props.viewId)
-  dialogStore.close()
+  mutateRequestFull(dataApi.getData)
+  // dialogStore.close()
 }
 
 </script>

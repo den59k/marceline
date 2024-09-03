@@ -1,8 +1,34 @@
-import { FastifyInstance } from "fastify";
-import { Endpoint } from "../types";
+import { FastifyInstance, FastifyRequest } from "fastify";
+import { Endpoint, EndpointEntry } from "../types";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { parseBody } from "../utils/parseBody";
+import { Prisma } from "@prisma/client";
 
+const getSelect = (fields?: EndpointEntry["fields"]): Record<string, any> | undefined => { 
+  if (!fields) return undefined
+
+  return Object.fromEntries(Object.entries(fields).map(item => [ 
+    item[0], 
+    typeof item[1] === "boolean"? item[1]: { select: getSelect(item[1]) } 
+  ]))
+}
+
+const getWhere = (req: FastifyRequest, systemTable: string, filters: EndpointEntry["filters"]) => {
+  if (!filters) return undefined
+  const where: Record<string, any> = {}
+  const table = Prisma.dmmf.datamodel.models.find(item => item.name === systemTable)
+  if (!table) throw new Error(`Table ${table} not found`)
+
+  for (let filter of filters) {
+    if (filter.param && filter.field) {
+      const value = (req.params as any)[filter.param]
+      const field = table.fields.find(item => item.name === filter.field)
+      if (!field) throw new Error(`Field ${field} not found in table ${systemTable}`)
+        where[filter.field] = parseIdField(field, value)
+    }
+  }
+  return where
+}
 
 export default async (fastify: FastifyInstance, options: { endpoints: Iterable<Endpoint> }) => {
 
@@ -11,23 +37,33 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
       if (entry.enabled === false) continue
       if (entry.id === "list") {
         fastify.get(item.path, async (req, reply) => {
+
+          const select = getSelect(entry.fields)
+          const where = getWhere(req, item.systemTable, entry.filters)
           req.endpointAction = "list"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
             await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
           }
-          const resp = await (fastify as any).prisma[item.systemTable].findMany({})
+          const resp = await (fastify as any).prisma[item.systemTable].findMany({
+            select,
+            where
+          })
           return resp
         })
 
       } else if (entry.id === "get") {
         fastify.get(item.path+"/:itemId", async (req, reply) => {
+          const select = getSelect(entry.fields)
+          const where = getWhere(req, item.systemTable, entry.filters)
+
           req.endpointAction = "get"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
             await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
           }
           const idField = getIdField(item)
           const resp = await (fastify as any).prisma[item.systemTable].findUnique({
-            where: { id: parseIdField(idField, (req as any).params.itemId) }
+            select,
+            where: { id: parseIdField(idField, (req as any).params.itemId), ...where }
           })
           return resp
         })

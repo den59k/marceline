@@ -1,29 +1,32 @@
 {
   "id": "User",
-  "path": "/api/users",
-  "systemTable": "User",
+  "path": "/api/users/:userId/files",
+  "systemTable": "File",
   "data": [
     {
       "id": "list",
       "enabled": true,
       "hooks": {},
       "fields": {
-        "files": {
-          "createdAt": true,
-          "src": true,
-          "previewSrc": true
-        },
         "id": true,
-        "type": true,
-        "email": true,
-        "createdAt": true
-      }
+        "src": true,
+        "previewSrc": true,
+        "size": true,
+        "authorId": true
+      },
+      "filters": [
+        {
+          "param": "userId",
+          "field": "authorId"
+        }
+      ]
     },
     {
       "id": "get",
       "enabled": true,
       "hooks": {},
-      "fields": {}
+      "fields": {},
+      "filters": []
     },
     {
       "id": "create",

@@ -36,7 +36,10 @@
         {
           "fieldId": "password",
           "name": "password",
-          "format": "input"
+          "format": "input",
+          "modifiers": [
+            "hashPassword"
+          ]
         }
       ]
     }

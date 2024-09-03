@@ -38,11 +38,20 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   fastify.post("/endpoints/:itemId", async (req, reply) => {
 
     const { itemId } = req.params as SchemaType<typeof params>
-    const { path, systemTable, data } = req.body as SchemaType<typeof createTableSchema>
+    const { path, systemTable, data: newData } = req.body as SchemaType<typeof createTableSchema>
       
     const item = fastify.marceline.endpoints.getItem(itemId)
     if (!item) return reply.code(400).send(`Endpoint ${itemId} not found`)
     
+    const data = item.data
+    for (let newItem of newData) {
+      const existsItem = data.find(item => item.id === newItem.id)
+      if (!existsItem) {
+        data.push(newItem)
+      } else {
+        Object.assign(existsItem, newItem)
+      }
+    }
     Object.assign(item, { path, systemTable, data })
     fastify.marceline.endpoints.saveItem(item)
   })

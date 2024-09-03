@@ -2,7 +2,7 @@
   <div class="fields-selector">
     <div v-if="props.label" class="fields-selector__label">{{ props.label }}</div>
     <template v-for="item in currentTable?.fields">
-      <VCollapse v-if="item.kind === 'object'" :label="item.name">
+      <VCollapse v-if="item.kind === 'object'" :label="getLabel(item)">
         <FieldsSelector 
           :model-value="props.modelValue?.[item.name] as Fields" 
           :table="item.type" 
@@ -36,6 +36,11 @@ const currentTable = computed(() => getTable(props.table))
 
 const getTable = (table: string) => {
   return modelsData.value?.models.find(item => item.name === table) ?? null
+}
+
+const getLabel = (item: any) => {
+  if (!props.modelValue?.[item.name]) return item.name
+  return `${item.name} (${Object.keys(props.modelValue[item.name]).length})`
 }
 
 const onModelValueUpdate = (key: string, value: boolean | Fields) => {

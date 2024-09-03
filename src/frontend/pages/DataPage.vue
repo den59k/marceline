@@ -27,6 +27,7 @@
           @itemclick="onItemClick"
         >
         </VTable>
+        <VPagination v-model="searchOptions.page" :page-count="data.totalPages"/>
       </div>
       <AddColumnPopover v-bind="contextMenu.props" :table="data.view.systemTable" @addcolumn="addColumn"/>
     </template>
@@ -34,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mutateRequest, useRequestWatch } from 'vuesix';
+import { mutateRequestFull, useRequestWatch } from 'vuesix';
 import VInput from '../components/VInput.vue';
 import VButton from '../components/VButton.vue';
 import { useContextMenu } from '../components/VContextMenu.vue';
@@ -43,7 +44,7 @@ import VLayout from '../components/VLayout.vue';
 import VTable from '../components/VTable.vue';
 import { dataApi } from '../api/data';
 import { useRouter } from 'vue-router';
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import AddColumnPopover from '../components/AddColumnPopover.vue';
 import { viewsApi } from '../api/views';
 import dayjs from 'dayjs';
@@ -53,12 +54,18 @@ import TableSettingsDialog from '../components/dialogs/TableSettingsDialog.vue';
 import AddDataItemDialog from '../components/dialogs/AddDataItemDialog.vue';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.vue';
 import { num } from '../../plugin/utils/lang';
+import VPagination from '../components/VPagination.vue';
 
 const contextMenu = useContextMenu(() => [])
 
 const router = useRouter()
 const viewId = computed(() => router.currentRoute.value.params.viewId as string)
-const { data, error } = useRequestWatch(dataApi.getData, viewId)
+
+const searchOptions = reactive({ page: 0, search: "" })
+const _searchOptions = computed(() => ({ 
+  page: searchOptions.page === 0? undefined: searchOptions.page
+}))
+const { data, error } = useRequestWatch(dataApi.getData, viewId, _searchOptions)
 
 const getByKey = (item: any, keys: string[]) => {
   let value = item
@@ -116,7 +123,7 @@ const columns = computed(() => {
 const addColumn = async (newColumn: { name: string, format: string, systemColumn: string }) => {
   data.value.view.columns.push(newColumn)
   await viewsApi.updateView(viewId.value, data.value.view)
-  mutateRequest(dataApi.getData, viewId.value)
+  mutateRequestFull(dataApi.getData)
 }
 
 const dialogStore = useDialogStore()
@@ -143,7 +150,7 @@ const deleteItems = () => {
     confirmTitle: "Удалить",
     async onConfirm() {
       await dataApi.deleteElements(viewId.value, selectedItems.value.map((item: any) => item.id))
-      mutateRequest(dataApi.getData, viewId.value)
+      mutateRequestFull(dataApi.getData)
     }
   })
 }

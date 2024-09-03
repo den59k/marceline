@@ -75,6 +75,9 @@ const createFormItem = (item: Field): FormItem => {
   if (item.kind === "object" && item.type === "File") {
     return { fieldId: item.relationFromFields?.[0] ?? item.name, name: item.name, format: "file" }
   }
+  if (item.kind === "object" && !item.isList && item.relationFromFields) {
+    return { fieldId: item.name,  name: item.name, format: "select", relationType: item.type, aliasFieldId: item.relationFromFields[0] }
+  }
   if (item.kind === "enum") {
     return { fieldId: item.name, name: item.name, format: "select", enum: item.enum?.map(item => ({ id: item, title: item })) }
   }

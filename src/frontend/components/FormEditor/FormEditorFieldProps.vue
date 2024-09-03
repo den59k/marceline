@@ -13,7 +13,7 @@
         :items="getFormats(activeFormItemField!)"
       />
       <FormEditorEnumValues 
-        v-if="props.item.format === 'select'" 
+        v-if="props.item.format === 'select' && !props.item.relationType" 
         v-model="props.item.enum"
         :editable="activeFormItemField?.kind !== 'enum'"
       />

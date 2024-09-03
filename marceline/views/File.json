@@ -1,0 +1,26 @@
+{
+  "id": "File",
+  "name": "Файл",
+  "systemTable": "File",
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id"
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "File"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "File"
+    },
+    "delete": {
+      "enabled": true
+    }
+  },
+  "icon": "code"
+}

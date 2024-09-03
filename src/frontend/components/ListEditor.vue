@@ -3,7 +3,7 @@
     <div v-if="props.label" class="list-editor__title">{{ props.label }}</div>
     <div v-for="(item, index) in values" class="list-editor__item">
       <VIconButton icon="dots" class="move-button"/>
-      {{ item }}
+      <slot name="item" :item="item" :index="index">{{ item }}</slot>
       <VIconButton icon="close" class="delete-button" @click="deleteItem(index)"/>
     </div>
     <VPopover v-model:open="popoverOpen" placement="bottom-start" fit-anchor class="list-editor__add-item-popover">
@@ -17,24 +17,28 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="T">
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
 import VPopover from './VPopover.vue';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import VIconButton from './VIconButton.vue';
 
-const props = defineProps<{ label?: string, modelValue?: string[], addLabel?: string, items: string[] }>()
+const props = defineProps<{ label?: string, modelValue?: T[], addLabel?: string, items: T[] }>()
 const emit = defineEmits([ "update:modelValue" ])
 
-const values = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] })
+const values = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] }) as Ref<T[]>
 
 const popoverOpen = ref(false)
-const addItem = (item: string) => {
+const addItem = (item: T) => {
   if (!values.value) {
     values.value = []
   }
-  values.value.push(item)
+  if (typeof item === "object") {
+    values.value.push({ ...item })
+  } else {
+    values.value.push(item)
+  }
   popoverOpen.value = false
   emit("update:modelValue", values.value)
 }

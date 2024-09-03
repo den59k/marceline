@@ -1,0 +1,31 @@
+{
+  "id": "User",
+  "name": "Пользователи",
+  "systemTable": "User",
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id"
+    },
+    {
+      "name": "E-mail",
+      "format": "string",
+      "systemColumn": "email"
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "User"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "User"
+    },
+    "delete": {
+      "enabled": true
+    }
+  },
+  "icon": "table"
+}
