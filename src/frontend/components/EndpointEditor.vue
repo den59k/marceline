@@ -43,12 +43,18 @@
           label="Фильтры"
         >
           <template #item="{ item }">
-            <template v-if="item.param">
-              :{{ item.param }}
-              <VIcon icon="arrow-right" style="margin-left: 14px"/>
-              <VSelect v-model="item.field" :items="getFields()" placeholder="Выберите поле" class="endpoint-editor__field-select"/>
-            </template>
+            {{ item.param? `:${item.param}`: item.id }}
+            <VIcon icon="arrow-right" style="margin-left: 10px"/>
+            <VSelect v-model="item.field" :items="getFields()" placeholder="Выберите поле" class="endpoint-editor__field-select"/>
           </template>
+        </ListEditor>
+        <ListEditor
+          v-if="currentTab === 'get' || currentTab === 'list'" 
+          v-model="endpointData.hooks['responseModifier']"
+          :items="getHooks('responseModifier')"
+          label="Обработчики ответа"
+        >
+          
         </ListEditor>
       </div>
     </div>
@@ -65,6 +71,7 @@ import { formsApi } from '../api/formsApi';
 import ListEditor from './ListEditor.vue';
 import { utilsApi } from '../api/utils';
 import FieldsSelector from './FieldsSelector.vue';
+import { filterHooks } from '../utils/filterHooks';
 
 const props = defineProps<{ systemTable: string, data: any[], urlParams: string[] }>()
 
@@ -122,16 +129,18 @@ const endpointData = computed(() => endpointsData[currentTab.value])
 const { data: hooksData } = useRequest(utilsApi.getHooks)
 const getHooks = (type: string) => {
   if (!hooksData.value) return []
-  return hooksData.value[type].filter((item: any) => {
-    if (!item.table) return true
-    return Array.isArray(item.table)? item.table.includes(props.systemTable): item.table === props.systemTable
-  }).map((item: any) => item.name)
+  return filterHooks(hooksData.value[type], props.systemTable)
+    .filter(item => !(item.options.allow === 'list' && currentTab.value === 'list') && !(item.options.allow === 'object' && currentTab.value === 'list'))
+    .map((item: any) => item.name)
 }
 
 const availableFilters = computed(() => {
-  const arr: { param: string, field: null | string }[] = []
+  const arr: { id: string, param?: string, field: null | string }[] = []
   for (let item of props.urlParams) {
-    arr.push({ param: item, field: null })
+    arr.push({ id: "param", param: item, field: null })
+  }
+  for (let item of filterHooks(hooksData.value.filter, props.systemTable)) {
+    arr.push({ id: item.name, field: null })
   }
   return arr 
 })
@@ -184,6 +193,10 @@ const getFields = () => {
 .endpoint-editor__field-select
   flex: 1 1 auto
   border: none
+  margin-right: -4px
+
+  .v-select__activator
+    padding: 0 12px
 
   .v-form-control__outline
     border: none

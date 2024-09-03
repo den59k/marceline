@@ -1,7 +1,7 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { generateSelect } from "../utils/generateSelect";
-import { parseBody } from "../utils/parseBody";
+import { parseBody, traverseFormFields } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { Form, View } from "../types";
 
@@ -36,7 +36,27 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   fastify.get("/data/:viewId/items", sc(params, getDataQuery, "query"), async (_req, reply) => {
     const req = _req as FastifyRequestExt
     const { page } = req.query as SchemaType<typeof getDataQuery>
+
+    let createForm: Form | null = null, editForm: Form | null = null
+    if (req.view.data.create.enabled && req.view.data.create.form) {
+      createForm = fastify.marceline.forms.getItem(req.view.data.create.form) ?? null
+    }
+    if (req.view.data.edit.enabled && req.view.data.edit.form) {
+      editForm = fastify.marceline.forms.getItem(req.view.data.edit.form) ?? null
+    }
+
     const select = generateSelect(req.view.columns)
+    if (editForm) {
+      traverseFormFields(editForm.fields, (field) => {
+        if (field.jsonField) {
+          select[field.jsonField] = true
+        } else if (field.aliasFieldId) {
+          select[field.aliasFieldId] = true 
+        } else if (field.fieldId && field.format !== 'password') {
+          select[field.fieldId] = true
+        }
+      })
+    }
     const idField = getIdField(req.view)
     if (select) {
       select[idField.name] = true
@@ -56,14 +76,6 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
           delete item._count
         }
       }
-    }
-
-    let createForm: Form | null = null, editForm: Form | null = null
-    if (req.view.data.create.enabled && req.view.data.create.form) {
-      createForm = fastify.marceline.forms.getItem(req.view.data.create.form) ?? null
-    }
-    if (req.view.data.edit.enabled && req.view.data.edit.form) {
-      editForm = fastify.marceline.forms.getItem(req.view.data.edit.form) ?? null
     }
     
     const totalItems = await (fastify as any).prisma[req.view.systemTable].count({ 

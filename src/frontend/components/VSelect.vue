@@ -58,12 +58,15 @@ const items = computed(() => {
 
 const opened = ref(false)
 
-watch(opened, async (opened) => {
-  if (opened && typeof props.items === "function") {
+let requestSended = false
+watch([opened, model], async () => {
+  if (requestSended) return
+  if (typeof props.items === "function" && (opened.value || !!model.value)) {
     cachedItems.value = await props.items()
     pending.value = false
+    requestSended = true
   }
-})
+}, { immediate: true })
 
 const onItemClick = (item: Item) => {
   model.value = item.id

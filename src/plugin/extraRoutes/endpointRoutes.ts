@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Endpoint, EndpointEntry } from "../types";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { parseBody } from "../utils/parseBody";
@@ -13,21 +13,31 @@ const getSelect = (fields?: EndpointEntry["fields"]): Record<string, any> | unde
   ]))
 }
 
-const getWhere = (req: FastifyRequest, systemTable: string, filters: EndpointEntry["filters"]) => {
+const getWhere = async (fasitfy: FastifyInstance, req: FastifyRequest, reply: FastifyReply, systemTable: string, filters: EndpointEntry["filters"]) => {
   if (!filters) return undefined
-  const where: Record<string, any> = {}
+  req.where = {}
   const table = Prisma.dmmf.datamodel.models.find(item => item.name === systemTable)
   if (!table) throw new Error(`Table ${table} not found`)
 
   for (let filter of filters) {
-    if (filter.param && filter.field) {
+    if (filter.id === 'param' && filter.param && filter.field) {
       const value = (req.params as any)[filter.param]
       const field = table.fields.find(item => item.name === filter.field)
       if (!field) throw new Error(`Field ${field} not found in table ${systemTable}`)
-        where[filter.field] = parseIdField(field, value)
+      req.where[filter.field] = parseIdField(field, value)
+    } else {
+      const hook = fasitfy.marceline.hooks.filter.get(filter.id)
+      if (!hook) {
+        console.warn(`Hook ${hook} not found`)
+        continue
+      }
+      if (!filter.field) continue
+
+      req.fieldId = filter.field
+      const resp = await hook.hook(req, reply)
+      if (typeof resp === "object" && resp === reply) return resp
     }
   }
-  return where
 }
 
 export default async (fastify: FastifyInstance, options: { endpoints: Iterable<Endpoint> }) => {
@@ -38,35 +48,58 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
       if (entry.id === "list") {
         fastify.get(item.path, async (req, reply) => {
 
-          const select = getSelect(entry.fields)
-          const where = getWhere(req, item.systemTable, entry.filters)
           req.endpointAction = "list"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
             const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
             if (typeof resp === "object" && resp === reply) return resp      
           }
+
+          const select = getSelect(entry.fields)
+          const _resp = await getWhere(fastify, req, reply, item.systemTable, entry.filters) ?? {}
+          if (typeof _resp === "object" && _resp === reply) return _resp
+
           const resp = await (fastify as any).prisma[item.systemTable].findMany({
             select,
-            where
+            where: req.where
           })
+
+          if (entry.hooks.responseModifier && entry.hooks.responseModifier.length > 0) {
+            req.endpointResponse = resp
+            const _resp = await fastify.marceline.applyHooks("responseModifier", entry.hooks.responseModifier, req, reply)
+            if (typeof _resp === "object" && _resp === reply) return _resp
+            return req.endpointResponse
+          }
+            
           return resp
         })
 
       } else if (entry.id === "get") {
         fastify.get(item.path+"/:itemId", async (req, reply) => {
-          const select = getSelect(entry.fields)
-          const where = getWhere(req, item.systemTable, entry.filters)
 
           req.endpointAction = "get"
           if (entry.hooks.onRequest && entry.hooks.onRequest.length > 0) {
             const resp = await fastify.marceline.applyHooks("onRequest", entry.hooks.onRequest, req, reply)
             if (typeof resp === "object" && resp === reply) return resp      
           }
+
+          const select = getSelect(entry.fields)
+
+          const _resp = await getWhere(fastify, req, reply, item.systemTable, entry.filters) ?? {}
+          if (typeof _resp === "object" && _resp === reply) return _resp
+
           const idField = getIdField(item)
           const resp = await (fastify as any).prisma[item.systemTable].findUnique({
             select,
-            where: { id: parseIdField(idField, (req as any).params.itemId), ...where }
+            where: { id: parseIdField(idField, (req as any).params.itemId), ...req.where }
           })
+
+          if (entry.hooks.responseModifier && entry.hooks.responseModifier.length > 0) {
+            req.endpointResponse = resp
+            const _resp = await fastify.marceline.applyHooks("responseModifier", entry.hooks.responseModifier, req, reply)
+            if (typeof _resp === "object" && _resp === reply) return _resp
+            return req.endpointResponse
+          }
+
           return resp
         })
 

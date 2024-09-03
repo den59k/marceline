@@ -18,19 +18,32 @@ import VButton from '../VButton.vue';
 import VDialog from '../VDialog.vue';
 import { Form as FormType, formsApi } from '../../api/formsApi';
 import Form from '../Form/Form.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { addFormComponent } from '../Form/FormItem.vue';
 
 import VInput from '../VInput.vue';
 import VSelect from '../VSelect.vue';
 import VFileUploader from '../VFileUploader.vue';
 import { dataApi } from '../../api/data';
+import { traverseFormFields } from '../../utils/traverse';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
 const dialogStore = useDialogStore()
 
 const data = ref(cloneDeep(props.item ?? {}))
+
+onMounted(() => {
+  if (!props.item) return
+  traverseFormFields(props.form.fields, formItem => {
+    if (!formItem.fieldId) return
+    if (formItem.jsonField) {
+      data.value[formItem.fieldId] = props.item[formItem.jsonField][formItem.fieldId]
+    } else if (formItem.aliasFieldId) {
+      data.value[formItem.fieldId] = props.item[formItem.aliasFieldId]
+    }
+  })
+})
 
 const apply = async () => {
   if (props.item) {

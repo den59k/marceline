@@ -57,7 +57,7 @@ export type EndpointEntry = {
   enabled?: boolean, 
   form?: string,
   fields: Fields, 
-  filters?: { param?: string, field?: string }[]
+  filters?: { id: string, param?: string, field?: string }[]
 }
 
 export type MarcelineOptions = {

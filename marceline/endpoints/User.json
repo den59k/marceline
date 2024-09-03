@@ -6,7 +6,10 @@
     {
       "id": "list",
       "enabled": true,
-      "hooks": {},
+      "hooks": {
+        "onRequest": [],
+        "responseModifier": []
+      },
       "fields": {
         "id": true,
         "src": true,
@@ -16,7 +19,12 @@
       },
       "filters": [
         {
+          "id": "param",
           "param": "userId",
+          "field": "authorId"
+        },
+        {
+          "id": "getAdminUserId",
           "field": "authorId"
         }
       ]

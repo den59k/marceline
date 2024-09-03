@@ -18,18 +18,21 @@ export type Options = {
   }
 }
 
-type HookType = "onRequest" | "bodyModifier" | "postEffect" | "fieldModifier"
+type HookType = "onRequest" | "bodyModifier" | "postEffect" | "fieldModifier" | "filter" | "responseModifier"
 type Hook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply | void> | FastifyReply | void
 type TableName = Exclude<keyof PrismaClient, `$${string}`>
 
-type AddHookSettings = { table?: TableName | TableName[] }
+type AddHookSettings = { table?: TableName | TableName[], allow?: "list" | "object" | "all" }
 
 type AuthHook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply | { accessToken: string, refreshToken?: string }>
 
 const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   
-  const hooks: Record<HookType, Map<string, { hook: Hook, options: AddHookSettings }>> = 
-    { onRequest: new Map(), bodyModifier: new Map(), postEffect: new Map(), fieldModifier: new Map() }
+  const hooks: Record<HookType, Map<string, { hook: Hook, options: AddHookSettings }>> = { 
+    onRequest: new Map(), bodyModifier: new Map(), 
+    postEffect: new Map(), fieldModifier: new Map(), 
+    filter: new Map(), responseModifier: new Map() 
+  }
     
   const views = new FlatDB<View>({ path: process.cwd() + "/marceline/views" })
   await views.init()
@@ -101,6 +104,9 @@ export const marceline = fp(async (fastify, options: Options) => {
   fastify.decorateRequest("currentField", null)
   fastify.decorateRequest("modifiedBody", null)
   fastify.decorateRequest("endpointAction", null)
+  fastify.decorateRequest("fieldId")
+  fastify.decorateRequest("where")
+  fastify.decorateRequest("endpointResponse", null)
 })
 
 export type MarcelinePlugin = Awaited<ReturnType<typeof marcelinePlugin>>
@@ -113,5 +119,8 @@ declare module 'fastify' {
     currentField: any
     modifiedBody: any
     endpointAction: "create" | "get" | "edit" | "delete" | "list"
+    fieldId: string
+    where: Record<string, any>
+    endpointResponse: any
   }
 }

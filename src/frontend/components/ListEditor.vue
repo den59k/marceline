@@ -83,6 +83,9 @@ const deleteItem = (index: number) => {
 
   .delete-button
     margin-left: auto
+    width: 32px
+    height: 32px
+    margin-right: 2px
 
 .list-editor__add-button
   background: none
