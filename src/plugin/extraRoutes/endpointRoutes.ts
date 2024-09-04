@@ -93,7 +93,7 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
             where: { id: parseIdField(idField, (req as any).params.itemId), ...req.where }
           })
 
-          if (entry.hooks.responseModifier && entry.hooks.responseModifier.length > 0) {
+          if (resp && entry.hooks.responseModifier && entry.hooks.responseModifier.length > 0) {
             req.endpointResponse = resp
             const _resp = await fastify.marceline.applyHooks("responseModifier", entry.hooks.responseModifier, req, reply)
             if (typeof _resp === "object" && _resp === reply) return _resp

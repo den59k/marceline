@@ -4,14 +4,14 @@ import { viewsApi } from "../api/views";
 import { HTTPError, setJwt } from "../api/request";
 import { ref } from "vue";
 
-const tokenKey = "accessToken"
+const tokenKey = "marceline__accessToken"
 
 export const useAccountStore = defineStore("account", () => {
 
   const status = ref<"init" | "authorized" | "not-authorized">("init")
 
   const init = async () => {
-    const accessToken = window.localStorage.getItem("accessToken")
+    const accessToken = window.localStorage.getItem(tokenKey)
     if (!accessToken) {
       status.value = "not-authorized"
       return
@@ -32,12 +32,12 @@ export const useAccountStore = defineStore("account", () => {
 
   const authorize = (tokens: { accessToken: string, refreshToken?: string }) => {
     setJwt(tokens.accessToken)
-    window.localStorage.setItem("accessToken", tokens.accessToken)
+    window.localStorage.setItem(tokenKey, tokens.accessToken)
     status.value = "authorized"
   }
 
   const logout = async () => {
-    window.localStorage.removeItem("accessToken")
+    window.localStorage.removeItem(tokenKey)
     status.value = "not-authorized"
   }
 

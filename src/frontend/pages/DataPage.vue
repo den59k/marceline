@@ -136,6 +136,7 @@ const addItem = () => {
 }
 
 const onItemClick = (item: any) => {
+  if (!data.value.editForm) return
   dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm, systemTable: data.value.view.systemTable })
 }
 
