@@ -1,0 +1,13 @@
+{
+  "id": "Chat",
+  "name": "Создание чата",
+  "systemTable": "Chat",
+  "fields": [
+    {
+      "fieldId": "name",
+      "name": "Название чата",
+      "format": "input"
+    }
+  ],
+  "bodyModifiers": []
+}

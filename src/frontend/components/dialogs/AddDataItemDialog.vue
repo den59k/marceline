@@ -52,7 +52,7 @@ const apply = async () => {
     await dataApi.createElement(props.viewId, data.value)
   }
   mutateRequestFull(dataApi.getData)
-  // dialogStore.close()
+  dialogStore.close()
 }
 
 </script>

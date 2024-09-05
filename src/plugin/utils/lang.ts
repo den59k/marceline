@@ -14,7 +14,17 @@ export function bytesForHuman (bytes: number | undefined): string {
   return `${Math.trunc(bytes * 10) / 10} ${units[i]}`
 }
 
-
+export const addDelimiter = (str: string) => {
+  let resp = ''
+  for (let i = str.length; i > 0; i -= 3) {
+    if (i === str.length) {
+      resp = str.slice(Math.max(i - 3, 0), i)
+    } else {
+      resp = str.slice(Math.max(i - 3, 0), i) + ' ' + resp
+    }
+  }
+  return resp
+}
 
 export function numeral(count: number, one: string, two: string, five: string){
 	if(!count) count = 0;

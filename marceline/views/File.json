@@ -1,12 +1,17 @@
 {
   "id": "File",
-  "name": "Файл",
+  "name": "Файлы",
   "systemTable": "File",
   "columns": [
     {
       "name": "ID",
       "format": "string",
       "systemColumn": "id"
+    },
+    {
+      "name": "Author Email",
+      "format": "string",
+      "systemColumn": "author.email"
     }
   ],
   "data": {

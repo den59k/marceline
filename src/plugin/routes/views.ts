@@ -19,7 +19,9 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   const params = schema({ viewId: "string" })
   /** Get available views */
   fastify.get("/views", async () => {
-    return fastify.marceline.views.getItems()
+    const views = fastify.marceline.views.getItems()
+    views.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    return views
   })
 
   fastify.get("/views/:viewId", async (req) => {

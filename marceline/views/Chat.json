@@ -1,0 +1,26 @@
+{
+  "id": "Chat",
+  "name": "Чаты",
+  "systemTable": "Chat",
+  "columns": [
+    {
+      "name": "Название чата",
+      "format": "string",
+      "systemColumn": "name"
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "Chat"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "Chat"
+    },
+    "delete": {
+      "enabled": true
+    }
+  },
+  "icon": "mail"
+}

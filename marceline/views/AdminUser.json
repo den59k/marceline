@@ -6,7 +6,7 @@
   "columns": [
     {
       "name": "ID",
-      "format": "string",
+      "format": "decimal",
       "systemColumn": "id"
     },
     {
@@ -15,14 +15,14 @@
       "systemColumn": "login"
     },
     {
-      "name": "Дата создания",
-      "format": "dateTime",
-      "systemColumn": "createdAt"
-    },
-    {
       "name": "Токен",
       "format": "string",
       "systemColumn": "token"
+    },
+    {
+      "name": "Дата создания",
+      "format": "date",
+      "systemColumn": "createdAt"
     }
   ],
   "data": {

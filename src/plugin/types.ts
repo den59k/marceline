@@ -17,7 +17,8 @@ export type View = {
     edit: { enabled: boolean, form?: string | null },
     delete: { enabled: boolean },
   }
-  columns: ViewColumn[]
+  columns: ViewColumn[],
+  order?: number
 }
 
 export type FormField = {

@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useForm, useRequest } from 'vuesix';
+import { mutateRequest, useForm, useRequest } from 'vuesix';
 import VInput from '../VInput.vue';
 import VSelect from '../VSelect.vue';
 import VDialog from '../VDialog.vue';
@@ -40,6 +40,7 @@ const models = computed(() => {
 
 const apply = handleSubmit(async (values) => {
   await viewsApi.createView(values)
+  mutateRequest(viewsApi.getViews)
   dialogStore.close()
 })
 

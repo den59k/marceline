@@ -43,9 +43,10 @@ const pages = computed(() => {
   if (!views.value) return []
   return [
     { to: "/", title: "Статистика", icon: "home" },
-    ...(views.value ?? []).map((item: any) => ({
-      title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
-    })),
+    ...(views.value ?? [])
+      .map((item: any) => ({
+        title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
+      })),
     { title: "Добавить таблицу", icon: "add", onClick: addTable },
     "Для разработчиков",
     // { to: "/dev/views", title: "Таблицы", icon: "table" },

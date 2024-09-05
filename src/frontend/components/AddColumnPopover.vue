@@ -21,8 +21,11 @@
     </div>
     <VSelect v-if="values.selectedItem" v-bind="register('format')" :items="formats" label="Формат отображения"  />
     <div class="add-column-popover__actions">
+      <VButton v-if="props.column" outline class="delete-button" @click="deleteColumn"><VIcon icon="delete" /></VButton>
       <VButton outline @click="close">Отмена</VButton>
-      <VButton v-if="values.selectedItem" @click="apply">Добавить</VButton>
+      <VButton v-if="values.selectedItem" @click="apply">
+        {{ props.column? "Сохранить": "Добавить" }}
+      </VButton>
     </div>
   </VPopover>
 </template>
@@ -33,31 +36,56 @@ import VPopover from './VPopover.vue';
 import { utilsApi } from '../api/utils';
 import VInput from './VInput.vue';
 import VButton from './VButton.vue';
-import { computed, reactive } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import VFormControl from './VFormControl.vue';
 import VIcon from './VIcon.vue';
 import VSelect from './VSelect.vue';
 
-const { register, values } = useForm({
+const { register, values, updateDefaultValues } = useForm({
   name: "",
   selectedItem: null as any,
   format: null as string | null
 })
 
-const props = defineProps<{ open?: boolean, table: string }>()
-const emit = defineEmits([ "update:open", "addcolumn" ])
+const props = defineProps<{ open?: boolean, table: string, column?: any }>()
+const emit = defineEmits([ "update:open", "addcolumn", "deletecolumn" ])
 
 const { data } = useRequest(utilsApi.getModels)
 
 const relationItem = reactive<any[]>([])
 
+watch(() => props.column, (column) => {
+  if (!column) {
+    updateDefaultValues({ name: "", selectedItem: null, format: null })
+  } else {
+    const path = column.systemColumn.split(".")
+    const fieldsPath = []
+    let tableName = props.table
+    for (let pathItem of path) {
+      const field = getFields(tableName).find(item => item.name === pathItem)
+      if (!field) {
+        fieldsPath.push({ name: pathItem })
+        continue
+      }
+      tableName = field.type
+      fieldsPath.push(field)
+    }
+    
+    relationItem.length = 0
+    relationItem.push(...fieldsPath.slice(0, -1))
+    updateDefaultValues({ ...column, selectedItem: fieldsPath.at(-1) })
+  }
+})
+
+const getFields = (systemTable :string) => {
+  const table = data.value?.models.find(item => item.name === systemTable)
+  return table?.fields ?? []
+}
+
 const fields = computed(() => {
   if (!data.value) return []
-
   const tableName = relationItem.length > 0? relationItem[relationItem.length-1].type: props.table
-  
-  const table = data.value.models.find(item => item.name === tableName)
-  return table?.fields ?? []
+  return getFields(tableName)
 })
 
 const setField = (item: any) => {
@@ -120,6 +148,11 @@ const apply = () => {
   close()
 }
 
+const deleteColumn = () => {
+  emit("deletecolumn")
+  close()
+}
+
 </script>
 
 <style lang="sass">
@@ -170,5 +203,8 @@ const apply = () => {
 
   .v-button
     height: 36px
+
+  .delete-button
+    margin-right: auto
   
 </style>

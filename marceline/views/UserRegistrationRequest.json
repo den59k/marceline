@@ -2,6 +2,7 @@
   "id": "UserRegistrationRequest",
   "name": "Запросы на рег.",
   "systemTable": "UserRegistrationRequest",
+  "order": -1,
   "columns": [
     {
       "name": "Дата создания",
@@ -26,5 +27,5 @@
       "enabled": false
     }
   },
-  "icon": "list"
+  "icon": "car"
 }
