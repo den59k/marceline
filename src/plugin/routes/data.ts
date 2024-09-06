@@ -4,6 +4,7 @@ import { generateSelect } from "../utils/generateSelect";
 import { parseBody, traverseFormFields } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { Form, View } from "../types";
+import { Prisma } from "@prisma/client";
 
 interface FastifyRequestExt extends FastifyRequest {
   view: View,
@@ -45,11 +46,25 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       editForm = fastify.marceline.forms.getItem(req.view.data.edit.form) ?? null
     }
 
-    const select = generateSelect(req.view.columns)
+    const postCallbacks: ((item: any) => void)[] = []
+    const select = generateSelect(req.view.columns, postCallbacks)
     if (editForm) {
       traverseFormFields(editForm.fields, (field) => {
         if (field.jsonField) {
           select[field.jsonField] = true
+        } else if (field.fieldId && field.relationBridgeFieldId) {
+          const table = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
+          const keys = [ "name", "surname", "email", "id", "uuid" ].filter(fieldId => table.fields.find(item => item.name === fieldId))
+          select[field.fieldId] = {
+            select: { 
+              [field.relationBridgeFieldId]: {
+                select: Object.fromEntries(keys.map(item => [ item, true ]))
+              } 
+            }
+          }
+          postCallbacks.push(item => {
+            item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
+          })
         } else if (field.aliasFieldId) {
           select[field.aliasFieldId] = true 
         } else if (field.fieldId && field.format !== 'password') {
@@ -57,6 +72,7 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
         }
       })
     }
+
     const idField = getIdField(req.view)
     if (select) {
       select[idField.name] = true
@@ -68,18 +84,17 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       take: PAGE_SIZE,
       skip: (page ?? 0) * PAGE_SIZE
     })
-
-    if (resp.length > 0 && "_count" in resp[0]) {
-      for (let item of resp) {
-        if (item._count) {
-          Object.assign(item, item._count)
-          delete item._count
-        }
-      }
-    }
     
     const totalItems = await (fastify as any).prisma[req.view.systemTable].count({ 
     })
+
+    if (resp.length > 0 && postCallbacks.length > 0) {
+        for (let item of resp) {
+          for (let callback of postCallbacks) {
+            callback(item)
+          }
+        }
+    }
 
     return {
       createForm,
@@ -109,7 +124,7 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       select: { [idField.name]: true },
       data: req.modifiedBody
     })
-
+    await fastify.marceline.executePostCallbacks(req, newObject)
     return newObject
   })
 
@@ -136,7 +151,7 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       where: { [idField.name]: parseIdField(idField, itemId) },
       data: req.modifiedBody
     })
-
+    await fastify.marceline.executePostCallbacks(req, newObject)
     return newObject
   })
 

@@ -1,5 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Form, FormField } from "../types";
+import { getIdField } from "./getIdField";
+import { Prisma } from "@prisma/client";
 
 export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, reply: FastifyReply, form: Form, body: any) => {
   
@@ -19,6 +21,85 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
         return resp
       }
       value = req.currentField
+    }
+
+     if (item.format === "multiselect" && item.relationType && Array.isArray(value)) {
+      if (!req.postCallbacks) req.postCallbacks = []
+      
+      const idField = getIdField({ systemTable: item.relationType })
+      const sourceTable = Prisma.dmmf.datamodel.models.find(table => table.name === form.systemTable)!
+
+      if (item.relationBridgeType) {
+        req.postCallbacks.push(async (obj) => {
+
+          const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === item.relationBridgeType)!
+          const sourceRelationField = sourceTable.fields.find(field => field.name === item.fieldId)!.relationName!
+          const relationField = relationTable.fields.find(field => field.relationName === sourceRelationField)!    
+          const oppositeField = relationTable.fields.find(field => field.name === item.relationBridgeFieldId)!
+
+          const data = Object.fromEntries(relationField.relationFromFields!.map((item, index) => 
+            [ item, obj[relationField.relationToFields![index]] ]))
+
+          const existingItems = await (fastify as any).prisma[item.relationBridgeType!].findMany({
+            where: data
+          })
+
+          const set = new Set(existingItems.map((item: any) => item[ oppositeField.relationFromFields![0] ]))
+          const newItemIds = []
+          for (let item of value) {
+            if (set.has(item[idField.name])) {
+              set.delete(item[idField.name])
+            } else {
+              newItemIds.push(item[idField.name])
+            }
+          }
+          if (set.size > 0) {
+            await (fastify as any).prisma[item.relationBridgeType!].deleteMany({
+              where: {
+                ...data,
+                [ oppositeField.relationFromFields![0] ]: { in: Array.from(set.values()) }
+              }
+            })
+          }
+
+          if (newItemIds.length > 0) {
+            await (fastify as any).prisma[item.relationBridgeType!].createMany({
+              data: newItemIds.map(itemId => ({
+                ...data,
+                [ oppositeField.relationFromFields![0] ]: itemId
+              }))
+            })
+          }
+        })
+        continue
+      }
+      req.postCallbacks.push(async (obj) => {
+        const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === item.relationType)!
+        const sourceRelationField = sourceTable.fields.find(field => field.name === item.fieldId)!.relationName!
+        const relationField = relationTable.fields.find(item => item.relationName === sourceRelationField)!
+  
+        const data = Object.fromEntries(relationField.relationFromFields!.map((item, index) => 
+          [ item, obj[relationField.relationToFields![index]] ]))
+        const nullData = Object.fromEntries(relationField.relationFromFields!.map((item, index) => 
+          [ item, null ]))
+
+        if (value.length > 0) {
+          await (fastify as any).prisma[item.relationType!].updateMany({
+            data,
+            where: { [idField.name]: { in: value.map((item: any) => item[idField.name]) } }
+          })
+        }
+        if (!relationField.isRequired) {
+          await (fastify as any).prisma[item.relationType!].updateMany({
+            data: nullData,
+            where: { 
+              [idField.name]: { notIn: value.map((item: any) => item[idField.name]) } ,
+              ...data
+            }
+          })
+        }
+      })
+      continue
     }
 
     if (item.jsonField) {

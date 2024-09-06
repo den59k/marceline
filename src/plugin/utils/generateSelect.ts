@@ -2,19 +2,25 @@ import { ViewColumn } from "../types";
 
 type Select = Record<string, boolean | { select: Select }>
 
-export const generateSelect = (columns: ViewColumn[]) => {
+export const generateSelect = (columns: ViewColumn[], postCallbacks: ((item: any) => void)[]) => {
 
   if (!columns || columns.length === 0) return {}
 
   const targetObject: Select = {}
-  for (let item of columns) {
+  for (let column of columns) {
 
-    if (item.format === "count") {
-      targetObject["_count"] = { select: { [item.systemColumn]: true } }
+    if (column.format === "count") {
+      targetObject["_count"] = { select: { [column.systemColumn]: true } }
+
+      postCallbacks.push(item => {
+        Object.assign(item, item._count)
+        delete item._count
+      })
+
       continue
     }
 
-    const keys = item.systemColumn.split(".")
+    const keys = column.systemColumn.split(".")
     let targetObj = targetObject
     for (let i = 0; i < keys.length-1; i++) {
       if (!targetObj[keys[i]] || typeof targetObj[keys[i]] === "boolean") {

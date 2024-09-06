@@ -2,15 +2,31 @@
   <VFormControl v-bind="pickProps(props)" outline class="v-select" >
     <VPopover v-model:open="opened" placement="bottom" fit-anchor :offset="8">
       <template #activator="{ props: activatorProps }">
-        <button class="v-select__activator" :class="{ opened }" v-bind="activatorProps">
-          <div v-if="currentItem">{{ currentItem.title }}</div>
+        <div class="v-select__activator" :class="{ opened }" v-bind="activatorProps" role="button">
+          <div v-if="props.multiple && selected.size > 0" class="v-select__multiple-items">
+            <div v-for="item in selected.values()" >
+              {{ item.title }}
+            </div>
+          </div>
+          <div v-else-if="currentItem">{{ currentItem.title }}</div>
           <div v-else class="v-select__placeholder">{{ props.placeholder ?? 'Выберите значение' }}</div>
-          <VIconButton v-if="props.nullable && model" icon="close" class="v-select__clear-button" @mousedown.stop @click.stop="resetValue"/>
+          <div class="flex-spacer"></div>
+          <VIconButton 
+            v-if="(props.nullable && model) || (props.multiple && selected.size > 0)" 
+            icon="close" class="v-select__clear-button" 
+            @mousedown.stop
+            @click.stop="resetValue"
+          />
           <VIcon icon="arrow-down" />
-        </button>
+        </div>
       </template>
-      <div class="v-select__menu" @mousedown.stop >
-        <button v-for="item in items" :key="item.id" @click="onItemClick(item)" >
+      <div class="v-select__menu with-scrollbar" @mousedown.stop >
+        <button 
+          v-for="item in items" 
+          :key="item.id" 
+          :class="{ selected: props.multiple && selected.has(item.id) }" 
+          @click="onItemClick(item)" 
+        >
           <slot name="item" :item="item">
             {{ item.title }}
           </slot>
@@ -23,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, onMounted, ref, shallowRef, watch } from 'vue';
+import { Ref, computed, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import VFormControl, { VFormControlProps, pickProps } from './VFormControl.vue';
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
@@ -34,14 +50,16 @@ type Item = { id: string | number, title: string }
 
 const props = defineProps<{ 
   items: Item[] | (() => Promise<Item[]>), 
-  modelValue?: string | number | null, 
+  modelValue?: string | number | null | Array<Item>, 
   placeholder?: string,
-  nullable?: boolean
+  nullable?: boolean,
+  multiple?: boolean
 } & VFormControlProps>()
 
 const emit = defineEmits([ "update:modelValue" ])
 
-const model = useVModel(props, "modelValue", emit, { passive: true, defaultValue: null }) as Ref<string | number | null>
+const model = useVModel(props, "modelValue", emit, { passive: true, defaultValue: null }) as Ref<string | number | null | Array<Item>>
+const selected = reactive(new Map())
 
 const currentItem = computed(() => {
   if (model.value === null) return null
@@ -68,13 +86,52 @@ watch([opened, model], async () => {
   }
 }, { immediate: true })
 
+let preventUpdateModelValue = false
+watch(selected, () => {
+  if (preventUpdateModelValue) { 
+    preventUpdateModelValue = false 
+    return 
+  }
+  emit("update:modelValue", Array.from(selected.values())) 
+})
+watch(items, () => {
+  if (props.multiple && props.modelValue && Array.isArray(props.modelValue)) {
+    if (items.value.length > 0) {
+      const set = new Set(props.modelValue.map(item => item.id))
+      for (let item of items.value) {
+        if (!set.has(item.id)) continue
+        selected.set(item.id, item)
+        preventUpdateModelValue = true
+      }
+    } else {
+      for (let item of props.modelValue) {
+        selected.set(item.id, item)
+        preventUpdateModelValue = true
+      }
+    }
+  }
+}, { immediate: true })
+
+
 const onItemClick = (item: Item) => {
-  model.value = item.id
-  opened.value = false
+  if (props.multiple) {
+    if (selected.has(item.id)) {
+      selected.delete(item.id)
+    } else {
+      selected.set(item.id, item)
+    }
+  } else {
+    model.value = item.id
+    opened.value = false
+  }
 }
 
 const resetValue = () => { 
-  model.value = null
+  if (props.multiple) {
+    selected.clear()
+  } else {
+    model.value = null
+  }
   opened.value = false
 }
 
@@ -98,6 +155,7 @@ const resetValue = () => {
   color: var(--text-color)
   text-align: left
   outline: none
+  cursor: pointer
   &>div
     flex: 1 1 auto
 
@@ -108,11 +166,15 @@ const resetValue = () => {
   &.opened
     &>svg
       transform: rotate(180deg)
+  
+  .flex-spacer
+    flex: 1 1 auto
 
 .v-select__menu
   display: flex
   flex-direction: column
   padding: 6px 0
+  max-height: 400px
 
   &>button
     background: none
@@ -122,9 +184,17 @@ const resetValue = () => {
     display: flex
     align-items: center
     padding: 0 16px
+    flex-shrink: 0
 
     &:hover
       background-color: var(--hover-color)
+
+    &.selected
+      font-weight: 500
+      background-color: var(--selected-color)
+      
+      &:hover
+        background-color: var(--selected-hover-color)
 
 .v-select__clear-button
   width: 28px
@@ -132,6 +202,22 @@ const resetValue = () => {
   color: var(--text-secondary-color)
   margin-right: 2px
 
+.v-select__multiple-items
+  display: flex
+  align-items: center
+  gap: 6px
+  overflow: hidden
+  flex-shrink: 1
+  position: absolute
+  left: 12px
+  right: 60px
+  height: 100%
+
+  &>div
+    background-color: var(--input-border-color)
+    padding: 0 8px
+    line-height: 20px
+    border-radius: 4px
 
 .v-select__empty-label
   padding: 0 16px

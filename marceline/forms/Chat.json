@@ -7,6 +7,14 @@
       "fieldId": "name",
       "name": "Название чата",
       "format": "input"
+    },
+    {
+      "fieldId": "users",
+      "name": "Пользователи",
+      "format": "multiselect",
+      "relationBridgeFieldId": "user",
+      "relationType": "User",
+      "relationBridgeType": "UserChat"
     }
   ],
   "bodyModifiers": []

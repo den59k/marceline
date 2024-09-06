@@ -32,7 +32,10 @@ export type FormField = {
   isCustom?: boolean,
   children?: FormField[],
   modifiers?: string[],
+  relationType?: string,
   aliasFieldId?: string,
+  relationBridgeType?: string,
+  relationBridgeFieldId?: string
 }
 
 export type Form = {

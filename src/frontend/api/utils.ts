@@ -5,11 +5,12 @@ type PrismaField = {
   type: string
   name: string
   relationName?: string
+  relationFromFields?: string[]
   isList: boolean
 }
 
 type PrismaModels = {
-  models: { name: string, fields: PrismaField[] }[], 
+  models: { name: string, fields: PrismaField[], primaryKey: { fields: string[] } | null }[], 
   enums: { name: string, values: { name: string }[] }[]
 }
 

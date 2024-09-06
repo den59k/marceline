@@ -1,5 +1,10 @@
 <template>
-  <VPopover :open="open" @update:open="emit('update:open', $event)" placement="bottom-end" class="add-column-popover">
+  <VPopover 
+    :open="open" 
+    @update:open="emit('update:open', $event)" 
+    :placement="props.column? 'bottom-start': 'bottom-end'" 
+    class="add-column-popover"
+  >
     <VInput v-bind="register('name')" placeholder="Название столбца" autofocus/>
 
     <VFormControl v-if="values.selectedItem" outline class="v-select" label="Системное поле">

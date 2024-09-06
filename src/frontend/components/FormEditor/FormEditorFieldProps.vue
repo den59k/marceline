@@ -104,6 +104,7 @@ const bodyModifiers = computed(() => {
 export const getFormats = (item: Field) => {
   if (item.isList) {
     return [
+      { id: "multiselect", title: "Выбор из нескольких вариантов" },
       { id: "files-group", title: "Загрузка файлов" },
       { id: "inputs-group", title: "Ввод нескольких значений" }
     ]

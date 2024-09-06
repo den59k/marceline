@@ -19,7 +19,10 @@ export type FormItem = {
   isCustom?: boolean,
   modifiers?: string[],
   relationType?: string,
+  relationBridgeType?: string,
+  relationBridgeFieldId?: string,
   aliasFieldId?: string,
+  multiple?: boolean,
   children?: FormItem[]
 }
 

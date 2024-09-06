@@ -56,6 +56,15 @@ const additionalProps = computed(() => {
     }
     return { items: props.item.enum ?? [] }
   }
+  if (props.item.format === 'multiselect') {
+    if (props.item.relationType) {
+      return {
+        items: () => getItems(props.item.relationType!),
+        multiple: true,
+        search: true
+      }
+    }
+  }
   if (props.item.format === 'file' && props.item.fileField) {
     const obj = props.modelValue[props.item.fileField!]
     return { 

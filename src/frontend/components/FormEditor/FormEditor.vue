@@ -36,12 +36,13 @@
 
 <script lang="ts" setup>
 import { CSSProperties, Ref, computed, ref, watch } from 'vue';
-import { useDraggableItem } from 'vuesix';
+import { useDraggableItem, useRequest } from 'vuesix';
 import FormEditorItem from './FormEditorItem.vue';
 import { useVModel } from '@vueuse/core';
 import { FormItem } from '../../api/formsApi';
 import { traverseFormFields } from '../../utils/traverse';
 import FormEditorFieldProps, { getFormats } from './FormEditorFieldProps.vue';
+import { utilsApi } from '../../api/utils';
 
 const props = defineProps<{ modelValue?: FormItem[], fields: Field[], bodyModifiers?: string[] }>()
 const emit = defineEmits([ "update:modelValue" ])
@@ -68,15 +69,31 @@ const onItemMouseDown = (e: MouseEvent, item: Field) => {
   })
 }
 
+const { data: tablesData } = useRequest(utilsApi.getModels)
+
 const createFormItem = (item: Field): FormItem => {
   if (item.kind === "custom") {
     return { fieldId: "custom", name: "Кастомное поле", format: "input", isCustom: true }
   }
-  if (item.kind === "object" && item.type === "File") {
-    return { fieldId: item.relationFromFields?.[0] ?? item.name, name: item.name, format: "file" }
-  }
+  // if (item.kind === "object" && item.type === "File") {
+  //   return { fieldId: item.relationFromFields?.[0] ?? item.name, name: item.name, format: "file" }
+  // }
   if (item.kind === "object" && !item.isList && item.relationFromFields) {
     return { fieldId: item.name,  name: item.name, format: "select", relationType: item.type, aliasFieldId: item.relationFromFields[0] }
+  }
+  if (item.kind === "object" && item.isList) {
+    const relationTable = tablesData.value!.models.find(table => table.name === item.type)
+    if (relationTable?.primaryKey) {
+      const sourceField = relationTable.fields.find(_item => _item.relationName === item.relationName)!
+      const primaryKeyFields = relationTable.primaryKey.fields.map(fieldId => relationTable.fields.find(item => item.name === fieldId)!)
+      const oppositeFieldId = primaryKeyFields.find(item => !sourceField.relationFromFields?.includes(item.name))!
+      const oppositeField = relationTable.fields.find(item => item.relationFromFields?.includes(oppositeFieldId.name))!
+
+      return { fieldId: item.name, name: item.name, format: "multiselect", relationBridgeFieldId: oppositeField.name, 
+        relationType: oppositeField.type, relationBridgeType: item.type }
+    } else {
+      return { fieldId: item.name, name: item.name, format: "multiselect", relationType: item.type }
+    }
   }
   if (item.kind === "enum") {
     return { fieldId: item.name, name: item.name, format: "select", enum: item.enum?.map(item => ({ id: item, title: item })) }
@@ -187,6 +204,7 @@ export type Field = {
   kind: string,
   isList?: boolean,
   enum?: string[],
+  relationName?: string,
   relationFromFields?: string[]
 }
 

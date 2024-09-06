@@ -72,6 +72,13 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
       }
     }
   }
+  
+  const executePostCallbacks = async (req: FastifyRequest, obj: any) => {
+    if (!req.postCallbacks || req.postCallbacks.length === 0) return
+    for (let callback of req.postCallbacks) {
+      await callback(obj)
+    }
+  }
 
   let authMethod: AuthHook | null = null
   const addAuthMethod = (method: AuthHook) => {
@@ -94,19 +101,21 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     registerHook,
     applyHooks,
     hooks,
-    addAuthMethod
+    addAuthMethod,
+    executePostCallbacks
   }
 }
 
 export const marceline = fp(async (fastify, options: Options) => {
   const plugin = await marcelinePlugin(fastify, options)
   fastify.decorate("marceline", plugin)
-  fastify.decorateRequest("currentField", null)
-  fastify.decorateRequest("modifiedBody", null)
-  fastify.decorateRequest("endpointAction", null)
+  fastify.decorateRequest("currentField")
+  fastify.decorateRequest("modifiedBody")
+  fastify.decorateRequest("endpointAction")
   fastify.decorateRequest("fieldId")
   fastify.decorateRequest("where")
-  fastify.decorateRequest("endpointResponse", null)
+  fastify.decorateRequest("endpointResponse")
+  fastify.decorateRequest("postCallbacks")
 })
 
 export type MarcelinePlugin = Awaited<ReturnType<typeof marcelinePlugin>>
@@ -122,5 +131,6 @@ declare module 'fastify' {
     fieldId: string
     where: Record<string, any>
     endpointResponse: any
+    postCallbacks: ((object: any) => void | Promise<void>)[]
   }
 }

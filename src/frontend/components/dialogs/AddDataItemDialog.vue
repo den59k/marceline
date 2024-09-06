@@ -62,6 +62,7 @@ const apply = async () => {
 addFormComponent("input", VInput)
 addFormComponent("select", VSelect)
 addFormComponent("file", VFileUploader)
+addFormComponent("multiselect", VSelect)
 
 </script>
 

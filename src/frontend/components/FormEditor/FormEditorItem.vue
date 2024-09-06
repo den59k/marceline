@@ -49,7 +49,7 @@ const getInputType = (item: FormItem) => {
 }
 
 const component = computed(() => {
-  if (props.item.format === 'select') return VSelect
+  if (props.item.format === 'select' || props.item.format === 'multiselect') return VSelect
   if (props.item.format === "file" || props.item.format === "files-group") return "VFileUploader"
   return VInput
 })
@@ -59,11 +59,21 @@ const additionalProps = computed(() => {
     if (props.item.relationType) {
       return {
         items: () => getItems(props.item.relationType!),
-        nullable: true
+        nullable: true,
+        search: true
       }
     }
     return { 
       items: props.item.enum ?? [] 
+    }
+  }
+  if (props.item.format === 'multiselect') {
+    if (props.item.relationType) {
+      return {
+        items: () => getItems(props.item.relationType!),
+        multiple: true,
+        search: true
+      }
     }
   }
   if (props.item.format === 'file' || props.item.format === "files-group") {
