@@ -15,9 +15,9 @@
         :table="props.systemTable" 
         label="Выбрать поля"
       />
-      <template v-if="currentTab === 'create' || currentTab === 'edit'">
+      <div class="form-row" v-if="currentTab === 'create' || currentTab === 'edit'">
         <VSelect v-model="endpointData.form" :items="availableForms" label="Форма для изменения" />
-      </template>
+      </div>
       <div v-if="hooksData" class="endpoint-editor__hooks">
         <ListEditor 
           v-model="endpointData.hooks['onRequest']" 

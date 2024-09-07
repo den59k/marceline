@@ -1,0 +1,37 @@
+{
+  "id": "UserChat",
+  "name": "Добавление пользователя в чат",
+  "systemTable": "UserChat",
+  "fields": [
+    {
+      "fieldId": "chat",
+      "name": "Чат",
+      "format": "select",
+      "relationType": "Chat",
+      "aliasFieldId": "chatId"
+    },
+    {
+      "fieldId": "user",
+      "name": "Пользователь",
+      "format": "select",
+      "relationType": "User",
+      "aliasFieldId": "userId"
+    },
+    {
+      "fieldId": "role",
+      "name": "Роль",
+      "format": "select",
+      "enum": [
+        {
+          "id": "admin",
+          "title": "admin"
+        },
+        {
+          "id": "default",
+          "title": "default"
+        }
+      ]
+    }
+  ],
+  "bodyModifiers": []
+}

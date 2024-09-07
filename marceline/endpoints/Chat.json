@@ -1,0 +1,54 @@
+{
+  "id": "Chat",
+  "path": "/api/chats",
+  "systemTable": "Chat",
+  "data": [
+    {
+      "id": "list",
+      "enabled": true,
+      "hooks": {},
+      "fields": {
+        "id": true,
+        "name": true,
+        "createdAt": true
+      },
+      "filters": []
+    },
+    {
+      "id": "get",
+      "enabled": true,
+      "hooks": {},
+      "fields": {
+        "id": true,
+        "createdAt": true,
+        "name": true,
+        "users": {
+          "user": {
+            "id": true,
+            "createdAt": true,
+            "email": true
+          },
+          "role": true
+        }
+      },
+      "filters": []
+    },
+    {
+      "id": "create",
+      "enabled": true,
+      "hooks": {},
+      "form": "Chat"
+    },
+    {
+      "id": "edit",
+      "enabled": true,
+      "hooks": {},
+      "form": "Chat"
+    },
+    {
+      "id": "delete",
+      "enabled": true,
+      "hooks": {}
+    }
+  ]
+}

@@ -12,11 +12,6 @@
       "name": "E-mail",
       "format": "string",
       "systemColumn": "email"
-    },
-    {
-      "name": "Количество файлов",
-      "format": "count",
-      "systemColumn": "files"
     }
   ],
   "data": {

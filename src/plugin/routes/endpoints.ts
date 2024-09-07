@@ -28,6 +28,10 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       return reply.code(400).send(`Table ${systemTable} not found`)
     }
 
+    if (!path.startsWith("/")) {
+      return reply.code(400).send({ error: { path: { message: "Path must started with \"/\"" } } })
+    }
+
     const id = getUniqueName(systemTable, (name: string) => !fastify.marceline.endpoints.hasItem(name))
     const newItem = fastify.marceline.endpoints.createItem({ id, path, systemTable, data })
 
@@ -42,7 +46,11 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       
     const item = fastify.marceline.endpoints.getItem(itemId)
     if (!item) return reply.code(400).send(`Endpoint ${itemId} not found`)
-    
+      
+    if (!path.startsWith("/")) {
+      return reply.code(400).send({ error: { path: { message: "Path must started with \"/\"" } } })
+    }
+
     const data = item.data
     for (let newItem of newData) {
       const existsItem = data.find(item => item.id === newItem.id)

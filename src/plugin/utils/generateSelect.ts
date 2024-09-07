@@ -1,6 +1,6 @@
 import { ViewColumn } from "../types";
 
-type Select = Record<string, boolean | { select: Select }>
+type Select = Record<string, boolean | { select: Select, take?: number }>
 
 export const generateSelect = (columns: ViewColumn[], postCallbacks: ((item: any) => void)[]) => {
 

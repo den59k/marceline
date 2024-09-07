@@ -149,6 +149,9 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
 
           const form = fastify.marceline.forms.getItem(entry.form!)
           if (!form) return reply.code(500).send("Contact with administrator. Error: Form not found")
+
+          const idField = getIdField(item)
+          req.where = { [idField.name]: parseIdField(idField, (req as any).params.itemId) }
             
           const resp = await parseBody(fastify, req, reply, form, req.body)
           if (typeof resp === "object" && resp === reply) return resp  
@@ -157,12 +160,11 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
             const resp = await fastify.marceline.applyHooks("bodyModifier", entry.hooks.bodyModifier, req, reply)
             if (typeof resp === "object" && resp === reply) return resp
           }
-
-          const idField = getIdField(item)
+          
           const newObject = await (fastify as any).prisma[item.systemTable].update({
             select: { [idField.name]: true },
             data: req.modifiedBody,
-            where: { id: parseIdField(idField, (req as any).params.itemId) }
+            where: req.where
           })
           Object.assign(req.modifiedBody, newObject)
 
@@ -181,8 +183,15 @@ export default async (fastify: FastifyInstance, options: { endpoints: Iterable<E
           }
 
           const idField = getIdField(item)
+          req.where = { [idField.name]: parseIdField(idField, (req as any).params.itemId) }
+
+          if (entry.hooks.bodyModifier && entry.hooks.bodyModifier.length > 0) {
+            const resp = await fastify.marceline.applyHooks("bodyModifier", entry.hooks.bodyModifier, req, reply)
+            if (typeof resp === "object" && resp === reply) return resp
+          }
+
           await (fastify as any).prisma[item.systemTable].delete({
-            where: { id: parseIdField(idField, (req as any).params.itemId) }
+            where: req.where
           })
 
           if (entry.hooks.postEffect && entry.hooks.postEffect.length > 0) {

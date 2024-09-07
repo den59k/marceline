@@ -60,7 +60,8 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
               [field.relationBridgeFieldId]: {
                 select: Object.fromEntries(keys.map(item => [ item, true ]))
               } 
-            }
+            },
+            take: 100
           }
           postCallbacks.push(item => {
             item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])

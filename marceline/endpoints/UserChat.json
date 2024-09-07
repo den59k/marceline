@@ -1,0 +1,51 @@
+{
+  "id": "UserChat",
+  "path": "/api/chats/:chatId/users",
+  "systemTable": "UserChat",
+  "idField": "userId",
+  "data": [
+    {
+      "id": "list",
+      "enabled": true,
+      "hooks": {},
+      "fields": {
+        "user": {
+          "id": true,
+          "email": true
+        },
+        "role": true
+      },
+      "filters": [
+        {
+          "id": "param",
+          "param": "chatId",
+          "field": "chatId"
+        }
+      ]
+    },
+    {
+      "id": "get",
+      "enabled": false,
+      "hooks": {},
+      "fields": {},
+      "filters": []
+    },
+    {
+      "id": "create",
+      "enabled": true,
+      "hooks": {},
+      "form": "UserChat"
+    },
+    {
+      "id": "edit",
+      "enabled": true,
+      "hooks": {},
+      "form": "UserChat"
+    },
+    {
+      "id": "delete",
+      "enabled": true,
+      "hooks": {}
+    }
+  ]
+}

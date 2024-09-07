@@ -1,0 +1,42 @@
+{
+  "id": "User-0",
+  "path": "/api/users",
+  "systemTable": "User",
+  "data": [
+    {
+      "id": "list",
+      "enabled": true,
+      "hooks": {},
+      "fields": {
+        "email": true,
+        "type": true,
+        "id": true
+      },
+      "filters": []
+    },
+    {
+      "id": "get",
+      "enabled": false,
+      "hooks": {},
+      "fields": {},
+      "filters": []
+    },
+    {
+      "id": "create",
+      "enabled": false,
+      "hooks": {},
+      "form": null
+    },
+    {
+      "id": "edit",
+      "enabled": false,
+      "hooks": {},
+      "form": null
+    },
+    {
+      "id": "delete",
+      "enabled": false,
+      "hooks": {}
+    }
+  ]
+}
