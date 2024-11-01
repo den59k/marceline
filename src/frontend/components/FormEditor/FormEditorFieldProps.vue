@@ -18,8 +18,15 @@
         :editable="activeFormItemField?.kind !== 'enum'"
       />
       <VInput v-if="props.item.isCustom" label="Системное название" v-model="props.item.fieldId" />
-      <VInput label="Название поля" v-model="props.item.name"/>
-      <VInput label="Placeholder" v-model="props.item.placeholder"/>
+      <template v-if="props.item.format === 'const'">
+        <VCheckbox v-if="activeFormItemField.type === 'Boolean'" v-model="props.item.value" label="Значение"/>
+        <VSelect v-else-if="activeFormItemField.kind === 'enum' && props.item.enum" v-model="props.item.value" label="Значение" :items="props.item.enum"/>
+        <VInput v-else v-model="props.item.value" label="Значение"/>
+      </template>
+      <template v-else>
+        <VInput label="Название поля" v-model="props.item.name"/>
+        <VInput label="Placeholder" v-model="props.item.placeholder"/>
+      </template>
       <VInput 
         v-if="props.item.format === 'file' || props.item.format === 'files-group'" 
         label="Поле для файла" 
@@ -51,6 +58,7 @@ import FormEditorEnumValues from './FormEditorEnumValues.vue';
 import ListEditor from '../ListEditor.vue';
 import { useRequest } from 'vuesix';
 import { utilsApi } from '../../api/utils';
+import VCheckbox from '../VCheckbox.vue';
 
 const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[] }>()
 
@@ -112,12 +120,20 @@ export const getFormats = (item: Field) => {
 
   if (item.kind === 'enum') {
     return [ 
-      { id: "select", title: "Выбор из вариантов" }
+      { id: "select", title: "Выбор из вариантов" },
+      { id: 'const', title: "Константное значение" }
     ]
   }
   if (item.type === 'Int' || item.type === "Float" || item.type === "Double") {
     return [
       { id: "inputNumber", title: "Поле ввода числа" },
+      { id: 'const', title: "Константное значение" },
+    ]
+  }
+  if (item.type === "Boolean") {
+    return [
+      { id: "checkbox", title: "Чекбокс" },
+      { id: 'const', title: "Константное значение" },
     ]
   }
 
@@ -126,7 +142,8 @@ export const getFormats = (item: Field) => {
     { id: "password", title: "Скрытое поле" },
     { id: "multiline", title: "Область текста" },
     { id: "select", title: "Выбор из вариантов" },
-    { id: "file", title: "Загрузка файла" }
+    { id: 'const', title: "Константное значение" },
+    { id: "file", title: "Загрузка файла" },
  ]
 }
 

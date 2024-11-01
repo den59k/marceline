@@ -12,6 +12,11 @@
       "name": "E-mail",
       "format": "string",
       "systemColumn": "email"
+    },
+    {
+      "name": "AdditionalInfo.Id",
+      "format": "string",
+      "systemColumn": "additionalInfo.id"
     }
   ],
   "data": {

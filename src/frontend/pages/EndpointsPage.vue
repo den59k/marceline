@@ -30,9 +30,20 @@ import { endpointsApi } from '../api/endpoints';
 
 const { data } = useRequest(endpointsApi.getAll)
 
+const getMethods = (item: any) => {
+  let methods = []
+  for (let method of item.data) {
+    if (method.enabled === false) continue
+    if ((method.id === 'create' || method.id === 'edit') && !method.form) continue
+    methods.push(method.id)
+  }
+  return methods.join(', ')
+}
+
 const columns = {
   id: { title: "ID" },
-  path: { title: "Путь" }
+  path: { title: "Путь" },
+  methods: { title: "Методы", map: getMethods  }
 }
 
 </script>

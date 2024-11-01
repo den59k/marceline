@@ -12,7 +12,8 @@
           <VIcon icon="add"/> {{ props.addLabel ?? "Добавить" }}
         </button>
       </template>
-      <button v-for="item in props.items" @click="addItem(item)">{{ item }}</button>
+      <button v-for="item in props.items" @click="addItem(item as T)">{{ item }}</button>
+      <div v-if="items.length === 0" class="v-select__empty-label">Нет доступных элементов</div>
     </VPopover>
   </div>
 </template>

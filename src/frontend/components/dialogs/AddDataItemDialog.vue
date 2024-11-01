@@ -26,6 +26,7 @@ import VSelect from '../VSelect.vue';
 import VFileUploader from '../VFileUploader.vue';
 import { dataApi } from '../../api/data';
 import { traverseFormFields } from '../../utils/traverse';
+import VCheckbox from '../VCheckbox.vue';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
@@ -63,6 +64,7 @@ addFormComponent("input", VInput)
 addFormComponent("select", VSelect)
 addFormComponent("file", VFileUploader)
 addFormComponent("multiselect", VSelect)
+addFormComponent("checkbox", VCheckbox)
 
 </script>
 

@@ -72,6 +72,7 @@ const onItemMouseDown = (e: MouseEvent, item: Field) => {
 const { data: tablesData } = useRequest(utilsApi.getModels)
 
 const createFormItem = (item: Field): FormItem => {
+  console.log(item)
   if (item.kind === "custom") {
     return { fieldId: "custom", name: "Кастомное поле", format: "input", isCustom: true }
   }

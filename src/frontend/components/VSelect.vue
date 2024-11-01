@@ -225,5 +225,6 @@ const resetValue = () => {
   display: flex
   align-items: center
   color: var(--text-secondary-color)
+  font-size: 13px
   
 </style>

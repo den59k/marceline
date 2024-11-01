@@ -34,9 +34,10 @@ import { FormItem } from '../../api/formsApi';
 import VIconButton from '../VIconButton.vue';
 import VSelect from '../VSelect.vue'
 import VInput from '../VInput.vue'
-import { makeRequest } from 'vuesix';
-import { dataApi } from '../../api/data';
 import { getItems } from '../../utils/getItems';
+import VFileUploader from '../VFileUploader.vue';
+import VFormEditorCheckbox from './VFormEditorCheckbox.vue'
+import VFormEditorConst from './VFormEditorConst.vue';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -49,8 +50,10 @@ const getInputType = (item: FormItem) => {
 }
 
 const component = computed(() => {
+  if (props.item.format === 'const') return VFormEditorConst
   if (props.item.format === 'select' || props.item.format === 'multiselect') return VSelect
-  if (props.item.format === "file" || props.item.format === "files-group") return "VFileUploader"
+  if (props.item.format === "file" || props.item.format === "files-group") return VFileUploader
+  if (props.item.format === "checkbox") return VFormEditorCheckbox
   return VInput
 })
 
@@ -76,9 +79,19 @@ const additionalProps = computed(() => {
       }
     }
   }
+  if (props.item.format === 'const') {
+    return {
+      value: props.item.value
+    }
+  }
   if (props.item.format === 'file' || props.item.format === "files-group") {
     return {
       multiple: props.item.format === "files-group"
+    }
+  }
+  if (props.item.format === 'checkbox') {
+    return {
+      class: "form-editor-item__checkbox"
     }
   }
   return { 

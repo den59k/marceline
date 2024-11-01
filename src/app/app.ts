@@ -85,7 +85,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
 
   app.marceline.registerHook("responseModifier", "Update photos", async (req, reply) => {
     req.endpointResponse.photos = []
-  }, { allow: "list" })
+  }, { allow: "list", table: "user" })
 
   const routePrefix = "/api"
   for (let [ key, route ] of Object.entries(routes)) {

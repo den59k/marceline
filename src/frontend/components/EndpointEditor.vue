@@ -2,7 +2,12 @@
   <div class="endpoint-editor__layout">
     <div class="endpoint-editor__available-items app-sidebar__items">
       <div class="app-sidebar__group-title">Операции с объектом</div>
-      <button v-for="item in tabs" class="app-sidebar__item" :class="{ 'active': item.id === currentTab }" @click="currentTab = item.id">
+      <button 
+        v-for="item in tabs" 
+        class="app-sidebar__item" 
+        :class="{ 'active': item.id === currentTab, disabled: isDisabled(item.id, endpointsData[item.id])  }" 
+        @click="currentTab = item.id"
+      >
         <VIcon :icon="item.icon" /> {{ item.title }}
       </button>
     </div>
@@ -130,7 +135,11 @@ const { data: hooksData } = useRequest(utilsApi.getHooks)
 const getHooks = (type: string) => {
   if (!hooksData.value) return []
   return filterHooks(hooksData.value[type], props.systemTable)
-    .filter(item => !(item.options.allow === 'list' && currentTab.value === 'list') && !(item.options.allow === 'object' && currentTab.value === 'list'))
+    .filter(item => {
+      if (item.options.allow === 'list' && currentTab.value !== 'list') return false
+      if (item.options.allow === 'object' && currentTab.value === 'list') return false
+      return true
+    })
     .map((item: any) => item.name)
 }
 
@@ -157,6 +166,12 @@ const getFields = () => {
   return currentTable.value.fields
     .filter(item => item.kind !== 'object')
     .map(item => ({ id: item.name, title: item.name }))
+}
+
+const isDisabled = (id: string, item: EndpointData) => {
+  if (item.enabled === false) return true
+  if ((id === "create" || id === "edit") && !item.form) return true
+  return false
 }
 
 </script>

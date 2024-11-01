@@ -77,6 +77,7 @@ const { data, error } = useRequestWatch(dataApi.getData, viewId, _searchOptions)
 const getByKey = (item: any, keys: string[]) => {
   let value = item
   for (let key of keys) {
+    if (!value) return null
     value = value[key]
   }
   return value

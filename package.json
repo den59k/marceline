@@ -38,15 +38,18 @@
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.28"
+    "vuesix": "^1.0.28",
+    "fastify": "^4.28.1"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",
     "compact-json-schema": "^0.0.9",
     "dayjs": "^1.11.12",
-    "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
     "uid": "^2.0.2"
+  },
+  "peerDependencies": {
+    "fastify": "^4"
   },
   "prisma": {
     "schema": "src/app/prisma/schema.prisma"

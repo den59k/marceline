@@ -13,6 +13,9 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
     if (!item.fieldId) continue
     
     let value = body[item.fieldId]
+    if (item.format === 'const') {
+      value = item.value
+    }
 
     if (item.modifiers && item.modifiers.length > 0) {
       req.currentField = value

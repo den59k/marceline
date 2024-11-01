@@ -36,6 +36,7 @@ export type FormField = {
   aliasFieldId?: string,
   relationBridgeType?: string,
   relationBridgeFieldId?: string
+  value?: any
 }
 
 export type Form = {

@@ -48,6 +48,11 @@
       "name": "Файлы",
       "format": "multiselect",
       "relationType": "File"
+    },
+    {
+      "fieldId": "deleted",
+      "name": "Пользователь удален",
+      "format": "checkbox"
     }
   ],
   "bodyModifiers": []

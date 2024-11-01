@@ -20,7 +20,7 @@
     {
       "fieldId": "role",
       "name": "Роль",
-      "format": "select",
+      "format": "const",
       "enum": [
         {
           "id": "admin",
@@ -30,7 +30,8 @@
           "id": "default",
           "title": "default"
         }
-      ]
+      ],
+      "value": "default"
     }
   ],
   "bodyModifiers": []

@@ -30,6 +30,15 @@ model User {
   type              UserType            @default(reader)
   files             File[]
   chats             UserChat[]
+  additionalInfo    UserAdditionalInfo?
+  deleted           Boolean             @default(false)
+}
+
+model UserAdditionalInfo {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  userId            Int                 @unique
+  user              User                @relation(fields: [userId], references: [id])
 }
 
 model Chat {

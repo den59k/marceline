@@ -52,7 +52,7 @@ const pages = computed(() => {
     // { to: "/dev/views", title: "Таблицы", icon: "table" },
     { to: "/dev/forms", title: "Формы", icon: "note-edit" },
     { to: "/dev/endpoints", title: "Эндпоинты", icon: "code" },
-    { to: "/dev/components", title: "Компоненты", icon: "component" },
+    // { to: "/dev/components", title: "Компоненты", icon: "component" },
   ]
 })
 
@@ -145,5 +145,8 @@ const logout = async () => {
 
   &.logout-button
     margin-bottom: 16px
+
+  &.disabled
+    opacity: 0.5
 
 </style>
