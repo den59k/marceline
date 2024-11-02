@@ -1,6 +1,6 @@
 {
   "name": "marceline",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
@@ -26,6 +26,7 @@
     "@vueuse/core": "^10.11.1",
     "builtin-modules": "^4.0.0",
     "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
     "jwt-runner": "^0.0.2",
     "pinia": "^2.2.1",
     "prisma": "^5.18.0",
@@ -38,8 +39,7 @@
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.28",
-    "fastify": "^4.28.1"
+    "vuesix": "^1.0.28"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",
