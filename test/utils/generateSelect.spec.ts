@@ -9,7 +9,7 @@ it("generateSelect", () => {
     { name: "A", systemColumn: "surname" },
   ]
 
-  expect(generateSelect(columns)).toEqual({ name: true, surname: true })
+  expect(generateSelect(columns, [])).toEqual({ name: true, surname: true })
 })
 
 it("generateSelect with nested columns", () => {
@@ -21,7 +21,7 @@ it("generateSelect with nested columns", () => {
     { name: "B", systemColumn: "user.ip" }
   ]
 
-  expect(generateSelect(columns)).toEqual({ 
+  expect(generateSelect(columns, [])).toEqual({ 
     name: true, 
     surname: true, 
     user: { select: { login: true, ip: true } }
@@ -38,7 +38,7 @@ it("generateSelect with count format", () => {
     { name: "B", systemColumn: "sessions", format: "count" }
   ]
 
-  expect(generateSelect(columns)).toEqual({ 
+  expect(generateSelect(columns, [])).toEqual({ 
     name: true, 
     surname: true, 
     user: { select: { login: true } },

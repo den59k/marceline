@@ -37,6 +37,7 @@ export type FormField = {
   relationBridgeType?: string,
   relationBridgeFieldId?: string
   value?: any
+  columns: Array<{ enabled: boolean, fieldId: string }>
 }
 
 export type Form = {

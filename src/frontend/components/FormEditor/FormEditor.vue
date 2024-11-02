@@ -30,7 +30,7 @@
         </div>
       </template>
     </div>
-    <FormEditorFieldProps :item="activeFormItem" :fieldsMap="fieldsMap" :bodyModifiers="bodyModifiers"/>
+    <FormEditorFieldProps :item="activeFormItem" :fieldsMap="fieldsMap" :bodyModifiers="bodyModifiers" :systemTable="props.systemTable"/>
   </div>
 </template>
 
@@ -44,7 +44,7 @@ import { traverseFormFields } from '../../utils/traverse';
 import FormEditorFieldProps, { getFormats } from './FormEditorFieldProps.vue';
 import { utilsApi } from '../../api/utils';
 
-const props = defineProps<{ modelValue?: FormItem[], fields: Field[], bodyModifiers?: string[] }>()
+const props = defineProps<{ modelValue?: FormItem[], fields: Field[], bodyModifiers?: string[], systemTable: string }>()
 const emit = defineEmits([ "update:modelValue" ])
 
 const fieldsMap = computed(() => {
@@ -72,7 +72,6 @@ const onItemMouseDown = (e: MouseEvent, item: Field) => {
 const { data: tablesData } = useRequest(utilsApi.getModels)
 
 const createFormItem = (item: Field): FormItem => {
-  console.log(item)
   if (item.kind === "custom") {
     return { fieldId: "custom", name: "Кастомное поле", format: "input", isCustom: true }
   }
@@ -83,17 +82,18 @@ const createFormItem = (item: Field): FormItem => {
     return { fieldId: item.name,  name: item.name, format: "select", relationType: item.type, aliasFieldId: item.relationFromFields[0] }
   }
   if (item.kind === "object" && item.isList) {
-    const relationTable = tablesData.value!.models.find(table => table.name === item.type)
-    if (relationTable?.primaryKey) {
-      const sourceField = relationTable.fields.find(_item => _item.relationName === item.relationName)!
+    const relationTable = tablesData.value!.models.find(table => table.name === item.type)!
+    const sourceField = relationTable.fields.find(_item => _item.relationName === item.relationName)
+
+    if (relationTable.primaryKey) {
       const primaryKeyFields = relationTable.primaryKey.fields.map(fieldId => relationTable.fields.find(item => item.name === fieldId)!)
-      const oppositeFieldId = primaryKeyFields.find(item => !sourceField.relationFromFields?.includes(item.name))!
+      const oppositeFieldId = primaryKeyFields.find(item => !sourceField!.relationFromFields?.includes(item.name))!
       const oppositeField = relationTable.fields.find(item => item.relationFromFields?.includes(oppositeFieldId.name))!
 
       return { fieldId: item.name, name: item.name, format: "multiselect", relationBridgeFieldId: oppositeField.name, 
         relationType: oppositeField.type, relationBridgeType: item.type }
     } else {
-      return { fieldId: item.name, name: item.name, format: "multiselect", relationType: item.type }
+      return { fieldId: item.name, name: item.name, format: "multiselect", relationType: item.type, relationBridgeFieldId: sourceField?.name }
     }
   }
   if (item.kind === "enum") {

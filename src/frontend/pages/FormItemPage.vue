@@ -13,7 +13,7 @@
         <template v-if="formInfo">Выберите таблицу для создания формы</template>
       </div>
     </div>
-    <FormEditor v-model="values.fields" v-else :fields="fields" :body-modifiers="values.bodyModifiers" class="form-item-page__form-editor"/>
+    <FormEditor v-model="values.fields" v-else :fields="fields" :body-modifiers="values.bodyModifiers" :systemTable="values.systemTable" class="form-item-page__form-editor"/>
   </VLayout>
 </template>
 

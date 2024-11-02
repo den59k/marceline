@@ -17,6 +17,7 @@
         v-model="props.item.enum"
         :editable="activeFormItemField?.kind !== 'enum'"
       />
+      <FormEditorTableValues v-if="props.item.format === 'subitems'" v-model="props.item.columns" :item="props.item"/>
       <VInput v-if="props.item.isCustom" label="Системное название" v-model="props.item.fieldId" />
       <template v-if="props.item.format === 'const'">
         <VCheckbox v-if="activeFormItemField.type === 'Boolean'" v-model="props.item.value" label="Значение"/>
@@ -59,8 +60,9 @@ import ListEditor from '../ListEditor.vue';
 import { useRequest } from 'vuesix';
 import { utilsApi } from '../../api/utils';
 import VCheckbox from '../VCheckbox.vue';
+import FormEditorTableValues from './FormEditorTableValues.vue';
 
-const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[] }>()
+const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[], systemTable: string }>()
 
 const customField: Field = { name: 'custom', type: 'custom', kind: 'custom' }
 
@@ -113,8 +115,8 @@ export const getFormats = (item: Field) => {
   if (item.isList) {
     return [
       { id: "multiselect", title: "Выбор из нескольких вариантов" },
-      { id: "files-group", title: "Загрузка файлов" },
-      { id: "inputs-group", title: "Ввод нескольких значений" }
+      { id: "subitems", title: "Ввод значений" },
+      { id: "files-group", title: "Загрузка файлов" }
     ]
   }
 

@@ -76,7 +76,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
   })
 
   app.marceline.registerHook("postEffect", "printConsole", async (req, reply) => {
-    console.log(req.body)
+    console.info(req.body)
   })
   
   app.marceline.registerHook("filter", "getAdminUserId", async (req, reply) => {

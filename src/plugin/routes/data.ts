@@ -52,6 +52,10 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       traverseFormFields(editForm.fields, (field) => {
         if (field.jsonField) {
           select[field.jsonField] = true
+        } else if (field.fieldId && field.format === 'subitems') {
+          select[field.fieldId] = {
+            select: Object.fromEntries(field.columns.map(item => [ item.fieldId, true ]))
+          }
         } else if (field.fieldId && field.relationBridgeFieldId) {
           const table = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
           const keys = [ "name", "surname", "email", "id", "uuid" ].filter(fieldId => table.fields.find(item => item.name === fieldId))

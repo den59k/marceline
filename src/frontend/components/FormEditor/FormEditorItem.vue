@@ -38,6 +38,7 @@ import { getItems } from '../../utils/getItems';
 import VFileUploader from '../VFileUploader.vue';
 import VFormEditorCheckbox from './VFormEditorCheckbox.vue'
 import VFormEditorConst from './VFormEditorConst.vue';
+import VFormEditorSubitems from '../VFormEditorSubitems.vue';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -54,6 +55,7 @@ const component = computed(() => {
   if (props.item.format === 'select' || props.item.format === 'multiselect') return VSelect
   if (props.item.format === "file" || props.item.format === "files-group") return VFileUploader
   if (props.item.format === "checkbox") return VFormEditorCheckbox
+  if (props.item.format === "subitems") return VFormEditorSubitems
   return VInput
 })
 
@@ -92,6 +94,11 @@ const additionalProps = computed(() => {
   if (props.item.format === 'checkbox') {
     return {
       class: "form-editor-item__checkbox"
+    }
+  }
+  if (props.item.format === 'subitems') {
+    return {
+      columns: props.item.columns
     }
   }
   return { 

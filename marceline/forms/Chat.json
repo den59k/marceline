@@ -15,6 +15,25 @@
       "relationBridgeFieldId": "user",
       "relationType": "User",
       "relationBridgeType": "UserChat"
+    },
+    {
+      "fieldId": "features",
+      "name": "Дополнительные функции",
+      "format": "subitems",
+      "relationType": "ChatFeature",
+      "relationBridgeFieldId": "chat",
+      "columns": [
+        {
+          "fieldId": "id",
+          "name": "ID",
+          "enabled": false
+        },
+        {
+          "fieldId": "name",
+          "name": "Название",
+          "enabled": true
+        }
+      ]
     }
   ],
   "bodyModifiers": []

@@ -1,0 +1,32 @@
+{
+  "id": "ChatFeature",
+  "name": "Chat Feature",
+  "systemTable": "ChatFeature",
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id",
+      "formula": "",
+      "size": "120px"
+    },
+    {
+      "name": "Name",
+      "format": "string",
+      "systemColumn": "name",
+      "formula": "",
+      "size": null
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": false
+    },
+    "edit": {
+      "enabled": false
+    },
+    "delete": {
+      "enabled": false
+    }
+  }
+}

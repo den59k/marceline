@@ -24,7 +24,7 @@
       ]
     },
     {
-      "fieldId": "Email",
+      "fieldId": "email",
       "name": "E-mail",
       "format": "input",
       "isCustom": true,

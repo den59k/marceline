@@ -7,22 +7,30 @@
     {
       "name": "ID",
       "format": "decimal",
-      "systemColumn": "id"
+      "systemColumn": "id",
+      "formula": "",
+      "size": "60px"
     },
     {
       "name": "Логин",
       "format": "string",
-      "systemColumn": "login"
+      "systemColumn": "login",
+      "formula": "",
+      "size": null
     },
     {
       "name": "Токен",
       "format": "string",
-      "systemColumn": "token"
+      "systemColumn": "token",
+      "formula": "",
+      "size": null
     },
     {
       "name": "Дата создания",
       "format": "date",
-      "systemColumn": "createdAt"
+      "systemColumn": "createdAt",
+      "formula": "",
+      "size": "200px"
     }
   ],
   "data": {

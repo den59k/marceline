@@ -24,7 +24,11 @@
         <VIcon v-if="item.relationName && !item.isList" icon="chevron-right" class="arrow-icon"/>
       </VButton>
     </div>
-    <VSelect v-if="values.selectedItem" v-bind="register('format')" :items="formats" label="Формат отображения"  />
+    <template v-if="values.selectedItem" >
+      <VSelect v-bind="register('format')" :items="formats" label="Формат отображения"  />
+      <VInput v-if="values.format === 'formula'" v-bind="register('formula')" label="Выражение" />
+      <VSelect v-bind="register('size')" :items="sizeItems" label="Размер столбца"/>
+    </template>
     <div class="add-column-popover__actions">
       <VButton v-if="props.column" outline class="delete-button" @click="deleteColumn"><VIcon icon="delete" /></VButton>
       <VButton outline @click="close">Отмена</VButton>
@@ -46,10 +50,12 @@ import VFormControl from './VFormControl.vue';
 import VIcon from './VIcon.vue';
 import VSelect from './VSelect.vue';
 
-const { register, values, updateDefaultValues } = useForm({
+const { register, values, updateDefaultValues, setError } = useForm({
   name: "",
   selectedItem: null as any,
-  format: null as string | null
+  format: null as string | null,
+  formula: "",
+  size: null as string | null
 })
 
 const props = defineProps<{ open?: boolean, table: string, column?: any }>()
@@ -94,7 +100,6 @@ const fields = computed(() => {
 })
 
 const setField = (item: any) => {
-
   if (item === null) {
     values.selectedItem = null
     return
@@ -135,6 +140,13 @@ const formats = computed(() => {
     ]
   }
 
+  if (values.selectedItem.type === "Json") {
+    return [
+      { id: "string", title: "Строковое представление" },
+      { id: "formula", title: "Выражение" }
+    ]
+  }
+
   return [
     { id: "string", title: "Строка" }
   ]
@@ -147,9 +159,12 @@ const close = () => {
 }
 
 const apply = () => {
+  if (values.format === 'formula') {
+    // return setError("formula", { message: "Неверный формат выражения" })
+  }
   const systemColumn = [ ...relationItem, values.selectedItem ].map(item => item.name).join(".")
   const name = values.name.trim() || values.selectedItem.name
-  emit("addcolumn", { name, format: values.format, systemColumn })
+  emit("addcolumn", { name, format: values.format, systemColumn, formula: values.formula, size: values.size })
   close()
 }
 
@@ -157,6 +172,16 @@ const deleteColumn = () => {
   emit("deletecolumn")
   close()
 }
+
+const sizeItems = [
+  { id: null as any, title: "Авто" },
+  { id: "60px", title: "60px" },
+  { id: "120px", title: "120px" },
+  { id: "200px", title: "200px" },
+  { id: "0.5fr", title: "0.5fr" },
+  { id: "1fr", title: "1fr" },
+  { id: "2fr", title: "2fr" },
+]
 
 </script>
 

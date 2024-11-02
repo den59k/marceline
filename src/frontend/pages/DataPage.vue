@@ -83,6 +83,32 @@ const getByKey = (item: any, keys: string[]) => {
   return value
 }
 
+const getByFormula = (value: any, formula: string) => {
+  const borders: { start: number, end: number }[] = []
+  for (let i = 0; i < formula.length; i++) {
+    if (formula[i] === "{" && formula[i-1] != "\\") {
+      borders.push({ start: i, end: i })
+    }
+    if (formula[i] === "}" && formula[i-1] != "\\" && borders.length > 0) {
+      borders[borders.length-1].end = i
+    }
+  }
+
+  let str = ""
+  let lastIndex = 0
+  for (let item of borders) {
+    if (item.end - item.start < 2) continue
+    str += formula.slice(lastIndex, item.start)
+    const varName = formula.slice(item.start+1, item.end)
+    if (value[varName] !== null && value[varName] !== undefined) {
+      str += value[varName]
+    }
+    lastIndex = item.end+1
+  }
+  str += formula.slice(lastIndex)
+  return str
+}
+
 const getMapMethod = (column: any) => {
   const keys = column.systemColumn.split(".")
 
@@ -90,6 +116,8 @@ const getMapMethod = (column: any) => {
     const value = getByKey(item, keys)
     
     if (value === null || value === undefined) return "-"
+
+    if (column.format === "formula") return getByFormula(value, column.formula)
     if (column.format === "decimal") return addDelimiter(value.toString())
     if (column.format === "string") return value
     if (column.format === "date") return dayjs(value).format("D MMMM - YYYY")
@@ -154,6 +182,7 @@ const columns = computed(() => {
         sortableKey: getSortableKey(column),
         title: column.name,
         map: getMapMethod(column),
+        width: column.size,
         headerProps: {
           class: "data-table__header",
           onContextmenu (e: MouseEvent) {

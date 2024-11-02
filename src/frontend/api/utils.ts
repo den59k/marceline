@@ -7,6 +7,7 @@ type PrismaField = {
   relationName?: string
   relationFromFields?: string[]
   isList: boolean
+  default?: { name: string }
 }
 
 type PrismaModels = {

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { Ref, computed, reactive, ref, shallowRef, watch } from 'vue';
 import VFormControl, { VFormControlProps, pickProps } from './VFormControl.vue';
 import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';

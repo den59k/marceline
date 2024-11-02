@@ -22,7 +22,7 @@
       v-for="(item, index) in data" 
       :key="index" 
       :is="props.rowComponent ?? 'div'" 
-      v-bind="props.rowProps? props.rowProps(item): undefined"
+      v-bind="props.rowProps? props.rowProps(item as T): undefined"
       class="v-table__row" 
       @click="emit('itemclick', item)"
       @contextmenu="emit('itemcontext', $event, item)"
@@ -33,8 +33,8 @@
         </div>
       </div>
       <div v-for="(column, key) in columns" :key="key" v-bind="column.columnProps">
-        <slot :name="key" :item="item" :cell="item[key as keyof T]">
-          {{ column.map? column.map(item): item[key as keyof T] }}
+        <slot :name="key" :item="item" :cell="(item as any)[key]">
+          {{ column.map? column.map(item as T): (item as any)[key as keyof T] }}
         </slot>
       </div>
     </component>

@@ -83,6 +83,11 @@ const additionalProps = computed(() => {
       progress: obj?.progress
     }
   }
+  if (props.item.format === 'subitems') {
+    return {
+      columns: props.item.columns
+    }
+  }
   return { 
     multiline: props.item.format === 'multiline', 
     type: getInputType(props.item) 

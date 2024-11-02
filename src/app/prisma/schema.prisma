@@ -46,6 +46,14 @@ model Chat {
   createdAt         DateTime            @default(now())
   name              String?
   users             UserChat[]
+  features          ChatFeature[]
+}
+
+model ChatFeature {
+  id                BigInt                @id @default(autoincrement())
+  name              String?
+  chatId            BigInt
+  chat              Chat                  @relation(fields: [chatId], references: [id])
 }
 
 enum UserChatRole {

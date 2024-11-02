@@ -7,12 +7,16 @@
     {
       "name": "Дата создания",
       "format": "dateTime",
-      "systemColumn": "createdAt"
+      "systemColumn": "createdAt",
+      "formula": "",
+      "size": null
     },
     {
       "name": "Данные",
-      "format": "string",
-      "systemColumn": "data"
+      "format": "formula",
+      "systemColumn": "data",
+      "formula": "{name} {surname}",
+      "size": null
     }
   ],
   "data": {
