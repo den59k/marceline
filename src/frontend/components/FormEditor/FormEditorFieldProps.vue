@@ -29,6 +29,12 @@
         <VInput label="Placeholder" v-model="props.item.placeholder"/>
       </template>
       <VInput 
+        v-if="props.item.format === 'geo'"
+        label="Начальные координаты"
+        v-model="props.item.initialLatLng"
+        placeholder="55.76, 37.64"
+      />
+      <VInput 
         v-if="props.item.format === 'file' || props.item.format === 'files-group'" 
         label="Поле для файла" 
         v-model="props.item.fileField" 
@@ -112,11 +118,18 @@ const bodyModifiers = computed(() => {
 <script lang="ts">
 
 export const getFormats = (item: Field) => {
-  if (item.isList) {
+  if (item.isList && item.kind !== "scalar") {
     return [
       { id: "multiselect", title: "Выбор из нескольких вариантов" },
       { id: "subitems", title: "Ввод значений" },
       { id: "files-group", title: "Загрузка файлов" }
+    ]
+  }
+
+  if (item.isList && item.kind === "scalar") {
+    return [
+      { id: "listInput", title: "Ввод значений" },
+      { id: "listSelect", title: "Выбор из вариантов" },
     ]
   }
 
@@ -146,6 +159,7 @@ export const getFormats = (item: Field) => {
     { id: "select", title: "Выбор из вариантов" },
     { id: 'const', title: "Константное значение" },
     { id: "file", title: "Загрузка файла" },
+    { id: "geo", title: "Точка на карте" },
  ]
 }
 

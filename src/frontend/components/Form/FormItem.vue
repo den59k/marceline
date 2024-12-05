@@ -88,6 +88,11 @@ const additionalProps = computed(() => {
       columns: props.item.columns
     }
   }
+  if (props.item.format === 'geo') {
+    return {
+      initialLatLng: props.item.initialLatLng
+    }
+  }
   return { 
     multiline: props.item.format === 'multiline', 
     type: getInputType(props.item) 

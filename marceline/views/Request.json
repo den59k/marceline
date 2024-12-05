@@ -1,0 +1,19 @@
+{
+  "id": "Request",
+  "name": "Формы заявок",
+  "systemTable": "Request",
+  "columns": [],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "Request"
+    },
+    "edit": {
+      "enabled": false
+    },
+    "delete": {
+      "enabled": false
+    }
+  },
+  "icon": "table"
+}

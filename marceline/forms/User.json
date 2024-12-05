@@ -50,9 +50,22 @@
       "relationType": "File"
     },
     {
+      "fieldId": "features",
+      "name": "Особенности пользователя",
+      "format": "listInput",
+      "placeholder": "Введите значение Feature"
+    },
+    {
       "fieldId": "deleted",
       "name": "Пользователь удален",
       "format": "checkbox"
+    },
+    {
+      "fieldId": "location",
+      "name": "location",
+      "format": "geo",
+      "initialLatLng": "58.009, 56.227",
+      "placeholder": ""
     }
   ],
   "bodyModifiers": []

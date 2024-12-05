@@ -108,7 +108,7 @@ const init = async () => {
 
   const onRequestHook = async (req, reply) => {
     if (ignoreReg.test(req.url) || req.url.startsWith("/view-assets/")) return
-    if (req.url.startsWith("/src") && req.headers["accept"] !== "*/*") {
+    if ((req.url.startsWith("/src") || req.url.startsWith("/node_modules/")) && req.headers["accept"] !== "*/*") {
       return reply.headers({ "content-type": lookup(req.url) }).send(fs.createReadStream(join(process.cwd(), req.url)))
     }
     if (req.url.startsWith("/src/") || req.url.startsWith("/@") || reg.test(req.url)) {

@@ -17,6 +17,13 @@
       "name": "AdditionalInfo.Id",
       "format": "string",
       "systemColumn": "additionalInfo.id"
+    },
+    {
+      "name": "Location",
+      "format": "string",
+      "systemColumn": "location",
+      "formula": "",
+      "size": null
     }
   ],
   "data": {

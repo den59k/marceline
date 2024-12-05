@@ -13,6 +13,7 @@ export type FormItem = {
   enum?: { id: string, title: string }[],
   fieldId?: string,
   name?: string, 
+  initialLatLng?: string,
   placeholder?: string,
   fileField?: string,
   jsonField?: string,

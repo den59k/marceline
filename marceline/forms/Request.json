@@ -1,0 +1,13 @@
+{
+  "id": "Request",
+  "name": "Создание формы заявок",
+  "systemTable": "Request",
+  "fields": [
+    {
+      "fieldId": "fields",
+      "name": "fields",
+      "format": "input"
+    }
+  ],
+  "bodyModifiers": []
+}

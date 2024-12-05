@@ -39,6 +39,8 @@ import VFileUploader from '../VFileUploader.vue';
 import VFormEditorCheckbox from './VFormEditorCheckbox.vue'
 import VFormEditorConst from './VFormEditorConst.vue';
 import VFormEditorSubitems from '../VFormEditorSubitems.vue';
+import VGeoPicker from '../VGeoPicker.vue';
+import VListInput from '../VListInput.vue';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -56,6 +58,8 @@ const component = computed(() => {
   if (props.item.format === "file" || props.item.format === "files-group") return VFileUploader
   if (props.item.format === "checkbox") return VFormEditorCheckbox
   if (props.item.format === "subitems") return VFormEditorSubitems
+  if (props.item.format === "geo") return VGeoPicker
+  if (props.item.format === "listInput") return VListInput
   return VInput
 })
 
@@ -99,6 +103,11 @@ const additionalProps = computed(() => {
   if (props.item.format === 'subitems') {
     return {
       columns: props.item.columns
+    }
+  }
+  if (props.item.format === 'geo') {
+    return {
+      initialLatLng: props.item.initialLatLng
     }
   }
   return { 
