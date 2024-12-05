@@ -63,7 +63,7 @@ const component = computed(() => {
   if (props.item.format === "geo") return VGeoPicker
   if (props.item.format === "listInput") return VListInput
   if (props.item.format === "jsonInput") return VInputJson
-  if (props.item.format === "jsonList") return VJsonListEditor
+  if (props.item.format === "jsonList") return VFormEditorSubitems
   return VInput
 })
 
@@ -105,6 +105,11 @@ const additionalProps = computed(() => {
     }
   }
   if (props.item.format === 'subitems') {
+    return {
+      columns: props.item.columns
+    }
+  }
+  if (props.item.format === "jsonList") {
     return {
       columns: props.item.columns
     }

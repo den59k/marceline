@@ -1,8 +1,11 @@
 <template>
-  <div class="list-editor">
+  <div class="list-editor" >
     <div v-if="props.label" class="list-editor__title">{{ props.label }}</div>
-    <div v-for="(item, index) in values" class="list-editor__item">
-      <VIconButton icon="dots" class="move-button"/>
+    <div 
+      v-for="(item, index) in values" 
+      class="list-editor__item"
+    >
+      <VIconButton icon="dots" class="move-button" @mousedown="onItemMouseDown($event, index)"/>
       <slot name="item" :item="item" :index="index">{{ item }}</slot>
       <VIconButton icon="close" class="delete-button" @click="deleteItem(index)"/>
     </div>
@@ -27,6 +30,7 @@ import VIcon from './VIcon.vue';
 import VPopover from './VPopover.vue';
 import { Ref, ref } from 'vue';
 import VIconButton from './VIconButton.vue';
+import { handleMove, useDraggableItem } from 'vuesix';
 
 const props = defineProps<{ label?: string, modelValue?: T[], addLabel?: string, items?: T[], defaultItem?: T }>()
 const emit = defineEmits([ "update:modelValue" ])
@@ -52,6 +56,53 @@ const deleteItem = (index: number) => {
   values.value.splice(index, 1)
 }
 
+const onItemMouseDown = (e: MouseEvent, index: number) => {
+  const item = (e.currentTarget as HTMLElement).parentElement!
+  const container = item.parentElement!
+    
+  const rects = Array.from(container.querySelectorAll(".list-editor__item")).map(item => item.getBoundingClientRect())
+  const rect = item.getBoundingClientRect()
+  const offset = { left: rect.left - e.clientX, top: rect.top - e.clientY }
+  const width = item.clientWidth
+
+  let clonedItem: HTMLElement | null = null
+  handleMove(e, {
+    onMove({ pos, startPos }){ 
+      if (!clonedItem && Math.abs(pos.y - startPos.y) > 2){ 
+        item.style.visibility = "hidden"
+        clonedItem = item.cloneNode(true) as HTMLElement
+        clonedItem.setAttribute("style", "position: fixed; pointer-events: none;")
+        container.append(clonedItem)
+      }
+      clonedItem?.setAttribute(
+        "style", 
+        `position: fixed; top: ${pos.y + offset.top}px; left: ${pos.x + offset.left}px; width: ${width}px; pointer-events: none;`
+      )
+    },
+    onEnd({ pos }) {
+      let targetIndex = 0
+      for (let i = 0; i < rects.length; i++) {
+        if (rects[i].top > pos.y+offset.top) {
+          break
+        }
+        targetIndex++
+      }
+      item.style.visibility = ""
+      clonedItem?.remove()
+      if (targetIndex === index || targetIndex === index+1) {
+        return
+      }
+      const entry = values.value[index]
+      values.value.splice(index, 1)
+      if (targetIndex > index) {
+        targetIndex--
+      }
+      values.value.splice(targetIndex, 0, entry)
+    },
+    type: "absolute"
+  })
+}
+
 </script>
 
 <style lang="sass">
@@ -59,6 +110,7 @@ const deleteItem = (index: number) => {
   display: flex
   flex-direction: column
   gap: 8px
+  position: relative
 
 .list-editor__title
   font-size: 12px
@@ -90,6 +142,9 @@ const deleteItem = (index: number) => {
     width: 32px
     height: 32px
     margin-right: 2px
+
+  &.move
+    position: absolute
 
 .list-editor__add-button
   background: none

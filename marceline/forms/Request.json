@@ -10,8 +10,14 @@
       "modifiers": [],
       "columns": [
         {
-          "fieldId": "weqqwe",
+          "fieldId": "name",
+          "type": "input",
+          "enabled": true
+        },
+        {
+          "fieldId": "type",
           "type": "select",
+          "enabled": true,
           "enum": [
             {
               "id": "input",

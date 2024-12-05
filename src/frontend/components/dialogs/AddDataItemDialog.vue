@@ -71,6 +71,7 @@ addFormComponent("checkbox", VCheckbox)
 addFormComponent("subitems", VFormEditorSubitems)
 addFormComponent("geo", VGeoPicker)
 addFormComponent("listInput", VListInput)
+addFormComponent("jsonList", VFormEditorSubitems)
 
 </script>
 

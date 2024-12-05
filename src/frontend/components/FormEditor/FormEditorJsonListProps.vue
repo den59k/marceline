@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts" setup>
-import { watch } from 'vue';
 import ListEditor from '../ListEditor.vue';
 import VSelect from '../VSelect.vue';
 import FormEditorEnumValues from './FormEditorEnumValues.vue';
@@ -35,7 +34,7 @@ if (!props.modelValue) {
   emit("update:modelValue", model.value)
 }
 
-const defaultItem = { fieldId: "", type: "" }
+const defaultItem = { fieldId: "", type: "", enabled: true }
 
 const arrayInputTypes = [
   { id: "input", title: "Строка" },

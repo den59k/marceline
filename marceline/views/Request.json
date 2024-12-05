@@ -2,7 +2,22 @@
   "id": "Request",
   "name": "Формы заявок",
   "systemTable": "Request",
-  "columns": [],
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id",
+      "formula": "",
+      "size": "60px"
+    },
+    {
+      "name": "Форма",
+      "format": "string",
+      "systemColumn": "fields",
+      "formula": "",
+      "size": null
+    }
+  ],
   "data": {
     "create": {
       "enabled": true,

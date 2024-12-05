@@ -7,7 +7,8 @@
           <VIconButton icon="close" class="remove-item-button" @click="deleteItem(item)"/>
         </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
-          <input v-model="item[column.fieldId]" />
+          <VSelect v-if="column.type === 'select'" :items="column.enum!" />
+          <input v-else v-model="item[column.fieldId]" />
         </template>
       </VTable>
       <slot name="end-adornment"></slot>
@@ -23,20 +24,22 @@ import VFormControl from './VFormControl.vue';
 import VTable from './VTable.vue';
 import { useVModel } from '@vueuse/core';
 import VIconButton from './VIconButton.vue';
+import VSelect from './VSelect.vue';
 
-const props = defineProps<{ modelValue?: any[], columns?: Array<{ fieldId: string, name: string, enabled: boolean }> }>()
+type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean }
+const props = defineProps<{ modelValue?: any[], columns?: Item[] }>()
 const emit = defineEmits([ "update:modelValue" ])
 
-const data = useVModel(props, "modelValue", emit)
+const data = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] })
 
 const columns = computed<Record<string, any>>(() => {
   if (!props.columns) return []
   const columns: [ string, any ][] = props.columns
-    .filter(item => !!item.enabled)
+    .filter(item => item.enabled)
     .map(field => [
       field.fieldId,
       {
-        title: field.name,
+        title: field.fieldId ?? field.name,
         sortable: false
       }
     ])
@@ -62,6 +65,9 @@ const addItem = () => {
   ]))
   arr.push(obj)
   data.value = arr
+  if (!props.modelValue) {
+    emit("update:modelValue", data.value)
+  }
 
   nextTick(() => {
     const items = Array.from(containerRef.value?.querySelectorAll("input") ?? [])
@@ -104,6 +110,17 @@ const deleteItem = (item: any) => {
 
       &:focus
         box-shadow: 0 0 0 1px var(--primary-color)
+
+    .v-select
+      width: 100%
+      height: 100%
+      .v-form-control__outline
+        border: none
+        height: 100%
+
+      .v-select__activator.opened
+        box-shadow: 0 0 0 1px var(--primary-color)
+
 
   .v-table__row>div
     padding: 0
