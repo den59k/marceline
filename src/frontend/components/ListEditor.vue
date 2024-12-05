@@ -6,15 +6,18 @@
       <slot name="item" :item="item" :index="index">{{ item }}</slot>
       <VIconButton icon="close" class="delete-button" @click="deleteItem(index)"/>
     </div>
-    <VPopover v-model:open="popoverOpen" placement="bottom-start" fit-anchor class="list-editor__add-item-popover">
+    <VPopover v-if="props.items" v-model:open="popoverOpen" placement="bottom-start" fit-anchor class="list-editor__add-item-popover">
       <template #activator="{ props: activatorProps }">
         <button v-bind="activatorProps" class="list-editor__add-button">
           <VIcon icon="add"/> {{ props.addLabel ?? "Добавить" }}
         </button>
       </template>
       <button v-for="item in props.items" @click="addItem(item as T)">{{ item }}</button>
-      <div v-if="items.length === 0" class="v-select__empty-label">Нет доступных элементов</div>
+      <div v-if="props.items.length === 0" class="v-select__empty-label">Нет доступных элементов</div>
     </VPopover>
+    <button v-else class="list-editor__add-button" @click="addItem(props.defaultItem!)">
+      <VIcon icon="add"/> {{ props.addLabel ?? "Добавить" }}
+    </button>
   </div>
 </template>
 
@@ -25,10 +28,10 @@ import VPopover from './VPopover.vue';
 import { Ref, ref } from 'vue';
 import VIconButton from './VIconButton.vue';
 
-const props = defineProps<{ label?: string, modelValue?: T[], addLabel?: string, items: T[] }>()
+const props = defineProps<{ label?: string, modelValue?: T[], addLabel?: string, items?: T[], defaultItem?: T }>()
 const emit = defineEmits([ "update:modelValue" ])
 
-const values = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] }) as Ref<T[]>
+const values = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] as any }) as Ref<T[]>
 
 const popoverOpen = ref(false)
 const addItem = (item: T) => {

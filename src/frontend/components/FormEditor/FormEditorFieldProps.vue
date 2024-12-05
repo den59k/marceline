@@ -28,6 +28,7 @@
         <VInput label="Название поля" v-model="props.item.name"/>
         <VInput label="Placeholder" v-model="props.item.placeholder"/>
       </template>
+      <FormEditorJsonListProps v-if="props.item.format === 'jsonList'" v-model="props.item.columns" />
       <VInput 
         v-if="props.item.format === 'geo'"
         label="Начальные координаты"
@@ -67,6 +68,7 @@ import { useRequest } from 'vuesix';
 import { utilsApi } from '../../api/utils';
 import VCheckbox from '../VCheckbox.vue';
 import FormEditorTableValues from './FormEditorTableValues.vue';
+import FormEditorJsonListProps from './FormEditorJsonListProps.vue';
 
 const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[], systemTable: string }>()
 
@@ -149,6 +151,13 @@ export const getFormats = (item: Field) => {
     return [
       { id: "checkbox", title: "Чекбокс" },
       { id: 'const', title: "Константное значение" },
+    ]
+  }
+
+  if (item.type === "Json") {
+    return [
+      { id: "jsonInput", title: "Ввод JSON" },
+      { id: "jsonList", title: "Редактор массива" }
     ]
   }
 

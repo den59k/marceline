@@ -41,6 +41,8 @@ import VFormEditorConst from './VFormEditorConst.vue';
 import VFormEditorSubitems from '../VFormEditorSubitems.vue';
 import VGeoPicker from '../VGeoPicker.vue';
 import VListInput from '../VListInput.vue';
+import VInputJson from '../VInputJson.vue';
+import VJsonListEditor from '../VJsonListEditor.vue';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -60,6 +62,8 @@ const component = computed(() => {
   if (props.item.format === "subitems") return VFormEditorSubitems
   if (props.item.format === "geo") return VGeoPicker
   if (props.item.format === "listInput") return VListInput
+  if (props.item.format === "jsonInput") return VInputJson
+  if (props.item.format === "jsonList") return VJsonListEditor
   return VInput
 })
 

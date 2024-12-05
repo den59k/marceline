@@ -6,7 +6,20 @@
     {
       "fieldId": "fields",
       "name": "fields",
-      "format": "input"
+      "format": "jsonList",
+      "modifiers": [],
+      "columns": [
+        {
+          "fieldId": "weqqwe",
+          "type": "select",
+          "enum": [
+            {
+              "id": "input",
+              "title": "Строка ввода"
+            }
+          ]
+        }
+      ]
     }
   ],
   "bodyModifiers": []

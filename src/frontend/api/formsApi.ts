@@ -26,7 +26,7 @@ export type FormItem = {
   multiple?: boolean,
   value?: any,
   children?: FormItem[]
-  columns?: Array<{ fieldId: string, name: string, enabled: boolean }>
+  columns?: Array<{ fieldId: string, name: string, type: string, enum?: { id: string, title: string }[], enabled: boolean }>
 }
 
 export const formsApi = {
