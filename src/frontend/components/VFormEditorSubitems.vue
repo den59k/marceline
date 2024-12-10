@@ -7,7 +7,7 @@
           <VIconButton icon="close" class="remove-item-button" @click="deleteItem(item)"/>
         </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
-          <VSelect v-if="column.type === 'select'" :items="column.enum!" />
+          <VSelect v-if="column.type === 'select'" v-model="item[column.fieldId]" :items="column.enum!" />
           <input v-else v-model="item[column.fieldId]" />
         </template>
       </VTable>
