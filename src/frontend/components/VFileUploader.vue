@@ -1,6 +1,6 @@
 <template>
   <VFormControl v-bind="pickProps(props)" class="v-image-uploader" @drop="onDrop">
-    <VIconButton v-if="props.preview" class="v-image-uploader__delete-button" icon="delete" @click="deleteImage" />
+    <VIconButton v-if="!props.multiple && files.length > 0" class="v-image-uploader__delete-button" icon="delete" @click="deleteFile" />
     <div class="v-form-control__outline v-image-uploader__drop-zone" :class="{ drag }" @dragover="onDragOver" @dragleave="onDragLeave">
       <template v-if="drag">
         <img :src="icon" height="28" alt="empty-file-icon" >
@@ -8,9 +8,9 @@
           Отпустите файл здесь
         </div>
       </template>
-      <template v-else-if="props.preview && typeof props.preview === 'string'">
-        <img :src="props.preview" class="v-file-uploader__preview" :class="{ temp: progress !== null }">
-        <VSpinner v-if="(typeof progress === 'number')" :progress="progress" :radius="20" :width="4"/>
+      <template v-else-if="!props.multiple && files.length > 0">
+        <img :src="files[0].src" class="v-file-uploader__preview" :class="{ temp: typeof files[0].progress === 'number' }">
+        <VSpinner v-if="(typeof files[0].progress === 'number')" :progress="files[0].progress" :radius="20" :width="4"/>
       </template>
       <template v-else>
         <slot :icon="icon" :openDialog="fileDialog.open">
@@ -25,26 +25,44 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 import lightIcon from '../assets/images/emptyFile.svg'
 import darkIcon from '../assets/images/emptyFileDark.svg'
 import VFormControl, { pickProps, VFormControlProps } from './VFormControl.vue';
 import VIconButton from './VIconButton.vue';
 import VButton from './VButton.vue';
+import VSpinner from './VSpinner.vue';
+import { utilsApi } from '../api/utils';
 
 const props = defineProps<{ 
-  modelValue?: string,
+  modelValue?: FileEntry | FileEntry[],
   accept?: string, 
   placeholder?: string,
-  preview?: string,
-  progress?: number | null
+  multiple?: boolean
 } & VFormControlProps>()
 const emit = defineEmits([ "loadfile", "deletefile", "update:modelValue" ])
 
-const addFile = async (file: File) => {
-  emit("loadfile", file)
+type FileEntry = { src: string, file: File, progress?: number, error?: string }
+const files = reactive<FileEntry[]>([])
+
+const addFile = (file: File) => {
+  const src = URL.createObjectURL(file)
+  const obj = reactive<FileEntry>({ src, file, progress: 0 })
+  files.push(obj) 
+
+  utilsApi.uploadFile(file, {
+    headers: { "x-file-name": file.name },
+    onProgress(percent) { obj.progress = percent }
+  })
+  .then(() => {
+    obj.progress = undefined
+  })
+  .catch(() => {
+    obj.error = "An error ocurred"
+  })
 }
+
 
 const drag = ref(false)
 const onDragOver = (e: DragEvent) => {
@@ -70,9 +88,9 @@ const onDrop = (e: DragEvent) => {
   }
 }
 
-const deleteImage = () => {
+const deleteFile = () => {
   emit("update:modelValue", null)
-  emit("deletefile", null)
+  files.length = 0
 }
 
 const fileDialog = useFileDialog({

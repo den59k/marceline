@@ -1,5 +1,5 @@
 <template>
-  <div class="v-dialog scroll" role="dialog">
+  <div class="v-dialog with-scrollbar" role="dialog">
     <div v-if="slots.header" class="v-dialog__header">
       <slot name="header"></slot>
       <VIconButton icon="close" class="close-icon" @click="dialogStore.close"></VIconButton>

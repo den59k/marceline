@@ -14,7 +14,9 @@ export type Options = {
     onRequest: onRequestHookHandler
   },
   files?: {
-    systemTable: TableName
+    systemTable?: TableName
+    filesDir?: string,
+    prefix?: string
   }
 }
 
@@ -49,7 +51,7 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
   for (let route of Object.values(routes)) {
     if (typeof route.default !== "function") continue
-    await fastify.register(route, { prefix: "/api/admin", onRequest: options.auth?.onRequest })
+    await fastify.register(route, { prefix: "/api/admin", onRequest: options.auth?.onRequest, files: options.files })
   }  
   
   const registerHook = (type: HookType, name: string, hook: Hook, options: AddHookSettings = {}) => {

@@ -1,4 +1,4 @@
-import { request } from "./request";
+import { request, sendXHR, XhrOptions } from "./request";
 
 type PrismaField = {
   kind: string
@@ -17,5 +17,6 @@ type PrismaModels = {
 
 export const utilsApi = {
   getModels: () => request<PrismaModels>("/api/admin/tables"),
-  getHooks: () => request("/api/admin/hooks")
+  getHooks: () => request("/api/admin/hooks"),
+  uploadFile: (file: File, options?: XhrOptions) => sendXHR("/api/admin/upload-file", file, options)
 }

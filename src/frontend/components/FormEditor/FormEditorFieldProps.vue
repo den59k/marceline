@@ -35,11 +35,6 @@
         v-model="props.item.initialLatLng"
         placeholder="55.76, 37.64"
       />
-      <VInput 
-        v-if="props.item.format === 'file' || props.item.format === 'files-group'" 
-        label="Поле для файла" 
-        v-model="props.item.fileField" 
-      />
       <VSelect
         v-if="props.item.isCustom"
         v-model="customFieldValue"
@@ -132,6 +127,7 @@ export const getFormats = (item: Field) => {
     return [
       { id: "listInput", title: "Ввод значений" },
       { id: "listSelect", title: "Выбор из вариантов" },
+      { id: "files-group", title: "Загрузка файлов" }
     ]
   }
 

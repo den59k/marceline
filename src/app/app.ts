@@ -27,7 +27,9 @@ export const createApp = async (opts?: FastifyServerOptions) => {
       onRequest: useAdminAuth
     },
     files: {
-      systemTable: "file"
+      systemTable: "file",
+      filesDir: "uploads",
+      prefix: "/uploads"
     }
   })
 

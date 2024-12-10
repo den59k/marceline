@@ -77,18 +77,24 @@ export const request = async <T = any>(url: string, body?: any, options: Options
 
 export type XhrOptions = { 
   method?: string,
+  headers?: Record<string, string>
   onProgress?: (percent: number) => void,
   responseType?: XMLHttpRequestResponseType,
   fileSize?: number,
   cancelationToken?: CancelationToken
 }
 
-export const sendXHR = (url: string, body: FormData, { method, onProgress, cancelationToken }: XhrOptions = {}) => {
+export const sendXHR = (url: string, body: FormData | File, { method, onProgress, cancelationToken, headers }: XhrOptions = {}) => {
   const xhr = new XMLHttpRequest()
   xhr.open(method || "POST", url)
 
   if (jwt) {
     xhr.setRequestHeader("Authorization", "Bearer "+jwt)
+  }
+  if (headers) {
+    for (let [key, value] of Object.entries(headers)) {
+      xhr.setRequestHeader(key, value)
+    }
   }
 
   xhr.responseType = "json"

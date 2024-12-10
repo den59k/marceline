@@ -28,13 +28,14 @@ model User {
   email             String              @unique
   password          Bytes
   type              UserType            @default(reader)
-  files             File[]
+  fileIds           String[]            @default([])
   chats             UserChat[]
   additionalInfo    UserAdditionalInfo?
   location          String?
   features          String[]            @default([])
   deleted           Boolean             @default(false)
 }
+
 
 model UserAdditionalInfo {
   id                Int                 @id @default(autoincrement())
@@ -90,6 +91,4 @@ model File {
   src               String
   previewSrc        String?
   size              Int
-  authorId          Int
-  author            User               @relation(fields: [authorId], references: [id])
 }

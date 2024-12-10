@@ -44,10 +44,10 @@
       ]
     },
     {
-      "fieldId": "files",
-      "name": "Файлы",
-      "format": "multiselect",
-      "relationType": "File"
+      "fieldId": "fileIds",
+      "name": "Фотографии",
+      "format": "files-group",
+      "fileField": ""
     },
     {
       "fieldId": "features",

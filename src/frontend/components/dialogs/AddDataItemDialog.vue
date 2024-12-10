@@ -72,6 +72,7 @@ addFormComponent("subitems", VFormEditorSubitems)
 addFormComponent("geo", VGeoPicker)
 addFormComponent("listInput", VListInput)
 addFormComponent("jsonList", VFormEditorSubitems)
+addFormComponent("files-group", VFileUploader)
 
 </script>
 
