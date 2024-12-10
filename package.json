@@ -1,6 +1,6 @@
 {
   "name": "marceline",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
@@ -26,8 +26,10 @@
     "@vitejs/plugin-vue": "^5.1.2",
     "@vueuse/core": "^10.11.1",
     "builtin-modules": "^4.0.0",
+    "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
+    "fastify-plugin": "^4.5.1",
     "jwt-runner": "^0.0.2",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
@@ -42,9 +44,7 @@
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.28",
-    "dayjs": "^1.11.12",
-    "fastify-plugin": "^4.5.1"
+    "vuesix": "^1.0.28"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",
