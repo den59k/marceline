@@ -188,9 +188,12 @@ const availableFields = computed(() => {
 
 const usedKeys = computed(() => {
   const keys: string[] = []
-  traverseFormFields(state.value, (formItem: any) => {
+  traverseFormFields(state.value, (formItem: FormItem) => {
     if (!formItem.fieldId) return
     keys.push(formItem.fieldId)
+    if (formItem.fileIdField) {
+      keys.push(formItem.fileIdField)
+    }
   })
   return keys
 })

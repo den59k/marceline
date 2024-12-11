@@ -27,7 +27,7 @@ export type FormField = {
   fieldId?: string,
   name?: string, 
   placeholder?: string,
-  fileField?: string,
+  fileIdField?: string,
   jsonField?: string,
   isCustom?: boolean,
   children?: FormField[],

@@ -15,11 +15,17 @@
       <template v-else>
         <slot :icon="icon" :openDialog="fileDialog.open">
           <img :src="icon" height="28" alt="empty-file-icon" >
-          {{ props.placeholder ?? "Перетащите файл сюда" }}
-          <VButton @click="fileDialog.open">Загрузить файл</VButton>
+          {{ props.placeholder ?? (props.multiple? "Перетащите файлы сюда": "Перетащите файл сюда") }}
+          <VButton @click="fileDialog.open">{{props.multiple? "Загрузить файлы": "Загрузить файл"}}</VButton>
         </slot>
         </template>
       <slot name="end-adornment"></slot>
+    </div>
+    <div v-if="props.multiple" class="v-image-uploader__files-row">
+      <div v-for="item in files" class="v-image-uploader__files-row-item" :class="{ temp: typeof item.progress === 'number' }"> 
+        <img :src="item.src" alt="Image"/>
+        <VIconButton icon="close" @click="deleteFileItem(item)"/>
+      </div>
     </div>
   </VFormControl>
 </template>
@@ -41,21 +47,22 @@ const props = defineProps<{
   placeholder?: string,
   multiple?: boolean
 } & VFormControlProps>()
-const emit = defineEmits([ "loadfile", "deletefile", "update:modelValue" ])
+const emit = defineEmits([ "update:modelValue" ])
 
-type FileEntry = { src: string, file: File, progress?: number, error?: string }
+type FileEntry = { id?: string, src: string, progress?: number, error?: string }
 const files = reactive<FileEntry[]>([])
 
 const addFile = (file: File) => {
   const src = URL.createObjectURL(file)
-  const obj = reactive<FileEntry>({ src, file, progress: 0 })
+  const obj = reactive<FileEntry>({ src, progress: 0 })
   files.push(obj) 
 
   utilsApi.uploadFile(file, {
     headers: { "x-file-name": file.name },
     onProgress(percent) { obj.progress = percent }
   })
-  .then(() => {
+  .then((_obj) => {
+    obj.id = _obj.id 
     obj.progress = undefined
   })
   .catch(() => {
@@ -63,6 +70,28 @@ const addFile = (file: File) => {
   })
 }
 
+let skipUpdate = false
+watch(() => props.modelValue, () => {
+  if (!props.modelValue) return
+  if (props.modelValue === files || props.modelValue === files[0]) return
+  skipUpdate = true
+  files.length = 0
+  for (let item of Array.isArray(props.modelValue)? props.modelValue: [props.modelValue]) {
+    files.push(item)
+  }
+}, { immediate: true })
+
+watch(files, () => {
+  if (skipUpdate) {
+    skipUpdate = false
+    return
+  }
+  if (props.multiple) {
+    emit("update:modelValue", files)
+  } else {
+    emit("update:modelValue", files[0] ?? null)
+  }
+})
 
 const drag = ref(false)
 const onDragOver = (e: DragEvent) => {
@@ -91,6 +120,12 @@ const onDrop = (e: DragEvent) => {
 const deleteFile = () => {
   emit("update:modelValue", null)
   files.length = 0
+}
+
+const deleteFileItem = (item: FileEntry) => {
+  const index = files.indexOf(item)
+  if (index < 0) return
+  files.splice(index, 1)
 }
 
 const fileDialog = useFileDialog({
@@ -156,4 +191,39 @@ button.v-image-uploader__delete-button
 
   &.temp
     opacity: 0.6
+
+.v-image-uploader__files-row
+  display: flex
+  gap: 8px
+  margin-top: 16px
+  
+.v-image-uploader__files-row-item
+  width: 60px
+  height: 60px
+  position: relative
+  img
+    width: 100%
+    height: 100%
+    display: block
+    object-fit: contain
+
+  &.temp
+    img
+      opacity: 0.6
+  
+  .v-icon-button
+    position: absolute
+    top: -4px
+    right: -4px
+    background-color: var(--paper-color)
+    width: 22px
+    height: 22px
+
+    svg 
+      width: 16px
+      height: 16px
+
+    &:hover
+      background-color: var(--primary-color)
+
 </style>

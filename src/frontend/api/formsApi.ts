@@ -15,7 +15,7 @@ export type FormItem = {
   name?: string, 
   initialLatLng?: string,
   placeholder?: string,
-  fileField?: string,
+  fileIdField?: string,
   jsonField?: string,
   isCustom?: boolean,
   modifiers?: string[],

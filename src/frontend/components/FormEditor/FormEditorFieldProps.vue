@@ -28,6 +28,12 @@
         <VInput label="Название поля" v-model="props.item.name"/>
         <VInput label="Placeholder" v-model="props.item.placeholder"/>
       </template>
+      <VSelect 
+        v-if="props.item.format === 'file' || props.item.format === 'files-group'"
+        v-model="props.item.fileIdField"
+        label="Поле для ID файлов"
+        :items="suitableFileIdFields"
+      />
       <FormEditorJsonListProps v-if="props.item.format === 'jsonList'" v-model="props.item.columns" />
       <VInput 
         v-if="props.item.format === 'geo'"
@@ -36,7 +42,7 @@
         placeholder="55.76, 37.64"
       />
       <VSelect
-        v-if="props.item.isCustom"
+        v-if="props.item.isCustom && props.item.format !== 'file' && props.item.format !== 'files-group'"
         v-model="customFieldValue"
         :items="customFieldItems"
         label="Действие для кастомного поля"
@@ -100,6 +106,23 @@ const customFieldValue = computed({
   }
 })
 
+const suitableFileIdFields = computed(() => {
+  if (!props.item || (props.item.format !== "file" && props.item.format !== "files-group")) return []
+  const arr: { id: string, title: string }[] = []
+  for (let [key, value] of props.fieldsMap) {
+    if (props.item.format === "files-group") {
+      if (value.isList && value.kind === "scalar" && value.type === "String") {
+        arr.push({ id: key, title: key })
+      }
+    } else {
+      if (value.kind === "scalar" && value.type === "String") {
+        arr.push({ id: key, title: key })
+      }
+    }
+  }
+  return arr
+})
+
 const { data: hooksData } = useRequest(utilsApi.getHooks)
 const fieldModifiers = computed(() => {
   if (!hooksData.value) return []
@@ -154,6 +177,21 @@ export const getFormats = (item: Field) => {
     return [
       { id: "jsonInput", title: "Ввод JSON" },
       { id: "jsonList", title: "Редактор массива" }
+    ]
+  }
+  
+  if (item.type === "custom") {
+    return [ 
+      { id: "input", title: "Поле ввода" },
+      { id: "password", title: "Скрытое поле" },
+      { id: "multiline", title: "Область текста" },
+      { id: "select", title: "Выбор из вариантов" },
+      { id: 'const', title: "Константное значение" },
+      { id: "geo", title: "Точка на карте" },
+      { id: "checkbox", title: "Чекбокс" },
+      { id: "inputNumber", title: "Поле ввода числа" },
+      { id: "file", title: "Загрузка файла" },
+      { id: "files-group", title: "Загрузка нескольких файлов" }
     ]
   }
 

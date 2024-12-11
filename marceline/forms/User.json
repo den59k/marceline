@@ -29,6 +29,24 @@
     {
       "children": [
         {
+          "fieldId": "avatar",
+          "name": "Аватар",
+          "format": "file",
+          "isCustom": true,
+          "fileIdField": "avatarId"
+        },
+        {
+          "fieldId": "files",
+          "name": "Ещё фотографии",
+          "format": "files-group",
+          "isCustom": true,
+          "fileIdField": "fileIds"
+        }
+      ]
+    },
+    {
+      "children": [
+        {
           "fieldId": "email",
           "name": "email",
           "format": "input"
@@ -42,12 +60,6 @@
           ]
         }
       ]
-    },
-    {
-      "fieldId": "fileIds",
-      "name": "Фотографии",
-      "format": "files-group",
-      "fileField": ""
     },
     {
       "fieldId": "features",

@@ -46,15 +46,17 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
       continue
     }
 
+    if (item.fileIdField && item.fieldId in body) {
+      if (item.format === "files-group") {
+        _body[item.fileIdField] = body[item.fieldId].map((item: any) => item.id)
+      } else {
+        _body[item.fileIdField] = body[item.fieldId]?.id ?? null
+      }
+      continue
+    }
+
     if (item.fieldId in body) {
       _body[item.aliasFieldId ?? item.fieldId] = value
-    }
-    if (item.fileField && item.fileField in body) {
-      if (item.format === "files-group") {
-        _body[item.fieldId] = body[item.fileField].map((item: any) => item.id)
-      } else {
-        _body[item.fieldId] = body[item.fileField]?.id ?? null
-      }
     }
   }
 

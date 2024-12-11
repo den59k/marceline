@@ -1,9 +1,9 @@
 import { sc, schema, SchemaType } from "compact-json-schema";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { generateSelect } from "../utils/generateSelect";
+import { attachFiles, generateSelect } from "../utils/generateSelect";
 import { parseBody, traverseFormFields } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
-import { Form, View } from "../types";
+import { Form, FormField, View } from "../types";
 import { Prisma } from "@prisma/client";
 
 interface FastifyRequestExt extends FastifyRequest {
@@ -12,7 +12,7 @@ interface FastifyRequestExt extends FastifyRequest {
 
 const PAGE_SIZE = 20
 
-export default async (fastify: FastifyInstance, { onRequest }: any) => {
+export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
 
   if (onRequest) {
     fastify.addHook("onRequest", onRequest)
@@ -32,6 +32,16 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
     req.view = view
   })
 
+  const filesReg = /file/i
+  const systemTable = files?.systemTable?.toLowerCase()
+  const filesTable = Prisma.dmmf.datamodel.models.find(item => {
+    if (systemTable) {
+      return item.name.toLowerCase() === systemTable
+    } else {
+      return filesReg.test(item.name)
+    }
+  })
+
   const getDataQuery = schema({ page: "number?" })
   /** Get data */
   fastify.get("/data/:viewId/items", sc(params, getDataQuery, "query"), async (_req, reply) => {
@@ -48,6 +58,8 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
 
     const postCallbacks: ((item: any) => void)[] = []
     const select = generateSelect(req.view.columns, postCallbacks)
+    const fileFields: FormField[] = []
+
     if (editForm) {
       traverseFormFields(editForm.fields, (field) => {
         if (field.jsonField) {
@@ -57,8 +69,8 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
             select: Object.fromEntries(field.columns.map(item => [ item.fieldId, true ]))
           }
         } else if (field.fieldId && field.relationBridgeFieldId) {
-          const table = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
-          const keys = [ "name", "surname", "email", "id", "uuid" ].filter(fieldId => table.fields.find(item => item.name === fieldId))
+          const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
+          const keys = [ "name", "surname", "email", "id", "uuid" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
           select[field.fieldId] = {
             select: { 
               [field.relationBridgeFieldId]: {
@@ -72,6 +84,9 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
           })
         } else if (field.aliasFieldId) {
           select[field.aliasFieldId] = true 
+        } else if (field.fileIdField) {
+          select[field.fileIdField] = true
+          fileFields.push(field)
         } else if (field.fieldId && field.format !== 'password') {
           select[field.fieldId] = true
         }
@@ -89,6 +104,10 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       take: PAGE_SIZE,
       skip: (page ?? 0) * PAGE_SIZE
     })
+
+    if (fileFields.length > 0 && filesTable) {
+      await attachFiles((fastify as any).prisma, filesTable.name, resp, fileFields as any[])
+    }
     
     const totalItems = await (fastify as any).prisma[req.view.systemTable].count({ 
     })

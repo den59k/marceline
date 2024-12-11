@@ -28,6 +28,7 @@ model User {
   email             String              @unique
   password          Bytes
   type              UserType            @default(reader)
+  avatarId          String?
   fileIds           String[]            @default([])
   chats             UserChat[]
   additionalInfo    UserAdditionalInfo?

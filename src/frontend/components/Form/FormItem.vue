@@ -65,24 +65,29 @@ const additionalProps = computed(() => {
       }
     }
   }
-  if (props.item.format === 'file' && props.item.fileField) {
-    const obj = props.modelValue[props.item.fileField!]
-    return { 
-      onLoadfile(file: File) { 
-        props.modelValue[props.item.fileField!] = { 
-          file: markRaw(file), 
-          previewSrc: URL.createObjectURL(file), 
-          fieldId: props.item.fieldId,
-          progress: null
-        }
-      },
-      onDeletefile() {
-        delete props.modelValue[props.item.fileField!]
-      },
-      preview: obj?.previewSrc,
-      progress: obj?.progress
+  if (props.item.format === 'files-group') {
+    return {
+      multiple: true
     }
   }
+  // if (props.item.format === 'file' && props.item.fileField) {
+  //   const obj = props.modelValue[props.item.fileField!]
+  //   return { 
+  //     onLoadfile(file: File) { 
+  //       props.modelValue[props.item.fileField!] = { 
+  //         file: markRaw(file), 
+  //         previewSrc: URL.createObjectURL(file), 
+  //         fieldId: props.item.fieldId,
+  //         progress: null
+  //       }
+  //     },
+  //     onDeletefile() {
+  //       delete props.modelValue[props.item.fileField!]
+  //     },
+  //     preview: obj?.previewSrc,
+  //     progress: obj?.progress
+  //   }
+  // }
   if (props.item.format === 'subitems') {
     return {
       columns: props.item.columns

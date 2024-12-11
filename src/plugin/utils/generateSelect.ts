@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { ViewColumn } from "../types";
 
 type Select = Record<string, boolean | { select: Select, take?: number }>
@@ -33,4 +34,37 @@ export const generateSelect = (columns: ViewColumn[], postCallbacks: ((item: any
   }
 
   return targetObject
+}
+
+export const attachFiles = async (prisma: PrismaClient, filesTable: string, items: any, fileFields: { fileIdField: string, fieldId: string }[]) => {
+  const fileIds: string[] = []
+  for (let item of items) {
+    for (let field of fileFields) {
+      if (!item[field.fileIdField!]) continue
+      if (Array.isArray(item[field.fileIdField!])) {
+        fileIds.push(...item[field.fileIdField!])
+        item[field.fieldId!] = []
+      } else {
+        fileIds.push(item[field.fileIdField!])
+        item[field.fieldId!] = null
+      }
+    }
+  }
+  if (fileIds.length > 0) {
+    const files = await (prisma as any)[filesTable].findMany({
+      where: { id: { in: fileIds }}
+    })
+    const filesMap = new Map(files.map((item: any) => [ item.id, item ]))
+    for (let item of items) {
+      for (let field of fileFields) {
+        if (!item[field.fileIdField!]) continue
+        if (Array.isArray(item[field.fileIdField!])) {
+          item[field.fieldId!] = item[field.fileIdField!].map((item: string) => filesMap.get(item))
+        } else {
+          item[field.fieldId!] = filesMap.get(item[field.fileIdField!]) ?? null
+        }
+      }
+    }
+  }
+  
 }

@@ -5,6 +5,8 @@ import { marceline } from '../plugin/marceline'
 import { useAdminAuth } from './hooks/useAdminAuth'
 import { generateHash, generateAccessToken } from './utils/hashPassword'
 import { uid } from 'uid/secure'
+import fastifyStatic from '@fastify/static'
+import { join } from 'path'
 
 const plugins = import.meta.glob<any>('./plugins/**/*.ts', { eager: true })
 const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
@@ -18,7 +20,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
   }
 
   await app.register(fastifyMultipart, { limits: { fileSize: 1024 * 1024 * 200 }})
-
+  await app.register(fastifyStatic, { prefix: "/uploads/", root: join(process.cwd(), "uploads") })
   await app.register(marceline, { 
     root: "/",
     prisma: app.prisma,
