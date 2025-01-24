@@ -6,9 +6,13 @@
         <template #_remove="{ item }">
           <VIconButton icon="close" class="remove-item-button" @click="deleteItem(item)"/>
         </template>
+        <template #_sort="{ item }">
+          <VIcon icon="sort" />
+        </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
           <VSelect v-if="column.type === 'select'" v-model="item[column.fieldId]" :items="column.enum!" />
-          <input v-else v-model="item[column.fieldId]" />
+          <VCheckbox v-else-if="column.type === 'bool'" v-model="item[column.fieldId]"/>
+          <input v-else v-model="item[column.fieldId]"  />
         </template>
       </VTable>
       <slot name="end-adornment"></slot>
@@ -25,6 +29,9 @@ import VTable from './VTable.vue';
 import { useVModel } from '@vueuse/core';
 import VIconButton from './VIconButton.vue';
 import VSelect from './VSelect.vue';
+import VCheckbox from './VCheckbox.vue';
+import VIcon from './VIcon.vue';
+import { clamp, handleMove } from 'vuesix';
 
 type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean }
 const props = defineProps<{ modelValue?: any[], columns?: Item[] }>()
@@ -40,10 +47,19 @@ const columns = computed<Record<string, any>>(() => {
       field.fieldId,
       {
         title: field.fieldId ?? field.name,
-        sortable: false
+        sortable: false,
+        width: field.type === 'bool'? (Math.max(field.fieldId.length*9, 60)+'px'): undefined
       }
     ])
-  
+  columns.unshift([
+    "_sort",
+    {
+      columnProps: { class: "form-editor-subitems__sort-column", onMousedown: onMoveRow },
+      title: "",
+      sortable: false,
+      width: "36px"
+    }
+  ])
   columns.push([
     "_remove",
     {
@@ -56,12 +72,50 @@ const columns = computed<Record<string, any>>(() => {
   return Object.fromEntries(columns)
 })
 
+const onMoveRow = (e: MouseEvent) => {
+  const item = (e.currentTarget as HTMLElement).parentElement!
+  ;(window.document.activeElement as HTMLElement)?.blur()
+
+  const children = Array.from(item.parentElement!.children)
+  children.shift()
+  const index = children.indexOf(item)
+  const height = item.getBoundingClientRect().height
+  
+  handleMove(e, {
+    onMove({ pos, startPos }) {
+      item.classList.add("drag")
+
+      const delta = clamp(pos.y - startPos.y, -index * height, (children.length - index - 1) * height);
+      item.classList.add("move"),
+      item.style.transform = `translateY(${delta}px)`
+    },
+    onEnd({ pos, startPos }) {
+      let newIndex = clamp(Math.round(index + (pos.y - startPos.y) / height), 0, children.length);
+      item.classList.remove("drag")
+      item.style.transform = ""
+      if (newIndex !== index) {
+        const k = data.value![index];
+        data.value!.splice(index, 1),
+        data.value!.splice(newIndex, 0, k),
+        emit("update:modelValue", data.value!)
+      }
+    }
+  })
+}
+
+const getDefaultValue = (type?: string) => {
+  if (type === 'number') return 0
+  if (type === 'bool') return false
+  if (type === 'select') return null
+  return ""
+}
+
 const containerRef = ref<HTMLDivElement>()
 const addItem = () => {
   const arr = data.value ?? []
   const obj = Object.fromEntries((props.columns ?? [])?.filter(item => item.enabled).map(item => [
     item.fieldId,
-    ""
+    getDefaultValue(item.type)
   ]))
   arr.push(obj)
   data.value = arr
@@ -121,6 +175,8 @@ const deleteItem = (item: any) => {
       .v-select__activator.opened
         box-shadow: 0 0 0 1px var(--primary-color)
 
+    .v-checkbox
+      margin-left: 16px
 
   .v-table__row>div
     padding: 0
@@ -135,5 +191,15 @@ const deleteItem = (item: any) => {
 
   .v-table__header
     border-radius: 12px 12px 0 0
+
+.form-editor-subitems__sort-column
+  cursor: pointer
+  &:hover
+    background-color: var(--hover-color)
+  svg
+    width: 20px
+    height: 20px
+    margin-left: 8px
+    opacity: 0.4
 
 </style>

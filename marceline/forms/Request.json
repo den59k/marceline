@@ -24,6 +24,11 @@
               "title": "Строка ввода"
             }
           ]
+        },
+        {
+          "fieldId": "required",
+          "type": "bool",
+          "enabled": true
         }
       ]
     }

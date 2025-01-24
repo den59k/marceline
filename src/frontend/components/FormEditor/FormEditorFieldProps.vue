@@ -13,6 +13,7 @@
         :items="getFormats(activeFormItemField!)"
       />
       <VInput 
+        v-if="props.item.format === 'file' || props.item.format === 'file-group'"
         label="Поле accept"
         placeholder="image/*"
         :validator="val => val === ''? null: val"

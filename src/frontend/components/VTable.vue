@@ -221,6 +221,13 @@ export type Columns<T> = Record<string, Column<T>>
   padding: 0
   box-sizing: border-box
 
+  &.drag
+    background-color: var(--paper-color)
+    position: relative
+    z-index: 2
+    box-shadow: 0 2px 4px #0003
+    border-bottom: none
+
 button.v-table__row, a.v-table__row
   cursor: pointer
   &:hover

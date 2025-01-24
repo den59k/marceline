@@ -185,6 +185,7 @@ const resetValue = () => {
     align-items: center
     padding: 0 16px
     flex-shrink: 0
+    text-align: left
 
     &:hover
       background-color: var(--hover-color)
