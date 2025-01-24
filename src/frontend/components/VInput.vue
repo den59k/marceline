@@ -39,6 +39,7 @@ const props = defineProps<{
   name?: string,
   large?: boolean,
   maxLength?: number,
+  nullable?: boolean,
   validator?: (inputValue: string) => null | any
 } & VFormControlProps>()
 

@@ -24,6 +24,7 @@ export type FormItem = {
   relationBridgeFieldId?: string,
   aliasFieldId?: string,
   multiple?: boolean,
+  accept?: string,
   value?: any,
   children?: FormItem[]
   columns?: Array<{ fieldId: string, name: string, type: string, enum?: { id: string, title: string }[], enabled: boolean }>

@@ -12,6 +12,12 @@
         v-model="props.item.format" 
         :items="getFormats(activeFormItemField!)"
       />
+      <VInput 
+        label="Поле accept"
+        placeholder="image/*"
+        :validator="val => val === ''? null: val"
+        v-model="props.item.accept"
+      />
       <FormEditorEnumValues 
         v-if="props.item.format === 'select' && !props.item.relationType" 
         v-model="props.item.enum"

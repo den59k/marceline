@@ -9,14 +9,23 @@
         </div>
       </template>
       <template v-else-if="!props.multiple && files.length > 0">
-        <img :src="files[0].src" class="v-file-uploader__preview" :class="{ temp: typeof files[0].progress === 'number' }">
+        <img 
+          v-if="!props.accept || props.accept.startsWith('image')"
+           :src="files[0].src" 
+           class="v-file-uploader__preview" 
+           :class="{ temp: typeof files[0].progress === 'number' }"
+        />
+        <div v-else class="v-image-uploader__file-preview">
+          <VIcon icon="file" />
+          {{ files[0].name }}
+        </div>
         <VSpinner v-if="(typeof files[0].progress === 'number')" :progress="files[0].progress" :radius="20" :width="4"/>
       </template>
       <template v-else>
-        <slot :icon="icon" :openDialog="fileDialog.open">
+        <slot :icon="icon" >
           <img :src="icon" height="28" alt="empty-file-icon" >
           {{ props.placeholder ?? (props.multiple? "Перетащите файлы сюда": "Перетащите файл сюда") }}
-          <VButton @click="fileDialog.open">{{props.multiple? "Загрузить файлы": "Загрузить файл"}}</VButton>
+          <VButton @click="fileDialog.open({ accept: props.accept })">{{props.multiple? "Загрузить файлы": "Загрузить файл"}}</VButton>
         </slot>
         </template>
       <slot name="end-adornment"></slot>
@@ -40,6 +49,7 @@ import VIconButton from './VIconButton.vue';
 import VButton from './VButton.vue';
 import VSpinner from './VSpinner.vue';
 import { utilsApi } from '../api/utils';
+import VIcon from './VIcon.vue';
 
 const props = defineProps<{ 
   modelValue?: FileEntry | FileEntry[],
@@ -49,12 +59,12 @@ const props = defineProps<{
 } & VFormControlProps>()
 const emit = defineEmits([ "update:modelValue" ])
 
-type FileEntry = { id?: string, src: string, progress?: number, error?: string }
+type FileEntry = { id?: string, src: string, name?: string, progress?: number, error?: string }
 const files = reactive<FileEntry[]>([])
 
 const addFile = (file: File) => {
   const src = URL.createObjectURL(file)
-  const obj = reactive<FileEntry>({ src, progress: 0 })
+  const obj = reactive<FileEntry>({ src, name: file.name, progress: 0 })
   files.push(obj) 
 
   utilsApi.uploadFile(file, {
@@ -226,4 +236,11 @@ button.v-image-uploader__delete-button
     &:hover
       background-color: var(--primary-color)
 
+.v-image-uploader__file-preview
+  display: flex
+  flex-direction: column
+  align-items: center
+  text-align: center
+  gap: 6px
+  
 </style>

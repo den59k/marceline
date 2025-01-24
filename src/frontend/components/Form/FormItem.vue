@@ -65,9 +65,10 @@ const additionalProps = computed(() => {
       }
     }
   }
-  if (props.item.format === 'files-group') {
+  if (props.item.format === 'file' || props.item.format === "files-group") {
     return {
-      multiple: true
+      multiple: props.item.format === "files-group",
+      accept: props.item.accept
     }
   }
   // if (props.item.format === 'file' && props.item.fileField) {

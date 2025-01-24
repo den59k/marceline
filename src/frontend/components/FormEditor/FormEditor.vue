@@ -261,6 +261,9 @@ export class BlockDropEvent extends Event {
   flex-direction: column
   gap: 12px
 
+  .v-image-uploader__delete-button
+    margin-right: 24px
+
 .form-editor__delete-icon
   position: absolute
   right: 0

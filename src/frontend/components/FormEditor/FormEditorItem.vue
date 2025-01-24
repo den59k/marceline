@@ -96,7 +96,8 @@ const additionalProps = computed(() => {
   }
   if (props.item.format === 'file' || props.item.format === "files-group") {
     return {
-      multiple: props.item.format === "files-group"
+      multiple: props.item.format === "files-group",
+      accept: props.item.accept
     }
   }
   if (props.item.format === 'checkbox') {

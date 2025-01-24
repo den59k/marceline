@@ -35,6 +35,7 @@ model User {
   location          String?
   features          String[]            @default([])
   deleted           Boolean             @default(false)
+  licenseFileId     String?             
 }
 
 
@@ -92,4 +93,5 @@ model File {
   src               String
   previewSrc        String?
   size              Int
+  name              String?
 }

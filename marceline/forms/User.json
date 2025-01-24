@@ -40,9 +40,18 @@
           "name": "Ещё фотографии",
           "format": "files-group",
           "isCustom": true,
-          "fileIdField": "fileIds"
+          "fileIdField": "fileIds",
+          "accept": null
         }
       ]
+    },
+    {
+      "fieldId": "license",
+      "name": "Пользовательское соглашение",
+      "format": "file",
+      "isCustom": true,
+      "fileIdField": "licenseFileId",
+      "accept": "application/pdf"
     },
     {
       "children": [

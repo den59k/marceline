@@ -25,6 +25,7 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
 
   const filesReg = /file/i
   const sizeReg = /size/i
+  const nameReg = /name/i
 
   const systemTable = files?.systemTable?.toLowerCase()
   const filesTable = Prisma.dmmf.datamodel.models.find(item => {
@@ -59,9 +60,13 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
       id: uuid,
       src: prefix + fileName,
     }
-    const sizeField = filesTable.fields.find(field => sizeReg.test(field.name))
+    const sizeField = filesTable.fields.find(field => sizeReg.test(field.name) && field.kind === 'scalar')
     if (sizeField) {
       insertObject[sizeField.name] = (req.body as Buffer).length
+    }
+    const nameField = filesTable.fields.find(field => nameReg.test(field.name) && field.kind === 'scalar')
+    if (nameField) {
+      insertObject[nameField.name] = filename
     }
 
     await (fastify as any).prisma[filesTable.name!].create({ data: insertObject })
