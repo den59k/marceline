@@ -14,7 +14,7 @@ export const generateSelect = (columns: ViewColumn[], postCallbacks: ((item: any
       targetObject["_count"] = { select: { [column.systemColumn]: true } }
 
       postCallbacks.push(item => {
-        Object.assign(item, item._count)
+        item[`${column.systemColumn}_count`] = item._count[column.systemColumn]
         delete item._count
       })
 

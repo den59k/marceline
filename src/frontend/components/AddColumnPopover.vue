@@ -135,7 +135,8 @@ const formats = computed(() => {
 
   if (values.selectedItem.isList) {
     return [
-      { id: "string", title: "Значения элементов" },
+      { id: "string", title: "Строковое представление" },
+      { id: "formula", title: "Значения элементов" },
       { id: "count", title: "Количество элементов" },
     ]
   }

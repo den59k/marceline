@@ -83,7 +83,12 @@ const getByKey = (item: any, keys: string[]) => {
   return value
 }
 
-const getByFormula = (value: any, formula: string) => {
+const getByFormula = (value: any, formula: string): string => {
+
+  if (Array.isArray(value)) {
+    return value.map((item: any) => getByFormula(item, formula)).join(", ")
+  }
+
   const borders: { start: number, end: number }[] = []
   for (let i = 0; i < formula.length; i++) {
     if (formula[i] === "{" && formula[i-1] != "\\") {
@@ -111,12 +116,14 @@ const getByFormula = (value: any, formula: string) => {
 
 const getMapMethod = (column: any) => {
   const keys = column.systemColumn.split(".")
+  if (column.format === 'count') {
+    keys[keys.length-1] = keys[keys.length-1]+'_count'
+  }
 
   return (item: any) => {
     const value = getByKey(item, keys)
-    
-    if (value === null || value === undefined) return "-"
 
+    if (value === null || value === undefined) return "-"
     if (column.format === "formula") return getByFormula(value, column.formula)
     if (column.format === "decimal") return addDelimiter(value.toString())
     if (column.format === "string") return value

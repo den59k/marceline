@@ -64,7 +64,7 @@ model ChatFeature {
   id                BigInt                @id @default(autoincrement())
   name              String?
   chatId            BigInt
-  chat              Chat                  @relation(fields: [chatId], references: [id])
+  chat              Chat                  @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 enum UserChatRole {
@@ -74,9 +74,9 @@ enum UserChatRole {
 
 model UserChat {
   userId            Int
-  user              User               @relation(fields: [userId], references: [id])
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   chatId            BigInt
-  chat              Chat               @relation(fields: [chatId], references: [id])
+  chat              Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
   role              UserChatRole       @default(default)
   @@id([ userId, chatId ])
 }

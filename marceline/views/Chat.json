@@ -7,6 +7,20 @@
       "name": "Название чата",
       "format": "string",
       "systemColumn": "name"
+    },
+    {
+      "name": "Пользователи",
+      "format": "count",
+      "systemColumn": "users",
+      "formula": "{name} {surname}",
+      "size": null
+    },
+    {
+      "name": "Пользователи",
+      "format": "formula",
+      "systemColumn": "users",
+      "formula": "{id} {email}",
+      "size": null
     }
   ],
   "data": {
