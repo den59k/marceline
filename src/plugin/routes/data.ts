@@ -61,6 +61,7 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
     const fileFields: FormField[] = []
 
     if (editForm) {
+      // Add some select fields for object edit feature
       traverseFormFields(editForm.fields, (field) => {
         if (field.jsonField) {
           select[field.jsonField] = true
@@ -98,10 +99,20 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
       select[idField.name] = true
     }
 
+    const where: Record<string, any> = {}
+    if (req.view.filters) {
+      for (let filter of req.view.filters) {
+        if (filter.format === 'const') {
+          where[filter.systemColumn] = filter.value
+        }
+      }
+    }
+
     const resp = await (fastify as any).prisma[req.view.systemTable].findMany({
       select,
       orderBy: { [idField.name]: "asc" },
       take: PAGE_SIZE,
+      where,
       skip: (page ?? 0) * PAGE_SIZE
     })
 

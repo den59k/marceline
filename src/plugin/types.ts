@@ -7,6 +7,12 @@ export type ViewColumn = {
   format?: string
 }
 
+export type ViewFilter = {
+  systemColumn: string, 
+  format: string, 
+  value?: any
+}
+
 export type View = {
   id: string,
   name: string,
@@ -18,6 +24,7 @@ export type View = {
     delete: { enabled: boolean },
   }
   columns: ViewColumn[],
+  filters?: ViewFilter[],
   order?: number
 }
 

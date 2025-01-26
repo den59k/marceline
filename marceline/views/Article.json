@@ -2,6 +2,9 @@
   "id": "Article",
   "name": "Статьи",
   "systemTable": "Article",
+  "filters": [
+    { "systemColumn": "type", "format": "const", "value": "docs" }
+  ],
   "columns": [
     {
       "name": "ID",
@@ -14,6 +17,13 @@
       "name": "Название статьи",
       "format": "string",
       "systemColumn": "name",
+      "formula": "",
+      "size": null
+    },
+    {
+      "name": "Тип статьи",
+      "format": "string",
+      "systemColumn": "type",
       "formula": "",
       "size": null
     }
