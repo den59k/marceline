@@ -183,7 +183,8 @@ export const getFormats = (item: Field) => {
   if (item.type === "Json") {
     return [
       { id: "jsonInput", title: "Ввод JSON" },
-      { id: "jsonList", title: "Редактор массива" }
+      { id: "jsonList", title: "Редактор массива" },
+      { id: "richText", title: "Rich редактор текста" }
     ]
   }
   

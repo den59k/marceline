@@ -30,6 +30,7 @@ import VCheckbox from '../VCheckbox.vue';
 import VFormEditorSubitems from '../VFormEditorSubitems.vue';
 import VGeoPicker from '../VGeoPicker.vue';
 import VListInput from '../VListInput.vue';
+import RichTextEditor from '../RichTextEditor.vue';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
@@ -73,6 +74,7 @@ addFormComponent("geo", VGeoPicker)
 addFormComponent("listInput", VListInput)
 addFormComponent("jsonList", VFormEditorSubitems)
 addFormComponent("files-group", VFileUploader)
+addFormComponent("richText", RichTextEditor)
 
 </script>
 

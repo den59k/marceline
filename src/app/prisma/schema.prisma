@@ -87,6 +87,19 @@ model UserRegistrationRequest {
   data              Json
 }
 
+enum ArticleType {
+  docs
+  news
+}
+
+model Article {
+  id                Int                 @id @default(autoincrement())
+  type              ArticleType         
+  name              String
+  content           Json
+  createdAt         DateTime            @default(now())
+}
+
 model File {
   id                String              @id @default(uuid())
   createdAt         DateTime            @default(now())

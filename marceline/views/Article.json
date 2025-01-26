@@ -1,0 +1,35 @@
+{
+  "id": "Article",
+  "name": "Статьи",
+  "systemTable": "Article",
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id",
+      "formula": "",
+      "size": "60px"
+    },
+    {
+      "name": "Название статьи",
+      "format": "string",
+      "systemColumn": "name",
+      "formula": "",
+      "size": null
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "Article"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "Article"
+    },
+    "delete": {
+      "enabled": true
+    }
+  },
+  "icon": "note-edit"
+}

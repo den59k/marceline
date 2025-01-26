@@ -1,0 +1,37 @@
+{
+  "id": "Article",
+  "name": "Статья",
+  "systemTable": "Article",
+  "fields": [
+    {
+      "children": [
+        {
+          "fieldId": "name",
+          "name": "Название статьи",
+          "format": "input"
+        },
+        {
+          "fieldId": "type",
+          "name": "Тип статьи",
+          "format": "select",
+          "enum": [
+            {
+              "id": "docs",
+              "title": "Документация"
+            },
+            {
+              "id": "news",
+              "title": "Новости"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fieldId": "content",
+      "name": "Контент",
+      "format": "richText"
+    }
+  ],
+  "bodyModifiers": []
+}
