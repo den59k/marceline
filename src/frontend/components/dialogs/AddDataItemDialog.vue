@@ -65,6 +65,8 @@ const apply = async () => {
 <script lang="ts">
 
 addFormComponent("input", VInput)
+addFormComponent("inputNumber", VInput)
+addFormComponent("password", VInput)
 addFormComponent("select", VSelect)
 addFormComponent("file", VFileUploader)
 addFormComponent("multiselect", VSelect)

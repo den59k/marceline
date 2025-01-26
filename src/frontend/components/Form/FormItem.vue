@@ -43,7 +43,9 @@ const model = computed({
 
 const component = computed(() => {
   if (!props.item.format) return components["input"]
-  return components[props.item.format] ?? null
+  const component = components[props.item.format]
+  if (component === null) return null
+  return component ?? components["input"]
 })
 
 const additionalProps = computed(() => {
