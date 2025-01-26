@@ -85,7 +85,7 @@ const { data: formsData } = useRequest(formsApi.getAll)
 const availableForms = computed(() => {
   if (!formsData.value || !data.value) return []
   return formsData.value.filter(item => item.systemTable === data.value.systemTable)
-    .map(item => ({ id: item.systemTable, title: item.name }))
+    .map(item => ({ id: item.id, title: item.name }))
 })
 
   
