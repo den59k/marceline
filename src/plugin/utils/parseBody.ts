@@ -55,7 +55,7 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
       continue
     }
 
-    if (item.fieldId in body) {
+    if (value !== undefined) {
       _body[item.aliasFieldId ?? item.fieldId] = value
     }
   }

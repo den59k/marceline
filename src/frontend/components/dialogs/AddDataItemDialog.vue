@@ -75,6 +75,7 @@ addFormComponent("listInput", VListInput)
 addFormComponent("jsonList", VFormEditorSubitems)
 addFormComponent("files-group", VFileUploader)
 addFormComponent("richText", RichTextEditor)
+addFormComponent("const", null)
 
 </script>
 

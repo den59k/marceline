@@ -4,26 +4,27 @@
   "systemTable": "Article",
   "fields": [
     {
+      "fieldId": "type",
+      "name": "type",
+      "format": "const",
+      "enum": [
+        {
+          "id": "docs",
+          "title": "docs"
+        },
+        {
+          "id": "news",
+          "title": "news"
+        }
+      ],
+      "value": "docs"
+    },
+    {
       "children": [
         {
           "fieldId": "name",
           "name": "Название статьи",
           "format": "input"
-        },
-        {
-          "fieldId": "type",
-          "name": "Тип статьи",
-          "format": "select",
-          "enum": [
-            {
-              "id": "docs",
-              "title": "Документация"
-            },
-            {
-              "id": "news",
-              "title": "Новости"
-            }
-          ]
         }
       ]
     },
