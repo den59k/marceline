@@ -26,6 +26,9 @@
           :row-component="data.editForm? 'button': 'div'" 
           @itemclick="onItemClick"
         >
+          <template v-for="(column, key) in columns" #[key]="{ item }">
+            <div class="data-page__data-cell">{{ column.map?.(item) ?? "" }}</div>
+          </template>
         </VTable>
         <VPagination v-model="searchOptions.page" :page-count="data.totalPages"/>
         <div v-for="(style, index) in moveMarkers" :style="style" class="data-page__move-marker" @columndrop="onColumnDrop($event, index)"></div>
@@ -326,5 +329,14 @@ class ColumnDropEvent extends Event {
 
   &:hover::after
     display: block
+
+.data-page__data-cell
+  overflow: hidden
+  text-overflow: ellipsis
+  display: -webkit-box
+  -webkit-line-clamp: 2
+  -webkit-box-orient: vertical
+  white-space: pre-wrap
+
 
 </style>
