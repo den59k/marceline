@@ -27,7 +27,7 @@
       "enabled": false
     },
     "delete": {
-      "enabled": false
+      "enabled": true
     }
   },
   "icon": "table"

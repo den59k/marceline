@@ -13,13 +13,7 @@ export default defineConfig({
     outDir: path.join(__dirname, "./dist/frontend"),
     emptyOutDir: true,
     rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes("monaco-editor")) {
-            return "monaco-editor"
-          }
-        }
-      }
+      // external: [ "vue", "pinia" ],
     }
   },
 })

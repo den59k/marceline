@@ -10,6 +10,7 @@ import EndpointsPage from './pages/EndpointsPage.vue'
 import EndpointItemPage from './pages/EndpointItemPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import { useAccountStore } from './stores/accountStore'
+import { nextTick } from 'vue'
 
 const basePath = document.head.querySelector("base")?.getAttribute("href")
 export const router = createRouter({
@@ -43,3 +44,13 @@ export const beforeEach = (to: RouteLocationNormalized) => {
   if (!to.meta.public && accountStore.status === "not-authorized") return "/auth/login"
 }
 router.beforeEach(beforeEach)
+
+export const afterEach = () => {
+  const event = new Event("open-page")
+  Object.assign(event, { path: router.currentRoute.value.path })
+  window.dispatchEvent(event)
+}
+
+router.afterEach(() => {
+  nextTick(afterEach) 
+})

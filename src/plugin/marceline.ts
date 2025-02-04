@@ -86,6 +86,11 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const addAuthMethod = (method: AuthHook) => {
     authMethod = method
   }
+  
+  const scripts: string[] = []
+  const registerScript = (path: string) => {
+    scripts.push(path)
+  }
 
   fastify.post("/api/admin/login", async (req, reply) => {
     if (authMethod === null) return reply.code(403).send("Auth method is not defined")
@@ -104,7 +109,9 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     applyHooks,
     hooks,
     addAuthMethod,
-    executePostCallbacks
+    executePostCallbacks,
+    registerScript,
+    scripts
   }
 }
 

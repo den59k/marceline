@@ -38,6 +38,12 @@ export default async (fastify: FastifyInstance, options: Options) => {
       if (options.title) {
         content = content.replace("<title>Marceline</title>", `<title>${options.title}</title>`)
       }
+      
+      const scripts = fastify.marceline.scripts.map(path => `<script src="${path}" type="module"></script>`).join("\n")
+      if (scripts) {
+        content = content.replace("</body>", `${scripts}\n</body>`)
+      }
+
       return reply.headers({ "content-type": "text/html", "content-length": content.length }).send(content)
     }
 

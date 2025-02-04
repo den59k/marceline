@@ -1,6 +1,8 @@
 <template>
   <VLayout>
+    <div id="app-home-page">
 
+    </div>
   </VLayout>
 </template>
 

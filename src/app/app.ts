@@ -35,6 +35,8 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     }
   })
 
+  app.marceline.registerScript("/src/app/components/mount.ts")
+
   app.marceline.addAuthMethod(async (req, reply) => {
     const { login, password } = req.body as any
     const user = await app.prisma.adminUser.findUnique({
