@@ -21,13 +21,16 @@ const props = defineProps<{
   title?: string,
   text?: string,
   confirmTitle?: string,
-  onConfirm: () => void | Promise<void>
+  onConfirm?: ConfirmCallback
 }>()
 
 const dialogStore = useDialogStore()
 
 const pending = ref(false)
 const apply = async () => {
+  if (!props.onConfirm) {
+    return
+  }
   try {
     pending.value = true
     await props.onConfirm()
@@ -42,13 +45,15 @@ const apply = async () => {
 <script lang="ts">
 import ConfirmDialog from './ConfirmDialog.vue'
 
+type ConfirmCallback = () => void | Promise<void>
+
 export const deleteProps = {
   title: "Вы действительно хотите удалить элемент?",
   text: "Отменить действие будет невозможно",
   confirmTitle: "Удалить"
 }
 
-export const openConfirmDialog = (dialogStore: ReturnType<typeof useDialogStore>, onConfirm: () => void | Promise<void>) => {
+export const openConfirmDialog = (dialogStore: ReturnType<typeof useDialogStore>, onConfirm: ConfirmCallback) => {
   dialogStore.open(ConfirmDialog, {
     ...deleteProps,
     onConfirm
