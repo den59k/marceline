@@ -88,8 +88,17 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   }
   
   const scripts: string[] = []
-  const registerScript = (path: string) => {
-    scripts.push(path)
+  const registerScript = (script: string) => {
+    if (script.trimStart().startsWith("<")) {
+      scripts.push(script)
+    } else {
+      const path = script
+      if (path.endsWith(".css")) {
+        scripts.push(`<link rel="stylesheet" href="${path}">`)
+      } else {
+        scripts.push(`<script src="${path}" type="module"></script>`)
+      }
+    }
   }
 
   fastify.post("/api/admin/login", async (req, reply) => {
