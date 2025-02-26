@@ -4,15 +4,15 @@
   "systemTable": "Article",
   "filters": [
     {
-      "systemColumn": "type",
+      "systemColumn": "id",
       "format": "select",
-      "options": [
+      "enum": [
         {
-          "id": "docs",
+          "id": 1,
           "title": "Документы"
         },
         {
-          "id": "news",
+          "id": 2,
           "title": "Новости"
         }
       ]

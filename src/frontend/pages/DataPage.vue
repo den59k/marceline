@@ -13,7 +13,7 @@
       </VButton>
       <div style="flex: 1 1 auto"></div>
       <template v-for="item in data?.view.filters">
-        <VSelect v-if="item.format === 'select'" nullable v-model="searchOptions.params[item.systemColumn]" :placeholder="item.systemColumn" :items="item.options"/>
+        <VSelect v-if="item.format === 'select'" nullable v-model="searchOptions.params[item.systemColumn]" :placeholder="item.systemColumn" :items="item.enum"/>
       </template>
       <VInput v-model="_searchValue" placeholder="Поиск..."/>
     </div>

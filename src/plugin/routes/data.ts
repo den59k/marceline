@@ -121,14 +121,17 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
       select[idField.name] = true
     }
 
+    const systemTable = Prisma.dmmf.datamodel.models.find(item => item.name === req.view.systemTable)!
     const where: Record<string, any> = {}
     if (req.view.filters) {
       for (let filter of req.view.filters) {
-        if (filter.format === 'const') {
+        const value = (otherParams as any)[filter.systemColumn] ?? filter.value
+        const viewColumn = systemTable.fields.find(item => item.name === filter.systemColumn)
+        if (filter.format === 'const' && value) {
           where[filter.systemColumn] = filter.value
         }
-        if (filter.format === 'select') {
-          where[filter.systemColumn] = (otherParams as any)[filter.systemColumn]
+        if (filter.format === 'select' && value) {
+          where[filter.systemColumn] = parseIdField(viewColumn!, value)
         }
       }
     }
@@ -138,7 +141,6 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
     if (search) {
       const feed = getSearchFeed(search)
 
-      const systemTable = Prisma.dmmf.datamodel.models.find(item => item.name === req.view.systemTable)!
       const sqlArr = []
       for (let field of systemTable.fields) {
         if (field.kind !== 'scalar' && field.kind !== "enum") continue
@@ -146,14 +148,14 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
         if (!viewColumn) continue
         let item = ""
         if (field.type === 'Int' || field.type === 'BigInt' || field.kind === "enum") {
-          item = field.name + "::text"
+          item = `"${field.name}"::text`
         }
         if (field.type === "String") {
-          item = `lower(${field.name})`
+          item = `lower("${field.name}")`
         }
         if (!item) continue
         if (!field.isRequired) {
-          item = `COALESCE(${item}, '')`
+          item = `COALESCE("${item}", '')`
         }
         sqlArr.push("' ' || " + item)
       }
