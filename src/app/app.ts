@@ -32,7 +32,8 @@ export const createApp = async (opts?: FastifyServerOptions) => {
       systemTable: "file",
       filesDir: "uploads",
       prefix: "/uploads"
-    }
+    },
+    advancedSearch: true
   })
 
   app.marceline.registerScript("/src/app/components/mount.ts")

@@ -3,19 +3,23 @@
     <template #header>
       <VIconButton icon="settings" class="data-page__edit-button" @click="editTable"/>
     </template>
+    <div class="tables-controls">
+      <VButton v-if="selectedItems.length > 0" @click="deleteItems">
+        <VIcon icon="delete" />
+        {{ selectedItems.length > 1? "Удалить элементы": "Удалить элемент" }}
+      </VButton>
+      <VButton v-else-if="data?.createForm" @click="addItem">
+        <VIcon icon="add" /> Добавить элемент
+      </VButton>
+      <div style="flex: 1 1 auto"></div>
+      <template v-for="item in data?.view.filters">
+        <VSelect v-if="item.format === 'select'" nullable v-model="searchOptions.params[item.systemColumn]" :placeholder="item.systemColumn" :items="item.options"/>
+      </template>
+      <VInput v-model="_searchValue" placeholder="Поиск..."/>
+    </div>
     <template v-if="!data && error">Нет такой страницы</template>
     <template v-else-if="!data"></template>
     <template v-else>
-      <div class="tables-controls">
-        <VButton v-if="selectedItems.length > 0" @click="deleteItems">
-          <VIcon icon="delete" />
-          {{ selectedItems.length > 1? "Удалить элементы": "Удалить элемент" }}
-        </VButton>
-        <VButton v-else-if="data.createForm" @click="addItem">
-          <VIcon icon="add" /> Добавить элемент
-        </VButton>
-        <VInput placeholder="Поиск..."/>
-      </div>
       <div ref="tableWrapperRef" class="views-page__layout data-page__table">
         <VTable 
           v-if="data"
@@ -65,15 +69,23 @@ import AddDataItemDialog from '../components/dialogs/AddDataItemDialog.vue';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.vue';
 import { addDelimiter, num } from '../../plugin/utils/lang';
 import VPagination from '../components/VPagination.vue';
+import { watchDebounced } from '@vueuse/core';
+import VSelect from '../components/VSelect.vue';
 
 const contextMenu = useContextMenu(() => [])
 
 const router = useRouter()
 const viewId = computed(() => router.currentRoute.value.params.viewId as string)
 
-const searchOptions = reactive({ page: 0, search: "" })
+const searchOptions = reactive({ page: 0, search: "", params: {} as Record<string, string | number> })
+const _searchValue = ref()
+watchDebounced(_searchValue, _searchValue => {
+  searchOptions.search = _searchValue
+}, { debounce: 400 })
 const _searchOptions = computed(() => ({ 
-  page: searchOptions.page === 0? undefined: searchOptions.page
+  page: searchOptions.page === 0? undefined: searchOptions.page,
+  search: searchOptions.search === ''? undefined: searchOptions.search,
+  ...(Object.values(searchOptions.params).some(item => item !== "")? searchOptions.params: undefined)
 }))
 const { data, error } = useRequestWatch(dataApi.getData, viewId, _searchOptions)
 

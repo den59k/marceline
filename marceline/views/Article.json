@@ -5,8 +5,17 @@
   "filters": [
     {
       "systemColumn": "type",
-      "format": "const",
-      "value": "docs"
+      "format": "select",
+      "options": [
+        {
+          "id": "docs",
+          "title": "Документы"
+        },
+        {
+          "id": "news",
+          "title": "Новости"
+        }
+      ]
     }
   ],
   "columns": [

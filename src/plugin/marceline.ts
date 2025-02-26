@@ -10,6 +10,7 @@ export type Options = {
   root?: string,
   title?: string,
   prisma?: PrismaClient,
+  advancedSearch?: boolean,
   auth?: {
     onRequest: onRequestHookHandler
   },
@@ -51,7 +52,12 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
   for (let route of Object.values(routes)) {
     if (typeof route.default !== "function") continue
-    await fastify.register(route, { prefix: "/api/admin", onRequest: options.auth?.onRequest, files: options.files })
+    await fastify.register(route, { 
+      prefix: "/api/admin", 
+      onRequest: options.auth?.onRequest, 
+      files: options.files,
+      advancedSearch: options.advancedSearch
+    })
   }  
   
   const registerHook = (type: HookType, name: string, hook: Hook, options: AddHookSettings = {}) => {

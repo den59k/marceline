@@ -52,10 +52,14 @@ const data = [
   margin-bottom: 10px
   display: flex
   align-items: center
+  gap: 12px
 
   .v-input
     height: 38px
     width: 300px
-    margin-left: auto
+
+  .v-select
+    min-width: 180px
+    height: 38px
 
 </style>

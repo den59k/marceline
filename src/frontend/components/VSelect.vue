@@ -203,6 +203,10 @@ const resetValue = () => {
   color: var(--text-secondary-color)
   margin-right: 2px
 
+  svg
+    width: 18px
+    height: 18px
+
 .v-select__multiple-items
   display: flex
   align-items: center

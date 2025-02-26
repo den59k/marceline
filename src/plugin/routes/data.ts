@@ -5,6 +5,7 @@ import { parseBody, traverseFormFields } from "../utils/parseBody";
 import { getIdField, parseIdField } from "../utils/getIdField";
 import { Form, FormField, View } from "../types";
 import { Prisma } from "@prisma/client";
+import { getSearchFeed } from "../utils/getSearchFeed";
 
 interface FastifyRequestExt extends FastifyRequest {
   view: View,
@@ -12,7 +13,28 @@ interface FastifyRequestExt extends FastifyRequest {
 
 const PAGE_SIZE = 20
 
-export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
+export default async (fastify: FastifyInstance, { onRequest, files, advancedSearch }: any) => {
+
+  if (advancedSearch) {
+    // @ts-ignore
+    await fastify.prisma.$executeRaw`
+  CREATE OR REPLACE FUNCTION find_in_array(A text, B text[]) 
+  RETURNS BOOL AS $$
+  DECLARE
+      found BOOL := TRUE;
+      element TEXT;
+  BEGIN
+    FOREACH element IN ARRAY B LOOP
+      IF POSITION(element IN a) = 0 THEN
+          RETURN FALSE;
+      END IF;
+    END LOOP;
+
+    RETURN TRUE;
+  END;
+  $$ LANGUAGE plpgsql IMMUTABLE;
+    `
+  }
 
   if (onRequest) {
     fastify.addHook("onRequest", onRequest)
@@ -42,11 +64,11 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
     }
   })
 
-  const getDataQuery = schema({ page: "number?" })
+  const getDataQuery = schema({ page: "number?", search: "string?" })
   /** Get data */
   fastify.get("/data/:viewId/items", sc(params, getDataQuery, "query"), async (_req, reply) => {
     const req = _req as FastifyRequestExt
-    const { page } = req.query as SchemaType<typeof getDataQuery>
+    const { page, search, ...otherParams } = req.query as SchemaType<typeof getDataQuery>
 
     let createForm: Form | null = null, editForm: Form | null = null
     if (req.view.data.create.enabled && req.view.data.create.form) {
@@ -105,6 +127,65 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
         if (filter.format === 'const') {
           where[filter.systemColumn] = filter.value
         }
+        if (filter.format === 'select') {
+          where[filter.systemColumn] = (otherParams as any)[filter.systemColumn]
+        }
+      }
+    }
+
+    let totalItems = 0
+
+    if (search) {
+      const feed = getSearchFeed(search)
+
+      const systemTable = Prisma.dmmf.datamodel.models.find(item => item.name === req.view.systemTable)!
+      const sqlArr = []
+      for (let field of systemTable.fields) {
+        if (field.kind !== 'scalar' && field.kind !== "enum") continue
+        const viewColumn = req.view.columns.find(item => item.systemColumn === field.name)
+        if (!viewColumn) continue
+        let item = ""
+        if (field.type === 'Int' || field.type === 'BigInt' || field.kind === "enum") {
+          item = field.name + "::text"
+        }
+        if (field.type === "String") {
+          item = `lower(${field.name})`
+        }
+        if (!item) continue
+        if (!field.isRequired) {
+          item = `COALESCE(${item}, '')`
+        }
+        sqlArr.push("' ' || " + item)
+      }
+
+      let resp: { id: number }[] = []
+      if (advancedSearch) {
+
+        const feedVariables = feed.map((_, index) => '$'+(index+1)).join(", ")
+        // @ts-ignore
+        resp = await fastify.prisma.$queryRawUnsafe(`
+        select ${getIdField(req.view).name} from "${req.view.systemTable}" where find_in_array(${sqlArr.join(" || ")}, ARRAY[${feedVariables}])
+        `, ...feed)
+      } else {
+        // @ts-ignore
+        resp = await fastify.prisma.$queryRawUnsafe(`
+        select ${getIdField(req.view).name} from "${req.view.systemTable}" where ${sqlArr.join(" || ")} like $1
+        `, `%${search.toLowerCase()}%`)
+      }
+      where[getIdField(req.view).name] = { in: resp.map(item => item.id) }
+      totalItems = resp.length
+      // totalItems = resp[0].count
+    } else {
+      totalItems = await (fastify as any).prisma[req.view.systemTable].count({ where })
+    }
+
+    if (totalItems === 0) {
+      return {
+        createForm,
+        editForm,
+        view: req.view,
+        data: [],
+        totalPages: 0
       }
     }
 
@@ -119,9 +200,6 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
     if (fileFields.length > 0 && filesTable) {
       await attachFiles((fastify as any).prisma, filesTable.name, resp, fileFields as any[])
     }
-    
-    const totalItems = await (fastify as any).prisma[req.view.systemTable].count({ 
-    })
 
     if (resp.length > 0 && postCallbacks.length > 0) {
         for (let item of resp) {
