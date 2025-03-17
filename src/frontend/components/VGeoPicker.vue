@@ -40,7 +40,7 @@ const updateModelValue = () => {
 let modelValue: string | null = null
 onMounted(() => {
 
-  const map = L.map(mapContainer.value!).setView(getCoords(props.initialLatLng ?? "55.76, 37.64"), 10)
+  const map = L.map(mapContainer.value!).setView(getCoords(props.initialLatLng ?? "55.76, 37.64"), 13)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -55,6 +55,7 @@ onMounted(() => {
         routeMarkers.splice(index, 1)
         updatePolyline()
       }
+      updateModelValue()
     }
 
     const addPoint = (pos: LatLng | [number,number], index?: number) => {
