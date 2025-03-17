@@ -101,9 +101,10 @@ const additionalProps = computed(() => {
       columns: props.item.columns
     }
   }
-  if (props.item.format === 'geo') {
+  if (props.item.format === 'geo' || props.item.format === 'geoRoute') {
     return {
-      initialLatLng: props.item.initialLatLng
+      initialLatLng: props.item.initialLatLng,
+      type: props.item.format
     }
   }
   return { 

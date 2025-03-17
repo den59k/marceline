@@ -60,7 +60,7 @@ const component = computed(() => {
   if (props.item.format === "file" || props.item.format === "files-group") return VFileUploader
   if (props.item.format === "checkbox") return VFormEditorCheckbox
   if (props.item.format === "subitems") return VFormEditorSubitems
-  if (props.item.format === "geo") return VGeoPicker
+  if (props.item.format === "geo" || props.item.format === "geoRoute") return VGeoPicker
   if (props.item.format === "listInput") return VListInput
   if (props.item.format === "jsonInput") return VInputJson
   if (props.item.format === "jsonList") return VFormEditorSubitems
@@ -116,9 +116,10 @@ const additionalProps = computed(() => {
       columns: props.item.columns
     }
   }
-  if (props.item.format === 'geo') {
+  if (props.item.format === 'geo' || props.item.format === 'geoRoute') {
     return {
-      initialLatLng: props.item.initialLatLng
+      initialLatLng: props.item.initialLatLng,
+      type: props.item.format
     }
   }
   return { 

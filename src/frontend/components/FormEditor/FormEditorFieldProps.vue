@@ -43,7 +43,7 @@
       />
       <FormEditorJsonListProps v-if="props.item.format === 'jsonList'" v-model="props.item.columns" />
       <VInput 
-        v-if="props.item.format === 'geo'"
+        v-if="props.item.format === 'geo' || props.item.format === 'geoRoute'"
         label="Начальные координаты"
         v-model="props.item.initialLatLng"
         placeholder="55.76, 37.64"
@@ -196,6 +196,7 @@ export const getFormats = (item: Field) => {
       { id: "select", title: "Выбор из вариантов" },
       { id: 'const', title: "Константное значение" },
       { id: "geo", title: "Точка на карте" },
+      { id: "geoRoute", title: "Маршрут на карте" },
       { id: "checkbox", title: "Чекбокс" },
       { id: "inputNumber", title: "Поле ввода числа" },
       { id: "file", title: "Загрузка файла" },
@@ -211,6 +212,7 @@ export const getFormats = (item: Field) => {
     { id: 'const', title: "Константное значение" },
     { id: "file", title: "Загрузка файла" },
     { id: "geo", title: "Точка на карте" },
+    { id: "geoRoute", title: "Маршрут на карте" },
  ]
 }
 

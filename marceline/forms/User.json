@@ -83,10 +83,9 @@
     },
     {
       "fieldId": "location",
-      "name": "location",
-      "format": "geo",
-      "initialLatLng": "58.009, 56.227",
-      "placeholder": ""
+      "name": "Дневной машрут",
+      "format": "geoRoute",
+      "initialLatLng": "58.011, 56.239"
     }
   ],
   "bodyModifiers": []
