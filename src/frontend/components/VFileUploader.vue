@@ -68,7 +68,7 @@ const addFile = (file: File) => {
   files.push(obj) 
 
   utilsApi.uploadFile(file, {
-    headers: { "x-file-name": file.name },
+    headers: { "x-file-name": encodeURIComponent(file.name) },
     onProgress(percent) { obj.progress = percent }
   })
   .then((_obj) => {

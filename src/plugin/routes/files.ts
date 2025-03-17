@@ -50,7 +50,7 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
       await fs.promises.mkdir(filesDir, { recursive: true })
     }
 
-    const filename = req.headers["x-file-name"] ?? ""
+    const filename = decodeURIComponent((req.headers["x-file-name"] as string) ?? "")
     const extension = filename.slice(filename.lastIndexOf(".")+1)
     const uuid = uid(20)
     const fileName = uuid + (extension? "."+extension: extension)
