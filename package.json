@@ -1,6 +1,6 @@
 {
   "name": "marceline",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
