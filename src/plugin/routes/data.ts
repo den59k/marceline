@@ -89,7 +89,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
           select[field.jsonField] = true
         } else if (field.fieldId && field.format === 'subitems') {
           select[field.fieldId] = {
-            select: Object.fromEntries(field.columns.map(item => [ item.fieldId, true ]))
+            select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))
           }
         } else if (field.fieldId && field.relationBridgeFieldId) {
           const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
