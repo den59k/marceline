@@ -31,6 +31,7 @@ import VFormEditorSubitems from '../VFormEditorSubitems.vue';
 import VGeoPicker from '../VGeoPicker.vue';
 import VListInput from '../VListInput.vue';
 import RichTextEditor from '../RichTextEditor.vue';
+import VInputArray from '../VInputArray.vue';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
@@ -78,6 +79,8 @@ addFormComponent("listInput", VListInput)
 addFormComponent("jsonList", VFormEditorSubitems)
 addFormComponent("files-group", VFileUploader)
 addFormComponent("richText", RichTextEditor)
+addFormComponent("inputArray", VInputArray)
+addFormComponent("inputArrayNumber", VInputArray)
 addFormComponent("const", null)
 
 </script>

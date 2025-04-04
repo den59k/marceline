@@ -34,6 +34,7 @@ model User {
   additionalInfo    UserAdditionalInfo?
   location          String?
   features          String[]            @default([])
+  telegramIds       Int[]               @default([])
   deleted           Boolean             @default(false)
   licenseFileId     String?             
 }

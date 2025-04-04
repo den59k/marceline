@@ -46,6 +46,11 @@
       ]
     },
     {
+      "fieldId": "telegramIds",
+      "name": "telegramIds",
+      "format": "inputArrayNumber"
+    },
+    {
       "fieldId": "license",
       "name": "Пользовательское соглашение",
       "format": "file",

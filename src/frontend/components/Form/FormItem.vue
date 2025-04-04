@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
 import { FormItem as FormItemType } from '../../api/formsApi';
-import { computed, markRaw } from 'vue';
+import { computed } from 'vue';
 import { getItems } from '../../utils/getItems';
 
 const props = defineProps<{ item: FormItemType, modelValue?: any }>()
@@ -27,7 +27,6 @@ const emit = defineEmits([ "update:modelValue" ])
 const getInputType = (item: FormItemType) => {
   if (item.format === "password") return "password"
   if (item.format === "inputNumber") return "number"
-  if (item.format === "")
   return undefined
 }
 
@@ -91,6 +90,11 @@ const additionalProps = computed(() => {
   //     progress: obj?.progress
   //   }
   // }
+  if (props.item.format === "inputArrayNumber") {
+    return {
+      format: "number"
+    }
+  }
   if (props.item.format === 'subitems') {
     return {
       columns: props.item.columns

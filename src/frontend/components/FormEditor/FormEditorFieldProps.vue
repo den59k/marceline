@@ -157,6 +157,7 @@ export const getFormats = (item: Field) => {
     return [
       { id: "listInput", title: "Ввод значений" },
       { id: "listSelect", title: "Выбор из вариантов" },
+      { id: (item.type === "Int" || item.type === "Float")? "inputArrayNumber": "inputArray", title: "Поле ввода" },
       { id: "files-group", title: "Загрузка файлов" }
     ]
   }
