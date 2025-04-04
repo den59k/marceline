@@ -136,6 +136,7 @@ const deleteFileItem = (item: FileEntry) => {
   const index = files.indexOf(item)
   if (index < 0) return
   files.splice(index, 1)
+  emit("update:modelValue", files)
 }
 
 const fileDialog = useFileDialog({
