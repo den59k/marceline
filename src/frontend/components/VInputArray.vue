@@ -6,7 +6,7 @@
 import { ref, watch } from 'vue';
 import VInput from './VInput.vue';
 
-const props = defineProps<{ modelValue?: number[] | string[], format: string }>()
+const props = defineProps<{ modelValue?: number[] | string[], format?: string }>()
 const emit = defineEmits([ "update:modelValue" ])
 
 const innerModel = ref("")
