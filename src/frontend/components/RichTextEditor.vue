@@ -9,6 +9,7 @@
       </div>
       <div class="rich-text-editor__actions-group">
         <button title="Вставить изображение" @click="insertImage"><VIcon icon="image-solid"/></button>
+        <button title="Вставить галерею" @click="insertGallery"><VIcon icon="gallery"/></button>
         <button title="Вставить файл" @click="insertFile"><VIcon icon="file"/></button>
         <button title="Вставить элемент кода" @click="insertCodeBlock"><VIcon icon="code"/></button>
       </div>
@@ -32,6 +33,17 @@
           v-model="block.image" 
           v-bind="props" 
           accept="*"
+          :class="{ selected: textEditorRef?.selection.focus.blockId === block.id }" 
+          contenteditable="false"
+          @keydown="onKeyDown"
+        />
+      </template>
+      <template #gallery="{ props, block }">
+        <VFileUploader 
+          v-model="block.image" 
+          v-bind="props" 
+          accept="image/*"
+          multiple
           :class="{ selected: textEditorRef?.selection.focus.blockId === block.id }" 
           contenteditable="false"
           @keydown="onKeyDown"
@@ -149,6 +161,9 @@ const insertImage = () => {
 
 const insertFile = () => {
   textEditorRef.value?.insertBlock({ type: "file", editable: false, text: "" })
+}
+const insertGallery = () => {
+  textEditorRef.value?.insertBlock({ type: "gallery", editable: false, text: "" })
 }
 
 </script>
