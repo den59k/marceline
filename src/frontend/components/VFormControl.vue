@@ -1,5 +1,5 @@
 <template>
-  <div class="v-form-control" :class="{ error: !!props.error, disabled }">
+  <div class="v-form-control" :class="{ error: !!props.error, 'no-label': !props.label, disabled }">
     <label v-if="!!props.label" class="v-form-control__label">
       {{ props.label }}
       <!-- <span v-if="props.required" class="v-form-control__required-marker">*</span> -->

@@ -105,6 +105,7 @@ model File {
   id                String              @id @default(uuid())
   createdAt         DateTime            @default(now())
   src               String
+  type              String?
   previewSrc        String?
   size              Int
   name              String?

@@ -1,106 +1,108 @@
 <template>
-  <div class="rich-text-editor">
-    <div class="v-form-control__label">
-      {{ props.label }}
+  <div class="rich-text-editor__dialog">
+    <div class="rich-text-editor__controls">
+      <VSelect v-model="blockType" :items="blockTypes" style="width: 200px"/>
+      <div class="rich-text-editor__actions-group">
+        <button v-for="item in styles" :class="{ active: item.active }" @click="item.onClick">
+          <VIcon :icon="item.icon" />
+        </button>
+      </div>
+      <div class="rich-text-editor__actions-group">
+        <button title="Вставить изображение" @click="insertImage"><VIcon icon="image-solid"/></button>
+        <button title="Вставить файл" @click="insertFile"><VIcon icon="file"/></button>
+        <button title="Вставить элемент кода" @click="insertCodeBlock"><VIcon icon="code"/></button>
+      </div>
     </div>
-    <div v-if="$slots.actions" class="v-form-control__actions">
-      <slot name="actions"></slot>
-    </div>
-    <TextEditor 
-      ref="textEditorRef" 
-      class="rich-text-editor__editor"
-      v-model="modelValue"
-      :decorator="decorator"
-      @keydown="onKeyDown"
-    >
-      <template #h1="{ content, props }">
-        <h1 v-bind="props"><component :is="content" /></h1>
-      </template>
-      <template #h2="{ content, props }">
-        <h2 v-bind="props"><component :is="content" /></h2>
-      </template>
-      <template #h3="{ content, props }">
-        <h3 v-bind="props"><component :is="content" /></h3>
-      </template>
-      <template #li="{ content, props }">
-        <li v-bind="props"><component :is="content" /></li>
-      </template>
-      <template #callout="{ props, content }">
-        <div v-bind="props" class="callout" ><component :is="content"/></div>
-      </template>
+    <TextEditor ref="textEditorRef" v-model="model" class="text-editor" :renderer="defaultRenderer" :decorator="defaultDecorator" @keydown="onKeyDown">
       <template #code="{ props, block }">
-        <RichTextEditorCode v-model="block.text" v-bind="props"/>
+        <RichTextEditorCode v-model="block.text" v-bind="props" @newblock="textEditorRef?.addNewLine()" @remove="textEditorRef?.removeCurrentBlock()"/>
       </template>
-      <!-- <template #image="{ props, block }">
-        <VImageUploader v-model="block.src" :contenteditable="false" v-bind="props"/>
-      </template> -->
+      <template #image="{ props, block }">
+        <VFileUploader 
+          v-model="block.image" 
+          v-bind="props" 
+          accept="image/*"
+          :class="{ selected: textEditorRef?.selection.focus.blockId === block.id }" 
+          contenteditable="false"
+          @keydown="onKeyDown"
+        />
+      </template>
+      <template #file="{ props, block }">
+        <VFileUploader 
+          v-model="block.image" 
+          v-bind="props" 
+          accept="*"
+          :class="{ selected: textEditorRef?.selection.focus.blockId === block.id }" 
+          contenteditable="false"
+          @keydown="onKeyDown"
+        />
+      </template>
       <template #placeholder>
-        <div class="rich-text-editor__placeholder" :contenteditable="false">
-          Введите текст...
-        </div>
+        <div class="rich-text-editor__placeholder" :contenteditable="false">Введите текст...</div>
       </template>
     </TextEditor>
-    <VPopover
-      v-model:open="makeLinkPopover.open"
-      placement="bottom-start"
-      :anchor-position="makeLinkPopover.position"
-    >
-      <RichTextMakeLinkPopover @apply="setLink($event)" @close="makeLinkPopover.open = false"/>
-    </VPopover>
-    <RichTextEditorPopover
-      ref="popoverRef"
-      v-model:open="popoverOpen" 
-      :word="currentWord" 
-      :position="popoverPosition" 
-      :blocks="customBlocks"
-    />
   </div>
-</template>  
+</template>
 
 <script lang="ts" setup>
-import { computed, ref, shallowRef, watch } from 'vue';
-import { Style, TextEditor, TextEditorRef } from 'vuewrite'
-import RichTextEditorPopover from './RichTextEditorPopover.vue';
+import { TextEditor, TextEditorRef } from 'vuewrite';
+import VSelect from './VSelect.vue';
+import { computed, shallowRef } from 'vue';
+import { defaultDecorator, defaultRenderer } from '../utils/richTextComponents';
 import RichTextEditorCode from './RichTextEditorCode.vue';
-import VPopover from './VPopover.vue';
-import RichTextMakeLinkPopover from './RichTextMakeLinkPopover.vue';
+import VIcon from './VIcon.vue';
+import VFileUploader from './VFileUploader.vue';
 
 const props = defineProps<{ label?: string }>()
-
-const modelValue = defineModel<any>()
-
-const textEditorRef = shallowRef<TextEditorRef>()
-
-const decorator = (style: Style) => {
-  if (style.style === 'color') {
-    return { style: `color: ${style.meta!.color};` }
-  }
-  if (style.style === 'bold') {
-    return { tag: "b", class: "bold" }
-  }
-  if (style.style === "underline" || style.style === "italic" || style.style === "code") {
-    return { class: style.style }
-  }
-  if (style.style === 'link') {
-    return { tag: "a", href: style.meta.url }
-  }
+const model = defineModel<any[]>()
+if (!model.value || model.value.length === 0) {
+  model.value = [{ text: "" }]
 }
 
-const makeLinkPopover = ref({
-  open: false,
-  position: { x: 0, y: 0 },
-  selection: {} as any
+const blockTypes = [
+  { id: "default", title: "Обычный текст" },
+  { id: "h1", title: "Заголовок 1" },
+  { id: "h2", title: "Заголовок 2" },
+  { id: "h3", title: "Заголовок 3" },
+  { id: "li", title: "Список" },
+  { id: "callout", title: "Callout" },
+  { id: "code", title: "Элемент кода" }
+]
+const textEditorRef = shallowRef<TextEditorRef>()
+
+const blockType = computed({
+  get() {
+    return textEditorRef.value?.currentBlock?.type ?? "default"
+  },
+  set(type) {
+    if (!textEditorRef.value?.currentBlock) return
+    if (type === "default") {
+      delete textEditorRef.value.currentBlock.type
+    } else {
+      textEditorRef.value.currentBlock.type = type ?? undefined
+    }
+    if (type === "code") {
+      textEditorRef.value.currentBlock.editable = false
+    } else {
+      delete textEditorRef.value.currentBlock.editable
+    }
+  }
+})
+
+const styles = computed(() => {
+  const textEditor = textEditorRef.value
+  if (!textEditor) return []
+  const currentStyles = textEditor.currentStyles
+  return [
+    { icon: "bold", active: currentStyles.has("bold"), onClick: () => textEditor.toggleStyle("bold") },
+    { icon: "italic", active: currentStyles.has("italic"), onClick: () => textEditor.toggleStyle("italic") },
+    { icon: "underline", active: currentStyles.has("underline"), onClick: () => textEditor.toggleStyle("underline") },
+    { icon: "strikethrough", active: currentStyles.has("strikethrough"), onClick: () => textEditor.toggleStyle("strikethrough") }
+  ]
 })
 
 
 const onKeyDown = (e: KeyboardEvent) => {
-  if (e.defaultPrevented) return
-
-  if (popoverOpen.value && popoverRef.value) {
-    popoverRef.value.onKeyDown(e)
-    if (e.defaultPrevented) return
-  }
-  
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
     if (e.code === "KeyB") {
       textEditorRef.value?.toggleStyle("bold")
@@ -111,180 +113,125 @@ const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === "KeyU") {
       textEditorRef.value?.toggleStyle("underline")
     }
-    if (e.code === "KeyK" && textEditorRef.value && !textEditorRef.value.isCollapsed) {
-      e.preventDefault()
-      const rect = textEditorRef.value.getClientRects(textEditorRef.value.selection)?.[0]
-      if (rect) {
-        makeLinkPopover.value = {
-          open: true,
-          position: { x: rect.left, y: rect.bottom },
-          selection: textEditorRef.value.selection
-        }
-      }
-    }
-  } 
-  if (!textEditorRef.value?.isCollapsed && e.code === "Backquote") {
-    textEditorRef.value?.toggleStyle("code")
-    e.preventDefault()
   }
-  if (e.code === "Space" && textEditorRef.value?.currentBlock) {
-    if (textEditorRef.value.currentBlock.text === "#") {
-      textEditorRef.value.currentBlock.type = "h1"
-      textEditorRef.value.currentBlock.text = ""
-      e.preventDefault()
-    } else if (textEditorRef.value.currentBlock.text === "##") {
-      textEditorRef.value.currentBlock.type = "h2"
-      textEditorRef.value.currentBlock.text = ""
-      e.preventDefault()
-    } else if (textEditorRef.value.currentBlock.text === "###") {
-      textEditorRef.value.currentBlock.type = "h3"
-      textEditorRef.value.currentBlock.text = ""
-      e.preventDefault()
-    } else if (textEditorRef.value.currentBlock.text === "*") {
-      textEditorRef.value.currentBlock.type = "li"
-      textEditorRef.value.currentBlock.text = ""
-      e.preventDefault()
-    }
-  }
-  if (e.code === "Enter" && textEditorRef.value?.currentBlock?.type === "li") {
+  // if (e.key === "Enter" && popoverOpen.value && activeItem.value) {
+  //   e.preventDefault()
+  //   activeItem.value.onClick()
+  //   return
+  // }
+  if (e.key === "Enter" && !e.shiftKey && textEditorRef.value?.currentBlock?.type === "li") {
     e.preventDefault()
     textEditorRef.value.addNewLine()
     textEditorRef.value!.currentBlock.type = "li"
+    textEditorRef.value.pushHistory("setText")
   }
+  if (textEditorRef.value?.currentBlock?.editable === false && textEditorRef.value.currentBlock.type !== 'code' && (e.code === "Backspace" || e.code === "Delete")) {
+    textEditorRef.value.removeCurrentBlock()
+    e.preventDefault()
+  }
+  // if ((e.key === "ArrowUp" || e.key === "ArrowDown") && popoverOpen.value && visibleBlocks.value.length > 0) {
+  //   e.preventDefault()
+  //   const index = visibleBlocks.value.indexOf(activeItem.value!)
+  //   let newIndex = index + (e.key === "ArrowUp"? -1: 1)
+  //   if (newIndex < 0) newIndex = visibleBlocks.value.length-1
+  //   if (newIndex >= visibleBlocks.value.length) newIndex = 0
+  //   activeItem.value = visibleBlocks.value[newIndex]
+  // }
 }
 
-const currentWord = computed(() => {
-  if (!textEditorRef.value || !textEditorRef.value.isCollapsed || !textEditorRef.value.currentBlock) return null
-  const text = textEditorRef.value.currentBlock!.text
-  const end = textEditorRef.value.selection.anchor.offset
-  let start = end
-  for (start = end; start > 0; start--) {
-    if (text[start] === ' ') {
-      start++
-      break
-    }
-  }
-  return text.slice(start, end)
-})
+const insertCodeBlock = () => {
+  textEditorRef.value?.insertBlock({ type: "code", editable: false, text: "" })
+}
 
-const customBlocks = [
-  { 
-    id: "code", 
-    title: "Code", 
-    onClick() {
-      popoverOpen.value = false
-      textEditorRef.value!.selection.anchor.offset -= currentWord.value!.length
-      textEditorRef.value?.insertBlock({ type: "code", editable: false, text: "" })
-    } 
-  },
-  {
-    id: "callout",
-    title: "Callout",
-    onClick() {
-      popoverOpen.value = false
-      textEditorRef.value!.selection.anchor.offset -= currentWord.value!.length
-      textEditorRef.value!.insertBlock({ type: "callout", text: "" })
-    }
-  },
-  { 
-    id: "list", 
-    title: "List", 
-    onClick() {
-      popoverOpen.value = false
-      textEditorRef.value!.selection.anchor.offset -= currentWord.value!.length
-      textEditorRef.value!.insertBlock({ type: "li", text: "" })
-    }
-  },
-  { 
-    id: "image", 
-    title: "Image", 
-    onClick() {
-      popoverOpen.value = false
-      textEditorRef.value!.selection.anchor.offset -= currentWord.value!.length
-      textEditorRef.value!.insertBlock({ type: "image", editable: false })
-    }
-  },
-]
+const insertImage = () => {
+  textEditorRef.value?.insertBlock({ type: "image", editable: false, text: "" })
+}
 
-const popoverPosition = ref<{ x: number, y: number }>({ x: 0, y: 0 })
-const popoverOpen = ref(false)
-watch(currentWord, (currentWord) => {
-  if (textEditorRef.value && currentWord?.startsWith("/")) {
-    popoverOpen.value = true
-    const selection = JSON.parse(JSON.stringify(textEditorRef.value.selection))
-    selection.anchor.offset -= currentWord.length
-    const rect = textEditorRef.value.getClientRects(selection)?.[0]
-    if (rect) {
-      popoverPosition.value = { y: rect.bottom, x: rect.left }
-    }
-  } else {
-    popoverOpen.value = false
-  }
-}, { flush: "post" })
-
-const popoverRef = shallowRef<any>()
-
-const setLink = (linkData: any) => {
-  if (!textEditorRef.value || !makeLinkPopover.value.selection) return
-  Object.assign(textEditorRef.value.selection, makeLinkPopover.value.selection)
-  textEditorRef.value.applyStyle("link", linkData)
+const insertFile = () => {
+  textEditorRef.value?.insertBlock({ type: "file", editable: false, text: "" })
 }
 
 </script>
 
 <style lang="sass">
-.rich-text-editor
-  position: relative
-  
-.rich-text-editor__editor
-  outline: none
-  position: relative
-  white-space: pre-wrap
-  font-size: 14px
-  overflow-y: hidden
-  min-height: 150px
+.rich-text-editor__dialog
+  .text-editor
+    outline: none
+    white-space: pre-wrap
+    word-break: break-all
+    min-height: 400px
+    position: relative
+    padding-top: 4px
+    
+    .callout
+      background-color: rgba(#0073E9, 0.1)
+      border: 1px solid var(--primary-color)
+      border-radius: 8px
+      padding: 16px
+      margin-bottom: 8px
+      margin-top: 8px
 
-  &>div
-    margin: 12px 0
-    line-height: 1.5em
+    .v-image-uploader
+      width: 320px
+      margin-top: 12px
+      margin-bottom: 12px
+      &.selected .v-form-control__outline
+        border-color: var(--primary-color)
+        box-shadow: 0 0 0 2px var(--shadow-color)
 
-  &>li
-    margin: 12px 0
-    line-height: 1.5em
-
-  .callout
-    background-color: var(--blocks-color)
-    border: 1px solid var(--primary-color)
-    border-radius: 8px
-    padding: 20px
-
-  
   .bold
     font-weight: 700
-
   .italic
     font-style: italic
-  
   .underline
     text-decoration: underline
-
-  .code
-    background-color: var(--blocks-color)
-    padding: 2px 4px
-    border-radius: 4px
-    color: var(--primary-color)
-
-  a
-    color: var(--primary-color)
-    font-weight: 500
-    text-decoration: underline
-    text-underline-offset: 2px
+  .strikethrough
+    text-decoration: line-through
+    
+  .underline.strikethrough
+    text-decoration: underline line-through
 
 .rich-text-editor__placeholder
-  color: var(--text-secondary-color)
   position: absolute
-  top: 0
-  pointer-events: none
+  top: 4px
+  left: 0px
+  color: var(--text-secondary-color)
   user-select: none
-  white-space: nowrap
+  pointer-events: none
+  margin-top: 1em
+
+.rich-text-editor__controls
+  height: 40px
+  display: flex
+  align-items: center
+  padding-top: 12px
+  gap: 12px
+
+.rich-text-editor__actions-group
+  height: 40px
+  // background-color: var(--blocks-color)
+  border: 1px solid var(--input-border-color)
+  border-radius: 8px
+  padding: 3px
+  box-sizing: border-box
+  display: flex
+  button
+    background: none
+    border: none
+    height: 32px
+    width: 32px
+    cursor: pointer
+    border-radius: 6px
+    color: var(--text-secondary-color)
+    display: flex
+    align-items: center
+    justify-content: center
+
+    &:hover
+      background-color: var(--hover-color)
+
+    &.active
+      background-color: var(--background-active-color)
+      color: var(--text-color)
+
 </style>

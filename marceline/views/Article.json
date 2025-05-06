@@ -6,6 +6,8 @@
     {
       "systemColumn": "id",
       "format": "select",
+      "name": "Тип статьи",
+      "style": "width: 200px",
       "enum": [
         {
           "id": 1,

@@ -1,5 +1,5 @@
 <template>
-  <div class="v-dialog with-scrollbar" role="dialog">
+  <div class="v-dialog" role="dialog">
     <div v-if="slots.header" class="v-dialog__header">
       <slot name="header"></slot>
       <VIconButton icon="close" class="close-icon" @click="dialogStore.close"></VIconButton>
@@ -31,12 +31,13 @@ const dialogStore = useDialogStore()
   background-color: var(--paper-color)
   border-radius: 16px
   position: relative
-  max-height: 86vh
   max-width: 94vw
   --padding: 0 24px
+  margin-top: auto
+  margin-bottom: auto
 
   &.standart
-    width: 650px
+    width: 680px
 
   @media(max-width: 800px)
     position: fixed

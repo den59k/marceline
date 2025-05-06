@@ -26,6 +26,7 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
   const filesReg = /file/i
   const sizeReg = /size/i
   const nameReg = /name/i
+  const typeReg = /type/i
 
   const systemTable = files?.systemTable?.toLowerCase()
   const filesTable = Prisma.dmmf.datamodel.models.find(item => {
@@ -51,6 +52,7 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
     }
 
     const filename = decodeURIComponent((req.headers["x-file-name"] as string) ?? "")
+    const fileType = decodeURIComponent((req.headers["x-file-type"] as string) ?? "")
     const extension = filename.slice(filename.lastIndexOf(".")+1)
     const uuid = uid(20)
     const fileName = uuid + (extension? "."+extension: extension)
@@ -64,6 +66,12 @@ export default async (fastify: FastifyInstance, { onRequest, files }: any) => {
     if (sizeField) {
       insertObject[sizeField.name] = (req.body as Buffer).length
     }
+
+    const typeField = filesTable.fields.find(field => typeReg.test(field.name) && field.kind === 'scalar')
+    if (typeField) {
+      insertObject[typeField.name] = fileType
+    }
+
     const nameField = filesTable.fields.find(field => nameReg.test(field.name) && field.kind === 'scalar')
     if (nameField) {
       insertObject[nameField.name] = filename

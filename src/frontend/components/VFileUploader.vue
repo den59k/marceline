@@ -10,7 +10,7 @@
       </template>
       <template v-else-if="!props.multiple && files.length > 0">
         <img 
-          v-if="!props.accept || props.accept.startsWith('image')"
+          v-if="isImage"
            :src="files[0].src" 
            class="v-file-uploader__preview" 
            :class="{ temp: typeof files[0].progress === 'number' }"
@@ -24,8 +24,10 @@
       <template v-else>
         <slot :icon="icon" >
           <img :src="icon" height="28" alt="empty-file-icon" >
-          {{ props.placeholder ?? (props.multiple? "Перетащите файлы сюда": "Перетащите файл сюда") }}
-          <VButton @click="fileDialog.open({ accept: props.accept })">{{props.multiple? "Загрузить файлы": "Загрузить файл"}}</VButton>
+          {{ props.placeholder ?? (props.multiple? "Перетащите файлы сюда": `Перетащите ${isImage? 'изображение': 'файл'} сюда`) }}
+          <VButton @click="fileDialog.open({ accept: props.accept, multiple: props.multiple })">
+            {{props.multiple? "Загрузить файлы": `Загрузить ${isImage? 'изображение': 'файл'}`}}
+          </VButton>
         </slot>
         </template>
       <slot name="end-adornment"></slot>
@@ -40,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, inject, reactive, ref, watch } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 import lightIcon from '../assets/images/emptyFile.svg'
 import darkIcon from '../assets/images/emptyFileDark.svg'
@@ -59,25 +61,54 @@ const props = defineProps<{
 } & VFormControlProps>()
 const emit = defineEmits([ "update:modelValue" ])
 
-type FileEntry = { id?: string, src: string, name?: string, progress?: number, error?: string }
+const isImage = computed(() => !props.accept || props.accept.startsWith('image'))
+
+type FileEntry = { id?: string, src: string, name?: string, type?: string, progress?: number, error?: string }
 const files = reactive<FileEntry[]>([])
+
+const filesMap = new WeakMap<FileEntry, File>()
+const uploadFile = async (fileEntry: FileEntry, file: File) => {
+  await utilsApi.uploadFile(file, {
+    headers: { 
+      "x-file-name": encodeURIComponent(file.name),
+      "x-file-type": encodeURIComponent(file.type),
+    },
+    onProgress(percent) { fileEntry.progress = percent }
+  })
+  .then((_obj) => {
+    fileEntry.id = _obj.id 
+    fileEntry.src = _obj.src
+    fileEntry.type = _obj.type
+    fileEntry.progress = undefined
+  })
+  .catch(() => {
+    fileEntry.error = "An error ocurred"
+  })
+}
+
+const uploadAllFiles = async () => {
+  for (let fileEntry of files) {
+    const file = filesMap.get(fileEntry)
+    if (!file) continue
+    await uploadFile(fileEntry, file!)
+    filesMap.delete(fileEntry)
+  }
+}
+
+const uploader = inject("uploader", null) as any
+if (uploader) {
+  uploader.add(uploadAllFiles)
+}
 
 const addFile = (file: File) => {
   const src = URL.createObjectURL(file)
-  const obj = reactive<FileEntry>({ src, name: file.name, progress: 0 })
-  files.push(obj) 
-
-  utilsApi.uploadFile(file, {
-    headers: { "x-file-name": encodeURIComponent(file.name) },
-    onProgress(percent) { obj.progress = percent }
-  })
-  .then((_obj) => {
-    obj.id = _obj.id 
-    obj.progress = undefined
-  })
-  .catch(() => {
-    obj.error = "An error ocurred"
-  })
+  const fileEntry = reactive<FileEntry>({ src, name: file.name })
+  files.push(fileEntry) 
+  if (uploader) {
+    filesMap.set(fileEntry, file)
+  } else {
+    uploadFile(fileEntry, file)
+  }
 }
 
 let skipUpdate = false
@@ -167,10 +198,15 @@ button.v-image-uploader__delete-button
   position: absolute
   right: -2px
   top: -4px
+  z-index: 4
 
   svg
     width: 16px
     height: 16px
+
+.v-image-uploader.no-label .v-image-uploader__delete-button
+  top: 2px
+  right: 2px
 
 .v-image-uploader__drop-zone
   height: 140px
