@@ -10,7 +10,7 @@
           <VIcon v-if="item.icon" :icon="item.icon" />
           {{ item.title }}
         </button>
-        <RouterLink v-else :to="item.to" :class="{ active: currentRoute === item }" class="app-sidebar__item">
+        <RouterLink v-else :to="item.to" :key="item.to" :class="{ active: currentRoute === item }" class="app-sidebar__item">
           <VIcon v-if="item.icon" :icon="item.icon" />
           {{ item.title }}
         </RouterLink>
@@ -43,7 +43,7 @@ const accountStore = useAccountStore()
 
 const pages = computed(() => {
   if (!views.value) return []
-  const arr = []
+  const arr: Array<{ title: string, icon: string, to?: string, onClick?: any } | string> = []
   arr.push(...customPages.value)
   if (views.value) {
     arr.push(...views.value.map((item: any) => ({
@@ -66,7 +66,7 @@ const pages = computed(() => {
 
 const router = useRouter()
 const currentRoute = computed(() => {
-  let targetRoute: { to: string } | null = null
+  let targetRoute: { to?: string } | null = null
   for (let route of pages.value) {
     if (typeof route !== "object" || !route.to) continue
     if (router.currentRoute.value.path === route.to) return route

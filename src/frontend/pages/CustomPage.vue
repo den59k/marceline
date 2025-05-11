@@ -1,5 +1,5 @@
 <template>
-  <div ref="elementRef">
+  <div ref="elementRef" class="custom-page">
 
   </div>
 </template>
@@ -31,5 +31,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="sass">
-
+.custom-page
+  flex: 1 1 auto
 </style>
