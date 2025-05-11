@@ -6,9 +6,7 @@ import { Options } from "../marceline";
 
 export default async (fastify: FastifyInstance, options: Options) => {
 
-  const frontendPath = import.meta.env.DEV? 
-    (process.cwd()+"/dist/frontend"): 
-    ((globalThis.__dirname ?? import.meta.dirname) + "/../frontend")
+  const frontendPath = (globalThis?.__dirname ?? import.meta.dirname) + "/../frontend"
 
   const rootPath = (options.root ?? "/")
 
@@ -39,6 +37,9 @@ export default async (fastify: FastifyInstance, options: Options) => {
       }
       if (options.title) {
         content = content.replace("<title>Marceline</title>", `<title>${options.title}</title>`)
+      }
+      if (import.meta.env?.DEV || fastify.marceline.showDevUI) {
+        content = content.replace("</head>", `<script>window.isDev = true</script>\n</head>`)
       }
 
       const scripts = fastify.marceline.scripts.join("\n")

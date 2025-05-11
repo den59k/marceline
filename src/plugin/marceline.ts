@@ -126,7 +126,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     addAuthMethod,
     executePostCallbacks,
     registerScript,
-    scripts
+    scripts,
+    showDevUI: false
   }
 }
 

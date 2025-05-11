@@ -39,22 +39,29 @@ import { accountApi } from '../api/account';
 import { addRegisterPageEvent } from '../marceline';
 
 const { data: views } = useRequest(viewsApi.getViews)
+const accountStore = useAccountStore()
 
 const pages = computed(() => {
   if (!views.value) return []
-  return [
-    ...customPages.value,
-    ...(views.value ?? [])
-      .map((item: any) => ({
-        title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
-      })),
-    { title: "Добавить таблицу", icon: "add", onClick: addTable },
-    "Для разработчиков",
-    // { to: "/dev/views", title: "Таблицы", icon: "table" },
-    { to: "/dev/forms", title: "Формы", icon: "note-edit" },
-    { to: "/dev/endpoints", title: "Эндпоинты", icon: "code" },
-    // { to: "/dev/components", title: "Компоненты", icon: "component" },
-  ]
+  const arr = []
+  arr.push(...customPages.value)
+  if (views.value) {
+    arr.push(...views.value.map((item: any) => ({
+      title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
+    })))
+  }
+
+  if ((window as any).isDev) {
+    arr.push({ title: "Добавить таблицу", icon: "add", onClick: addTable }),
+    arr.push(
+      "Для разработчиков",
+      // { to: "/dev/views", title: "Таблицы", icon: "table" },
+      { to: "/dev/forms", title: "Формы", icon: "note-edit" },
+      { to: "/dev/endpoints", title: "Эндпоинты", icon: "code" },
+    )
+  }
+
+  return arr
 })
 
 const router = useRouter()
@@ -77,7 +84,6 @@ const addTable = (e: MouseEvent) => {
   dialogStore.open(CreateTableDialog)
 }
 
-const accountStore = useAccountStore()
 const logout = async () => {
   try {
     await accountApi.logout()

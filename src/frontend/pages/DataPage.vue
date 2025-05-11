@@ -1,7 +1,7 @@
 <template>
   <VLayout :values="{ view: data?.view.name }">
     <template #header>
-      <VIconButton icon="settings" class="data-page__edit-button" @click="editTable"/>
+      <VIconButton v-if="isDev" icon="settings" class="data-page__edit-button" @click="editTable"/>
     </template>
     <div class="tables-controls">
       <VButton v-if="selectedItems.length > 0" @click="deleteItems">
@@ -74,6 +74,7 @@ import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
 
 const contextMenu = useContextMenu(() => [])
+const isDev = (window as any).isDev
 
 const router = useRouter()
 const viewId = computed(() => router.currentRoute.value.params.viewId as string)
@@ -218,8 +219,11 @@ const columns = computed(() => {
           }
         }
       }
-    ]),
-    [ "_addColumn", { 
+    ])
+  ]
+
+  if ((window as any).isDev) {
+    columns.push([ "_addColumn", { 
       sortable: false, 
       headerProps: { 
         class: "data-page__add-column data-table__header", 
@@ -230,8 +234,8 @@ const columns = computed(() => {
       }, 
       width: "120px",
       columnProps: { class: "data-page__more-cell" }
-    }]
-  ]
+    }])
+  }
     
   return Object.fromEntries(columns)
 })
