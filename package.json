@@ -16,6 +16,7 @@
     "collect": "node scripts/registerComponents.js src/frontend",
     "build:frontend": "tsc && vite build -c vite.frontend.config.ts",
     "build:backend": "vite build -c vite.backend.config.ts",
+    "build:utils": "vite build -c vite.utils.config.ts",
     "test": "vitest"
   },
   "devDependencies": {
@@ -40,7 +41,7 @@
     "typescript": "5.4.2",
     "vite": "^5.4.1",
     "vite-node": "^2.0.5",
-    "vite-plugin-dts": "^4.0.3",
+    "vite-plugin-dts": "^4.5.3",
     "vitest": "^2.0.5",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
@@ -61,8 +62,15 @@
     "schema": "src/app/prisma/schema.prisma"
   },
   "exports": {
-    "import": "./dist/plugin/index.js",
-    "require": "./dist/plugin/index.cjs"
+    ".": {
+      "import": "./dist/plugin/index.js",
+      "require": "./dist/plugin/index.cjs",
+      "types": "./dist/plugin/index.d.ts"
+    },
+    "./vue": {
+      "import": "./dist/utils/vue.js",
+      "types": "./dist/utils/vue.d.ts"
+    }
   },
   "files": [
     "dist"

@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage.vue'
 import { useAccountStore } from './stores/accountStore'
 import { nextTick } from 'vue'
 import { addRegisterPageEvent } from './marceline'
+import CustomPage from './pages/CustomPage.vue'
 
 const basePath = document.head.querySelector("base")?.getAttribute("href")
 export const router = createRouter({
@@ -39,7 +40,12 @@ addRegisterPageEvent((e) => {
   if (e.path === "/") {
     router.removeRoute("main")
   }
-  router.addRoute({ path: e.path, component: e.component, meta: { name: e.name ?? "" } })
+  router.addRoute({ 
+    path: e.path, 
+    component: CustomPage, 
+    props: { component: e.component, mount: e.mount, unmount: e.unmount }, 
+    meta: { name: e.name ?? "" } 
+  })
   if (router.currentRoute.value.path === e.path) {
     router.push(router.currentRoute.value.path)
   }

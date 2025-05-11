@@ -1,5 +1,5 @@
 
-type RegisterPageEvent = { path: string, name?: string, icon?: string, component?: any }
+type RegisterPageEvent = { path: string, name?: string, icon?: string, component?: any, mount?: () => void, unmount?: () => void }
 
 const registerPageEvents: ((e: RegisterPageEvent) => void)[] = []
 export const addRegisterPageEvent = (callback: (e: RegisterPageEvent) => void) => {

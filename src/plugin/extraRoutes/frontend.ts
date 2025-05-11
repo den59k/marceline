@@ -55,7 +55,9 @@ export default async (fastify: FastifyInstance, options: Options) => {
     const { statusCode, headers, stream, type, metadata } = await send(req.raw, path, { index: false })
 
     if (type === "error" || type === "directory") {
-      if ("error" in metadata) console.error(metadata.error)
+      if ("error" in metadata) {
+        // console.error(metadata.error)
+      }
       return reply.code(statusCode).send({ error: `Route ${req.method}:${req.url} not found` })
     }
 
