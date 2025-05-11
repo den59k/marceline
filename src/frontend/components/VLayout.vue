@@ -65,18 +65,24 @@ const getName = (name: string) => {
     margin: 0
     margin-bottom: 30px
 
+  h2
+    margin: 0
+    margin-bottom: 24px
+    font-size: 20px
+
 .v-layout__header
   display: flex
   align-items: center
   gap: 8px
-  color: var(--text-secondary-color)
   margin-bottom: 24px
   font-size: 20px
   font-weight: 700
   min-height: 24px
+  color: var(--text-color)
 
   a
     text-decoration: none
+    color: var(--text-secondary-color)
   
   a.active
     color: var(--text-color)

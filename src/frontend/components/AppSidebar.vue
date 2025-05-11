@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import VIcon from './VIcon.vue';
 import { useRouter } from 'vue-router';
 import { useDialogStore } from '../stores/dialogStore';
@@ -36,13 +36,14 @@ import { useRequest } from 'vuesix';
 import { viewsApi } from '../api/views';
 import { useAccountStore } from '../stores/accountStore';
 import { accountApi } from '../api/account';
+import { addRegisterPageEvent } from '../marceline';
 
 const { data: views } = useRequest(viewsApi.getViews)
 
 const pages = computed(() => {
   if (!views.value) return []
   return [
-    { to: "/", title: "Статистика", icon: "home" },
+    ...customPages.value,
     ...(views.value ?? [])
       .map((item: any) => ({
         title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
@@ -86,6 +87,24 @@ const logout = async () => {
   await accountStore.logout()
   router.push("/auth/login")
 }
+
+</script>
+
+<script lang="ts">
+
+const customPages = ref<{ to: string, title: string, icon: string }[]>([
+  { to: "/", title: "Стартовая страница", icon: "home" },
+])
+// @ts-ignore
+addRegisterPageEvent(e => {
+  const newPage = { to: e.path, title: e.name ?? "Страница", icon: e.icon ?? "home" }
+  const existsItemIndex = customPages.value.findIndex(item => item.to === e.path)
+  if (existsItemIndex >= 0) {
+    customPages.value[existsItemIndex] = newPage
+  } else {
+    customPages.value.push(newPage)
+  }
+})
 
 </script>
 

@@ -7,6 +7,7 @@ import { generateHash, generateAccessToken } from './utils/hashPassword'
 import { uid } from 'uid/secure'
 import fastifyStatic from '@fastify/static'
 import { join } from 'path'
+import { ViteDevServer } from 'vite'
 
 const plugins = import.meta.glob<any>('./plugins/**/*.ts', { eager: true })
 const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
@@ -36,7 +37,41 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     advancedSearch: true
   })
 
-  app.marceline.registerScript("/src/app/components/mount.ts")
+  if (import.meta.env.DEV) {
+    const { createServer } = await import("vite")
+    const { default: vuePlugin } = await import("@vitejs/plugin-vue")
+    const port = 5566
+    const server: ViteDevServer = import.meta.hot?.data.server ?? await createServer({
+      plugins: [ vuePlugin() ],
+      server: {
+        port,
+        proxy: {
+          "/api": `http://localhost:${port}`
+        }
+      },
+      build: {
+        lib: {
+          entry: "/src/dashboard/mount.ts"
+        }
+      },
+    })
+
+    if (!import.meta.hot?.data.server) {
+      import.meta.hot!.data.server = server
+      
+      await server.listen()
+    }
+    app.marceline.registerScript(`http://localhost:${port}/src/app/dashboard/mount.ts`)
+  } else {
+    app.marceline.registerScript(`/api/dashboard.js`)
+    app.marceline.registerScript(`/api/dashboard.css`)
+  }
+  app.get("/dashboard.js", (req, reply) => {
+    return reply.sendFile("dashboard.js", process.cwd() + "/dist")
+  })
+  app.get("/dashboard.css", (req, reply) => {
+    return reply.sendFile("style.css", process.cwd() + "/dist")
+  })
 
   app.marceline.addAuthMethod(async (req, reply) => {
     const { login, password } = req.body as any

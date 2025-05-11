@@ -1,6 +1,7 @@
 <template>
-  <h1>I am dashboard</h1>
-  
+  <div class="v-layout">
+    <h2>I am dashboard</h2>
+  </div>
 </template>
 
 <script lang="ts" setup>

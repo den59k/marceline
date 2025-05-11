@@ -6,8 +6,9 @@ import { createPinia } from 'pinia'
 // import { registerComponents } from './registerComponents'
 import { router } from './router'
 
-createApp(App)
+const app = createApp(App)
   .use(createPinia())
   .use(router)
   // .use(registerComponents)
   .mount('#app')
+

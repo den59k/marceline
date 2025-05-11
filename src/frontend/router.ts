@@ -11,12 +11,13 @@ import EndpointItemPage from './pages/EndpointItemPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import { useAccountStore } from './stores/accountStore'
 import { nextTick } from 'vue'
+import { addRegisterPageEvent } from './marceline'
 
 const basePath = document.head.querySelector("base")?.getAttribute("href")
 export const router = createRouter({
   history: createWebHistory(basePath ?? undefined),
   routes: [
-    { path: "/", component: HomePage, meta: { name: "Главная" } },
+    { path: "/", component: HomePage, name: "main", meta: { name: document.title ?? "Добро пожаловать" } },
     { path: "/auth/login", component: LoginPage, meta: { public: true, showSidebar: false } },
 
     { path: "/data/:viewId", component: DataPage, meta: { name: "#view" } },
@@ -32,6 +33,16 @@ export const router = createRouter({
     { path: "/dev/endpoints", component: EndpointsPage, meta: { name: "Эндпоинты" } },
     { path: "/dev/endpoints/:endpointId", component: EndpointItemPage, meta: { name: "#endpoint" } },
   ]
+})
+
+addRegisterPageEvent((e) => {
+  if (e.path === "/") {
+    router.removeRoute("main")
+  }
+  router.addRoute({ path: e.path, component: e.component, meta: { name: e.name ?? "" } })
+  if (router.currentRoute.value.path === e.path) {
+    router.push(router.currentRoute.value.path)
+  }
 })
 
 export const beforeEach = (to: RouteLocationNormalized) => {

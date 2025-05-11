@@ -9,7 +9,7 @@
         </button>
       </template>
       <div class="v-icons-selector__icons-grid">
-        <button v-for="key in icons.keys()" @click="selectIcon(key)">
+        <button v-for="key in icons.keys()" :title="key" @click="selectIcon(key)" >
           <VIcon :icon="key"/>
         </button>
       </div>

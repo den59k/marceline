@@ -130,18 +130,16 @@ const init = async () => {
   let address = ""
   startMain(async (app, isReload) => {
     app.addHook("onRequest", onRequestHook)
-    
-    app.setNotFoundHandler(async (req, reply) => {
-      if (req.method !== "GET" || req.originalUrl.startsWith("/api")) {
-        return reply.code(404).send({ error: `Route ${req.method}:${req.url} not found` })
-      }
-
+    app.decorate("_pageGenerator", async (req) => {
       let template = fs.readFileSync(resolve(process.cwd(), "src/frontend/index.html"), "utf-8")
       template = template.replaceAll("./", '/src/frontend/')
       template = await vite.transformIndexHtml(req.url, template, req.originalUrl)
 
-      return reply.headers({ "content-type": "text/html" }).send(template)
+      return template
     })
+    // app.setNotFoundHandler(async (req, reply) => {
+      
+    // })
   
     const port = parseInt(process.env.PORT ?? "9000")
     address = await app.listen({ port, host: process.env.HOST ?? "127.0.0.1" })

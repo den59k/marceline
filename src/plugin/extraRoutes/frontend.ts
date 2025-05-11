@@ -19,10 +19,6 @@ export default async (fastify: FastifyInstance, options: Options) => {
   }
 
   fastify.get(rootPath+"*", async (req, reply) => {
-    if (import.meta.env.DEV) {
-      return reply.callNotFound()
-    }
-
     if (req.url.includes("..")) return reply.code(403).send("Forbidden")
 
     if (req.method !== "GET" || req.url.startsWith("/api")) {
@@ -31,14 +27,20 @@ export default async (fastify: FastifyInstance, options: Options) => {
 
     // Send index.html file on root
     if (!req.url.includes(".")) {
-      let content = await fs.promises.readFile(frontendPath+"/index.html", "utf-8")
-      if (rootPath !== '/') { 
-        content = content.replace(`<base href="/" >`, `<base href="${rootPath}">`)
+
+      let content
+      if ("_pageGenerator" in fastify) {
+        content = await (fastify._pageGenerator as any)(req, reply)
+      } else {
+        content = await fs.promises.readFile(frontendPath+"/index.html", "utf-8")
+        if (rootPath !== '/') { 
+          content = content.replace(`<base href="/" >`, `<base href="${rootPath}">`)
+        }
       }
       if (options.title) {
         content = content.replace("<title>Marceline</title>", `<title>${options.title}</title>`)
       }
-      
+
       const scripts = fastify.marceline.scripts.join("\n")
 
       if (scripts) {
