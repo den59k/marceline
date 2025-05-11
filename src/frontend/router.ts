@@ -43,7 +43,7 @@ addRegisterPageEvent((e) => {
   router.addRoute({ 
     path: e.path, 
     component: CustomPage, 
-    props: { component: e.component, mount: e.mount, unmount: e.unmount }, 
+    props: { component: e.component, mount: e.mount, unmount: e.unmount, key: e.path }, 
     meta: { name: e.name ?? "" } 
   })
   if (router.currentRoute.value.path === e.path) {
