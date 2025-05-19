@@ -10,15 +10,16 @@
 </template>
 
 <script lang="ts" setup>
-import { shallowRef } from 'vue';
+import { shallowRef, watch } from 'vue';
 import VFormControl from './VFormControl.vue';
 import VIconButton from './VIconButton.vue';
 import VPopover from './VPopover.vue';
 import VCalendarSlider from './VCalendarSlider.vue';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import VDateInput from './VDateInput.vue';
 
-const dateValue = shallowRef<Dayjs | null>(null)
+const model = defineModel<string | null>()
+const dateValue = shallowRef<Dayjs | null>(model.value? dayjs(model.value): null)
 
 const opened = shallowRef(false)
 const el = shallowRef<HTMLElement>()
@@ -31,6 +32,14 @@ const openPopover = (e: MouseEvent) => {
 const onDateClick = (date: Dayjs) => {
   dateValue.value = date
 }
+
+watch(dateValue, (dateValue) => {
+  if (dateValue) {
+    model.value = dateValue.toISOString()
+  } else {
+    model.value = null
+  }
+})
 
 </script>
 

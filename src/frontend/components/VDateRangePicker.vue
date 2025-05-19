@@ -1,8 +1,8 @@
 <template>
   <VFormControl class="v-date-picker v-date-range-picker" outline>
-    <VDateInput :model-value="startDate"/>
+    <VDateInput v-model="startDate"/>
     -
-    <VDateInput :model-value="endDate"/>
+    <VDateInput v-model="endDate"/>
     <VIconButton class="v-date-picker__activator" :class="{ opened }" icon="calendar" @click="openPopover"/>
     <VPopover v-model:open="opened" placement="bottom-start"  :offset="4" :element="el" class="v-date-picker__popover">
       <VCalendarSlider :start-date="startDate" :end-date="endDate" @itemclick="onDateClick" />
@@ -11,18 +11,21 @@
 </template>
 
 <script lang="ts" setup>
-import { shallowRef } from 'vue';
+import { shallowRef, watch } from 'vue';
 import VFormControl from './VFormControl.vue';
 import VPopover from './VPopover.vue';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import VCalendarSlider from './VCalendarSlider.vue';
 import VIconButton from './VIconButton.vue';
 import VDateInput from './VDateInput.vue';
 
 const opened = shallowRef(false)
 
-const startDate = shallowRef<Dayjs | null>(null)
-const endDate = shallowRef<Dayjs | null>(null)
+const model = defineModel<string | null>()
+const splited = model.value?.split("-") ?? []
+
+const startDate = shallowRef<Dayjs | null>(splited[0]? dayjs(splited[0]): null)
+const endDate = shallowRef<Dayjs | null>(splited[1]? dayjs(splited[1]): null)
 
 const el = shallowRef<HTMLElement>()
 
@@ -47,6 +50,15 @@ const onDateClick = (day: Dayjs) => {
     }
   }
 }
+
+watch([ startDate, endDate ], ([ startDate, endDate ]) => {
+  if (startDate && endDate) {
+    model.value = startDate.toISOString() + " - " + endDate.toISOString()
+  } else {
+    model.value = null
+  }
+})
+
 
 
 </script>

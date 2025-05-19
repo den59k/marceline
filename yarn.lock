@@ -2385,10 +2385,10 @@ vue@^3, vue@^3.4.38:
     "@vue/server-renderer" "3.5.13"
     "@vue/shared" "3.5.13"
 
-vuesix@^1.0.28:
-  version "1.0.28"
-  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.28.tgz#01aaa42f8139178a0c4b4c066a9b4152285ba83b"
-  integrity sha512-pvwCD88p24620aT+ROviDMbYemnUAdYtwZ2gIyU5+ICiGUX6QYhYELzrS5GZYrMkNhdKj1uHmz51Xp5AFQ6ZqQ==
+vuesix@^1.0.35-b:
+  version "1.0.35-b"
+  resolved "https://registry.yarnpkg.com/vuesix/-/vuesix-1.0.35-b.tgz#23ea18c5426621bd785e274fb20cd5e7899dc263"
+  integrity sha512-ZyH2AxKT1a/XUpmP48w/JtUg1LhGa0euLYFWtseqX+Zc97p3XZoWgXZ9RimF6SUzUOO5p/zvbU97YBJRxDur+g==
 
 vuewrite@^0.0.19:
   version "0.0.19"

@@ -46,7 +46,7 @@
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
-    "vuesix": "^1.0.28",
+    "vuesix": "^1.0.35-b",
     "vuewrite": "^0.0.22-b"
   },
   "dependencies": {
