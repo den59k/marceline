@@ -32,6 +32,8 @@ import VGeoPicker from '../VGeoPicker.vue';
 import VListInput from '../VListInput.vue';
 import RichTextEditor from '../RichTextEditor.vue';
 import VInputArray from '../VInputArray.vue';
+import VDateRangePicker from '../VDateRangePicker.vue';
+import VDatePicker from '../VDatePicker.vue';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
@@ -90,6 +92,8 @@ addFormComponent("files-group", VFileUploader)
 addFormComponent("richText", RichTextEditor)
 addFormComponent("inputArray", VInputArray)
 addFormComponent("inputArrayNumber", VInputArray)
+addFormComponent("dateRange", VDateRangePicker)
+addFormComponent("date", VDatePicker)
 addFormComponent("const", null)
 
 </script>
