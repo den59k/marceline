@@ -31,7 +31,7 @@ export default defineConfig({
     outDir: path.join(__dirname, "./dist/utils"),
     emptyOutDir: true,
     rollupOptions: {
-      external: [ "vue", "pinia", "@vueuse/core", "vuesix" ],
+      external: [ "vue", "pinia", "@vueuse/core", "vuesix", "dayjs" ],
     }
   },
 })

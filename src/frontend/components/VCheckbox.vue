@@ -1,5 +1,5 @@
 <template>
-  <div class="v-checkbox" :class="{ active: model }" role="checkbox" @click="onClick">
+  <div class="v-checkbox" :class="{ active: model, disabled }" role="checkbox" @click="onClick">
     <div v-if="labelPosition === 'left'" class="v-checkbox__label left">
       <slot name="label">{{ props.label }}</slot>
     </div>
@@ -16,7 +16,7 @@
 import VIcon from './VIcon.vue';
 import { computed, useSlots } from 'vue';
 
-const props = defineProps<{ label?: string, labelPosition?: "left" | "right" }>()
+const props = defineProps<{ label?: string, disabled?: boolean, labelPosition?: "left" | "right" }>()
 const model = defineModel<boolean>()
 
 const onClick = (_e: MouseEvent) => {
@@ -50,7 +50,10 @@ const labelPosition = computed(() => {
 
     &.left
       margin-left: 0
-
+  
+  &.disabled
+    pointer-events: none
+    opacity: 0.5
 
 .v-checkbox__icon.active
   color: white
