@@ -11,6 +11,7 @@ export type Options = {
   title?: string,
   prisma?: PrismaClient,
   advancedSearch?: boolean,
+  showDevUI?: boolean,
   auth?: {
     onRequest: onRequestHookHandler
   },
@@ -127,7 +128,7 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     executePostCallbacks,
     registerScript,
     scripts,
-    showDevUI: false
+    showDevUI: options.showDevUI ?? true
   }
 }
 

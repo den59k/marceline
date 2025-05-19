@@ -8,6 +8,8 @@ import { uid } from 'uid/secure'
 import fastifyStatic from '@fastify/static'
 import { join } from 'path'
 import { ViteDevServer } from 'vite'
+// @ts-ignore
+import svgPlugin from '../../scripts/viteSvgPlugin.js'
 
 const plugins = import.meta.glob<any>('./plugins/**/*.ts', { eager: true })
 const routes = import.meta.glob<any>('./routes/**/*.ts', { eager: true })
@@ -42,7 +44,7 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     const { default: vuePlugin } = await import("@vitejs/plugin-vue")
     const port = 5566
     const server: ViteDevServer = import.meta.hot?.data.server ?? await createServer({
-      plugins: [ vuePlugin() ],
+      plugins: [ vuePlugin(), svgPlugin() ],
       server: {
         port,
         proxy: {

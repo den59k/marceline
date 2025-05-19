@@ -68,7 +68,7 @@ import { useDialogStore } from '../stores/dialogStore';
 import TableSettingsDialog from '../components/dialogs/TableSettingsDialog.vue';
 import AddDataItemDialog from '../components/dialogs/AddDataItemDialog.vue';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.vue';
-import { addDelimiter, num } from '../../plugin/utils/lang';
+import { addDelimiter, num } from '../utils/lang';
 import VPagination from '../components/VPagination.vue';
 import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
