@@ -13,14 +13,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useVModel } from '@vueuse/core';
 import VIcon from './VIcon.vue';
 import { computed, useSlots } from 'vue';
 
-const props = defineProps<{ modelValue?: boolean, label?: string, labelPosition?: "left" | "right" }>()
-const emit = defineEmits([ "update:modelValue" ])
-
-const model = useVModel(props, "modelValue", emit, { passive: true, defaultValue: false })
+const props = defineProps<{ label?: string, labelPosition?: "left" | "right" }>()
+const model = defineModel<boolean>()
 
 const onClick = (_e: MouseEvent) => {
   model.value = !model.value
