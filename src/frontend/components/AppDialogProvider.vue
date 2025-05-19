@@ -21,6 +21,8 @@ import { useKeyDownLayer } from 'vuesix';
 import { watch } from 'vue';
 
 const dialogStore = useDialogStore()
+// @ts-ignore
+window.dialogStore = dialogStore
 
 useKeyDownLayer("Escape", () => dialogStore.length > 0, () => dialogStore.back())
 

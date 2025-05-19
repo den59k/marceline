@@ -8,18 +8,38 @@
     </div>
     <div>{{ counter }}</div>
     <button @click="add">Add</button>
+    <button @click="open">Open Dialog</button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { createApp, ref } from 'vue';
 import VInput from '../../frontend/components/VInput.vue';
 import VDateRangePicker from '../../frontend/components/VDateRangePicker.vue';
 import VDatePicker from '../../frontend/components/VDatePicker.vue';
+import TestDialog from './TestDialog.vue';
 
 const counter = ref(0)
 const add = () => {
   counter.value++
+}
+
+const dialog = (window as any).dialogStore
+const open = () => {
+  dialog.openExternal({
+    title: "Test",
+    class: "standart",
+    actions: [
+      { title: "Сохранить", async onClick() {
+        await new Promise(res => setTimeout(res, 1000))
+      } }
+    ],
+    onMounted(el: HTMLElement) {
+      createApp(TestDialog)
+        .mount(el)
+    }
+  })
+  // dialog.open()
 }
 
 </script>
