@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mutateRequestFull, useDraggableItem, useRequestWatch } from 'vuesix';
+import { mutateRequest, mutateRequestFull, useDraggableItem, useRequestWatch } from 'vuesix';
 import VInput from '../components/VInput.vue';
 import VButton from '../components/VButton.vue';
 import { useContextMenu } from '../components/VContextMenu.vue';
@@ -316,8 +316,11 @@ const actionInvoke = async (e: MouseEvent, action: string, item: any) => {
   button.classList.add("disabled")
   try {
     const resp = await dataApi.invokeAction(data.value.view.systemTable, action, { [key]: item[key] })
-    if (resp.href) {
+    if (resp?.href) {
       window.open(resp.href)
+    }
+    if (resp?.mutate) {
+      mutateRequestFull(dataApi.getData)
     }
   } finally {
     button.classList.remove("disabled")
