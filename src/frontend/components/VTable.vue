@@ -33,8 +33,8 @@
         </div>
       </div>
       <div v-for="(column, key) in columns" :key="key" v-bind="column.columnProps">
-        <slot :name="key" :item="item" :cell="(item as any)[key]">
-          {{ column.map? column.map(item as T): (item as any)[key as keyof T] }}
+        <slot :name="key" :item="item" :cell="getItem(item, key, column)">
+          {{ getItem(item, key, column) }}
         </slot>
       </div>
     </component>
@@ -60,6 +60,11 @@ const props = defineProps<{
 const emit = defineEmits([ "itemclick", "itemcontext", "update:sortedColumn", "update:checked" ])
 
 const sortedColumn = useVModel(props, "sortedColumn", emit, { passive: true, defaultValue: null })
+
+const getItem = (item: T, key: string, column: Column<T>) => {
+  if (column.map) return column.map(item)
+  return (item as any)[key as keyof T]
+}
 
 const gridStyle = computed<CSSProperties>(() => {
   const columns = Object.values(props.columns).map(item => item.width ?? '1fr')
@@ -207,6 +212,20 @@ export type Columns<T> = Record<string, Column<T>>
     &.activeDesc
       svg
         transform: rotate(180deg)
+
+.v-table__row .v-table__actions
+  padding: 0
+  padding-right: 8px
+  justify-content: flex-end
+  align-items: center
+  gap: 8px
+  display: none
+
+  .v-button
+    white-space: nowrap
+
+.v-table__row:hover .v-table__actions
+  display: flex
 
 .v-table__row
   height: 50px

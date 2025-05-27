@@ -31,8 +31,13 @@
           :row-component="data.editForm? 'button': 'div'" 
           @itemclick="onItemClick"
         >
-          <template v-for="(column, key) in columns" #[key]="{ item }">
-            <div class="data-page__data-cell">{{ column.map?.(item) ?? "" }}</div>
+          <template v-for="(column, key) in Object.keys(columns).filter((key: any) => key.startsWith('column'))" #[key]="{ cell }">
+            <div class="data-page__data-cell">{{ cell }}</div>
+          </template>
+          <template #_actions="{ item }">
+            <VButton v-for="action in data.view.actions" @click.stop="actionInvoke($event, action.id, item)">
+              {{ action.title }}
+            </VButton>
           </template>
         </VTable>
         <VPagination v-model="searchOptions.page" :page-count="data.totalPages"/>
@@ -222,6 +227,20 @@ const columns = computed(() => {
     ])
   ]
 
+  if (data.value.view.actions) {
+    columns.push([
+      "_actions",
+      {
+        title: "",
+        sortable: false,
+        width: "150px",
+        columnProps: {
+          class: "v-table__actions"
+        }
+      }
+    ])
+  }
+
   if ((window as any).isDev) {
     columns.push([ "_addColumn", { 
       sortable: false, 
@@ -232,7 +251,7 @@ const columns = computed(() => {
           contextMenu.open(e) 
         } 
       }, 
-      width: "120px",
+      width: "100px",
       columnProps: { class: "data-page__more-cell" }
     }])
   }
@@ -289,6 +308,20 @@ const deleteItems = () => {
       mutateRequestFull(dataApi.getData)
     }
   })
+}
+
+const actionInvoke = async (e: MouseEvent, action: string, item: any) => {
+  const button = (e.currentTarget as HTMLElement)
+  const key = data.value.view.idField
+  button.classList.add("disabled")
+  try {
+    const resp = await dataApi.invokeAction(data.value.view.systemTable, action, { [key]: item[key] })
+    if (resp.href) {
+      window.open(resp.href)
+    }
+  } finally {
+    button.classList.remove("disabled")
+  }
 }
 
 </script>

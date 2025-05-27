@@ -18,6 +18,7 @@ export type View = {
   name: string,
   systemTable: string,
   idField?: string,
+  actions?: string[],
   data: {
     create: { enabled: boolean, form?: string | null },
     edit: { enabled: boolean, form?: string | null },

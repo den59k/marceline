@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest, onRequestHookHandler } f
 import fp from 'fastify-plugin'
 import { FlatDB } from './flatdb'
 import { Endpoint, Form, View } from './types'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import frontendRoute from './extraRoutes/frontend'
 import endpointRoutes from './extraRoutes/endpointRoutes'
 
@@ -26,6 +26,8 @@ type HookType = "onRequest" | "bodyModifier" | "postEffect" | "fieldModifier" | 
 type Hook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply | void> | FastifyReply | void
 type TableName = Exclude<keyof PrismaClient, `$${string}`>
 
+type Action<T extends Prisma.ModelName> = (item: Prisma.TypeMap["model"][T]["payload"]["scalars"]) => any | Promise<any>
+
 type AddHookSettings = { table?: TableName | TableName[], allow?: "list" | "object" | "all" }
 
 type AuthHook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply | { accessToken: string, refreshToken?: string }>
@@ -37,6 +39,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     postEffect: new Map(), fieldModifier: new Map(), 
     filter: new Map(), responseModifier: new Map() 
   }
+
+  const actions: { [key in Prisma.ModelName]: Record<string, { title?: string, callback: Action<key> }> } = {} as any
     
   const views = new FlatDB<View>({ path: process.cwd() + "/marceline/views" })
   await views.init()
@@ -66,6 +70,16 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
       return console.warn(`Hook ${name} already registered. Pick another name`)
     }
     hooks[type].set(name, { hook, options })
+  }
+
+  type AddActionOptions<K> = {
+    table: K,
+    id: string,
+    title?: string
+  }
+
+  const registerAction = <K extends Prisma.ModelName>(options: AddActionOptions<K>, callback: Action<K>) => {
+    actions[options.table] = { ...actions[options.table], [options.id]: { ...options, callback } }
   }
 
   const applyHooks = async (type: HookType, hookList: string[], req: FastifyRequest, reply: FastifyReply): Promise<void | FastifyReply> => {
@@ -127,6 +141,8 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     addAuthMethod,
     executePostCallbacks,
     registerScript,
+    registerAction,
+    actions,
     scripts,
     showDevUI: options.showDevUI ?? true
   }

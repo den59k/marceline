@@ -21,7 +21,12 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   })
 
   /** Create new view */
-  const createTableSchema = schema({ name: "string", systemTable: "string", fields: { type: "array?" }, bodyModifiers: { type: "array?", items: "string" } })
+  const createTableSchema = schema({
+    name: "string", 
+    systemTable: "string", 
+    fields: { type: "array?" }, 
+    bodyModifiers: { type: "array?", items: "string" } 
+  })
   fastify.post("/forms", sc(createTableSchema, "body"), async (req, reply) => {
     const { name, systemTable, fields, bodyModifiers } = req.body as SchemaType<typeof createTableSchema>
     
@@ -34,7 +39,7 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
     return view
   })
 
-  /** Edit view */
+  /** Edit form */
   fastify.post("/forms/:formId", sc(params, createTableSchema), async (req, reply) => {
     const { formId } = req.params as SchemaType<typeof params>
     const { name, systemTable, fields, bodyModifiers } = req.body as SchemaType<typeof createTableSchema>

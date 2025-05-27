@@ -18,5 +18,6 @@ type PrismaModels = {
 export const utilsApi = {
   getModels: () => request<PrismaModels>("/api/admin/tables"),
   getHooks: () => request("/api/admin/hooks"),
-  uploadFile: (file: File, options?: XhrOptions) => sendXHR("/api/admin/upload-file", file, options)
+  uploadFile: (file: File, options?: XhrOptions) => sendXHR("/api/admin/upload-file", file, options),
+  getActions: (tableName: string) => request(`/api/admin/actions/${tableName}`)
 }

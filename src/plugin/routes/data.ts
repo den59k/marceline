@@ -51,7 +51,9 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
     const view = fastify.marceline.views.getItem(viewId)
     if (!view) return reply.code(400).send(`View ${viewId} not found`)
 
-    req.view = view
+    const actions = view.actions?.map(key => fastify.marceline.actions[view.systemTable as Prisma.ModelName][key]).filter(item => !!item) ?? []
+
+    req.view = { ...view, idField: getIdField(view)?.name, actions } as any
   })
 
   const filesReg = /file/i

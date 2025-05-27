@@ -30,8 +30,14 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   })
 
   /** Create new view */
-  const createTableSchema = schema({ name: "string", systemTable: "string",
-    columns: { type: "array?" }, icon: "string?", data: "object?" })
+  const createTableSchema = schema({ 
+    name: "string", 
+    systemTable: "string",
+    columns: { type: "array?" }, 
+    actions: { type: "array?", items: "string" }, 
+    icon: "string?", 
+    data: "object?" 
+  })
   fastify.post("/views", sc(createTableSchema, "body"), async (req, reply) => {
     const { name, systemTable, columns } = req.body as SchemaType<typeof createTableSchema>
     
@@ -49,12 +55,12 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   /** Edit view */
   fastify.post("/views/:viewId", sc(params, createTableSchema), async (req, reply) => {
     const { viewId } = req.params as SchemaType<typeof params>
-    const { name, systemTable, columns, icon, data } = req.body as SchemaType<typeof createTableSchema>
+    const { name, systemTable, columns, icon, data, actions } = req.body as SchemaType<typeof createTableSchema>
 
     const item = fastify.marceline.views.getItem(viewId)
     if (!item) return reply.code(400).send(`View ${viewId} not found`)
     
-    Object.assign(item, { name, systemTable, columns, icon, data })
+    Object.assign(item, { name, systemTable, columns, icon, data, actions })
 
     fastify.marceline.views.saveItem(item)
   })

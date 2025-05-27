@@ -105,6 +105,12 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     create: { login: "root", password: rootPassword }
   })
 
+  app.marceline.registerAction({ table: "AdminUser", id: "sendMail", title: "Открыть профиль" }, user => {
+    return {
+      href: `/${user.id}`
+    }
+  })
+
   app.marceline.registerHook("onRequest", "checkUserAccess", (req, reply) => {
     if (!req) return reply.code(403).send("Forbidden")
   })

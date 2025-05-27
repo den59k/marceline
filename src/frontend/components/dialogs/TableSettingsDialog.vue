@@ -8,6 +8,7 @@
         <VInput v-bind="register('name')" label="Название таблицы" />
         <VIconsSelector v-bind="register('icon')" style="margin-top: 20px"/>
       </div>
+      <VSelect v-if="actionsData && actionsData.length > 0" v-model="values.actions" label="Действия" multiple :items="actionsData" />
       <VCheckbox v-model="values.data.create.enabled" label="Разрешить создание объекта" style="margin-bottom: -8px"/>
       <VSelect v-model="values.data.create.form" :items="availableForms" 
         placeholder="Форма для создания объекта" :disabled="!values.data.create.enabled"/>
@@ -27,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mutateRequest, mutateRequestFull, useForm, useRequest } from 'vuesix';
+import { mutateRequest, mutateRequestFull, useForm, useRequest, useRequestWatch } from 'vuesix';
 import VDialog from '../VDialog.vue';
 import { viewsApi } from '../../api/views';
 import { computed } from 'vue';
@@ -45,11 +46,18 @@ const props = defineProps<{ viewId: string }>()
 
 const { data, error } = useRequest(viewsApi.getView, props.viewId)
 
+const tableId = computed(() => data.value?.systemTable)
+const { data: actionsData, setReturnData } = useRequestWatch(utilsApi.getActions, tableId)
+setReturnData((tableName) => {
+  if (!tableName) return []
+})
+
 const { register, handleSubmit, values, updateDefaultValuesWatch } = useForm({
   name: "",
   icon: "table",
   systemTable: null as string | null,
   columns: [],
+  actions: [] as any[],
   data: {
     create: {
       enabled: true,
@@ -64,7 +72,11 @@ const { register, handleSubmit, values, updateDefaultValuesWatch } = useForm({
     }
   }
 }, { required: [ "name" ] })
-updateDefaultValuesWatch(data)
+
+updateDefaultValuesWatch(data, obj => ({
+  ...obj,
+  actions: obj.actions.map((item: string) => ({ id: item, title: item }))
+}))
 
 const { data: modelsData } = useRequest(utilsApi.getModels)
 const models = computed(() => {
@@ -73,8 +85,9 @@ const models = computed(() => {
 })
 
 const dialogStore = useDialogStore()
-const save = handleSubmit(async () => {
-  await viewsApi.updateView(props.viewId, values)
+const save = handleSubmit(async (values) => {
+  const _values = { ...values, actions: values.actions.map(item => item.id) }
+  await viewsApi.updateView(props.viewId, _values)
   mutateRequest(viewsApi.getView, props.viewId)
   mutateRequest(viewsApi.getViews)
   mutateRequestFull(dataApi.getData)
@@ -87,7 +100,6 @@ const availableForms = computed(() => {
   return formsData.value.filter(item => item.systemTable === data.value.systemTable)
     .map(item => ({ id: item.id, title: item.name }))
 })
-
   
 </script>
 
