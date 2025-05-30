@@ -6,6 +6,7 @@ import { getIdField, parseIdField } from "../utils/getIdField";
 import { Form, FormField, View } from "../types";
 import { Prisma } from "@prisma/client";
 import { getSearchFeed } from "../utils/getSearchFeed";
+import { capitalize } from "../utils/lang";
 
 interface FastifyRequestExt extends FastifyRequest {
   view: View,
@@ -51,7 +52,8 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
     const view = fastify.marceline.views.getItem(viewId)
     if (!view) return reply.code(400).send(`View ${viewId} not found`)
 
-    const actions = view.actions?.map(key => fastify.marceline.actions[view.systemTable as Prisma.ModelName][key]).filter(item => !!item) ?? []
+    const tableName = capitalize(view.systemTable) as Prisma.ModelName
+    const actions = view.actions?.map(key => fastify.marceline.actions[tableName]?.[key]).filter(item => !!item) ?? []
 
     req.view = { ...view, idField: getIdField(view)?.name, actions } as any
   })

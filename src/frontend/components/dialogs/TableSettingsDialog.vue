@@ -75,7 +75,7 @@ const { register, handleSubmit, values, updateDefaultValuesWatch } = useForm({
 
 updateDefaultValuesWatch(data, obj => ({
   ...obj,
-  actions: obj.actions.map((item: string) => ({ id: item, title: item }))
+  actions: obj.actions?.map((item: string) => ({ id: item, title: item })) ?? []
 }))
 
 const { data: modelsData } = useRequest(utilsApi.getModels)

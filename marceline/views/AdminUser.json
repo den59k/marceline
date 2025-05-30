@@ -46,8 +46,8 @@
       "enabled": true
     }
   },
+  "idField": "id",
   "actions": [
     "sendMail"
-  ],
-  "idField": "id"
+  ]
 }
