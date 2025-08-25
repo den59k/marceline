@@ -53,17 +53,22 @@
         <div class="rich-text-editor__placeholder" :contenteditable="false">Введите текст...</div>
       </template>
     </TextEditor>
+    <VPopover v-model:open="makeLinkPopover.open" placement="bottom-start" :anchor-position="makeLinkPopover.position">
+      <RichTextMakeLinkPopover @apply="setLink($event)" @close="makeLinkPopover.open = false"/>
+    </VPopover>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { TextEditor, TextEditorRef } from 'vuewrite';
 import VSelect from './VSelect.vue';
-import { computed, shallowRef } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 import { defaultDecorator, defaultRenderer } from '../utils/richTextComponents';
 import RichTextEditorCode from './RichTextEditorCode.vue';
+import RichTextMakeLinkPopover from './RichTextMakeLinkPopover.vue';
 import VIcon from './VIcon.vue';
 import VFileUploader from './VFileUploader.vue';
+import VPopover from './VPopover.vue';
 
 const props = defineProps<{ label?: string }>()
 const model = defineModel<any[]>()
@@ -113,6 +118,11 @@ const styles = computed(() => {
   ]
 })
 
+const makeLinkPopover = ref({
+  open: false,
+  position: { x: 0, y: 0 },
+  selection: {} as any
+})
 
 const onKeyDown = (e: KeyboardEvent) => {
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
@@ -124,6 +134,17 @@ const onKeyDown = (e: KeyboardEvent) => {
     }
     if (e.code === "KeyU") {
       textEditorRef.value?.toggleStyle("underline")
+    }
+    if (e.code === "KeyK" && textEditorRef.value && !textEditorRef.value.isCollapsed) {
+      e.preventDefault()
+      const rect = textEditorRef.value.getClientRects(textEditorRef.value.selection)?.[0]
+      if (rect) {
+        makeLinkPopover.value = {
+          open: true,
+          position: { x: rect.left, y: rect.bottom },
+          selection: textEditorRef.value.selection
+        }
+      }
     }
   }
   // if (e.key === "Enter" && popoverOpen.value && activeItem.value) {
@@ -166,6 +187,13 @@ const insertGallery = () => {
   textEditorRef.value?.insertBlock({ type: "gallery", editable: false, text: "" })
 }
 
+const setLink = (linkData: any) => {
+  if (!textEditorRef.value || !makeLinkPopover.value.selection) return
+  Object.assign(textEditorRef.value.selection, makeLinkPopover.value.selection)
+  textEditorRef.value.applyStyle("link", linkData)
+  makeLinkPopover.value.open = false
+}
+
 </script>
 
 <style lang="sass">
@@ -205,6 +233,9 @@ const insertGallery = () => {
     
   .underline.strikethrough
     text-decoration: underline line-through
+
+  a
+    color: var(--primary-color)
 
 .rich-text-editor__placeholder
   position: absolute

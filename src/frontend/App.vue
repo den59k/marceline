@@ -12,7 +12,7 @@ import { onMounted } from 'vue';
 import AppDialogProvider from './components/AppDialogProvider.vue';
 import AppSidebar from './components/AppSidebar.vue';
 import { useAccountStore } from './stores/accountStore';
-import { afterEach, beforeEach } from './router';
+import { beforeEach } from './router';
 import { useRouter } from 'vue-router';
 
 const accountStore = useAccountStore()

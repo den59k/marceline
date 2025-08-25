@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import dayjs, { Dayjs } from 'dayjs';
-import { nextTick } from 'process';
+import { nextTick } from 'vue';
 import { shallowRef, watch } from 'vue';
 import VCalendar from './VCalendar.vue';
 import VIconButton from './VIconButton.vue';

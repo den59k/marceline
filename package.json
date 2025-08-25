@@ -1,6 +1,6 @@
 {
   "name": "marceline",
-  "version": "0.1.5-a",
+  "version": "0.1.6",
   "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "node scripts/run.js",
     "collect": "node scripts/registerComponents.js src/frontend",
-    "build:frontend": "tsc && vite build -c vite.frontend.config.ts",
+    "build:frontend": "vite build -c vite.frontend.config.ts",
     "build:backend": "vite build -c vite.backend.config.ts",
     "build:utils": "vite build -c vite.utils.config.ts",
     "test": "vitest"
