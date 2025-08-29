@@ -26,6 +26,7 @@ export type View = {
   }
   columns: ViewColumn[],
   filters?: ViewFilter[],
+  sortBy?: string,
   order?: number
 }
 

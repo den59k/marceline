@@ -195,9 +195,11 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
       }
     }
 
+    const sortBy = req.view.sortBy
+
     const resp = await (fastify as any).prisma[req.view.systemTable].findMany({
       select,
-      orderBy: { [idField.name]: "asc" },
+      orderBy: sortBy? { [sortBy.replace(/[-+]/,"")]: sortBy.startsWith("-")? "desc": "asc" }: { [idField.name]: "asc" },
       take: PAGE_SIZE,
       where,
       skip: (page ?? 0) * PAGE_SIZE

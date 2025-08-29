@@ -2,6 +2,7 @@
   "id": "Article",
   "name": "Статьи",
   "systemTable": "Article",
+  "sortBy": "-type",
   "filters": [
     {
       "systemColumn": "id",
