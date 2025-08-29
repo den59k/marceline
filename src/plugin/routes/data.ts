@@ -159,7 +159,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
         }
         if (!item) continue
         if (!field.isRequired) {
-          item = `COALESCE("${item}", '')`
+          item = `COALESCE(${item}, '')`
         }
         sqlArr.push("' ' || " + item)
       }
