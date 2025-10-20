@@ -81,7 +81,6 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
 
   const registerAction = <K extends Prisma.ModelName>(options: AddActionOptions<K>, callback: Action<K>) => {
     actions[options.table] = { ...actions[options.table], [options.id]: { ...options, callback } }
-    console.log(actions)
   }
 
   const applyHooks = async (type: HookType, hookList: string[], req: FastifyRequest, reply: FastifyReply): Promise<void | FastifyReply> => {
