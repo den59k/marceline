@@ -246,6 +246,11 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
       data: req.modifiedBody
     })
     await fastify.marceline.executePostCallbacks(req, newObject)
+
+    if (form.postEffects && form.postEffects.length > 0) {
+      await fastify.marceline.applyHooks("postEffect", form.postEffects, req, reply)
+    }
+
     return newObject
   })
 
@@ -273,6 +278,11 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
       data: req.modifiedBody
     })
     await fastify.marceline.executePostCallbacks(req, newObject)
+
+    if (form.postEffects && form.postEffects.length > 0) {
+      await fastify.marceline.applyHooks("postEffect", form.postEffects, req, reply)
+    }
+
     return newObject
   })
 

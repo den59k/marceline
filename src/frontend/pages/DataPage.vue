@@ -35,8 +35,14 @@
             <div class="data-page__data-cell">{{ cell }}</div>
           </template>
           <template #_actions="{ item }">
-            <VButton v-for="action in data.view.actions" @click.stop="actionInvoke($event, action.id, item)">
+            <VButton 
+              v-for="action in data.view.actions" 
+              class="v-table__action-button"
+              :class="{ 'v-table__action-icon-button': !action.title }" 
+              @click.stop="actionInvoke($event, action.id, item)"
+            >
               {{ action.title }}
+              <VIcon v-if="action.icon" :icon="action.icon"/>
             </VButton>
           </template>
         </VTable>
@@ -316,11 +322,22 @@ const actionInvoke = async (e: MouseEvent, action: string, item: any) => {
   button.classList.add("disabled")
   try {
     const resp = await dataApi.invokeAction(data.value.view.systemTable, action, { [key]: item[key] })
+    if (resp?.mutate || resp?.update) {
+      mutateRequestFull(dataApi.getData)
+    }
     if (resp?.href) {
       window.open(resp.href)
-    }
-    if (resp?.mutate) {
-      mutateRequestFull(dataApi.getData)
+    } else if (resp?.relativeLink) {
+      let link = resp.relativeLink
+      if (link.startsWith("#")) {
+        link = window.location.pathname + link
+      } else if (!link.startsWith("http")) {
+        router.push(link)
+        return
+      }
+      window.location.href = link
+    } else if (resp?.reload) {
+      window.location.reload()
     }
   } finally {
     button.classList.remove("disabled")
@@ -391,5 +408,16 @@ class ColumnDropEvent extends Event {
   -webkit-box-orient: vertical
   white-space: pre-wrap
 
+.v-table__action-button
+  padding: 0 12px
+  gap: 4px
+
+.v-table__action-icon-button
+  padding: 0
+  width: 38px
+  flex-shrink: 0
+  display: flex
+  align-items: center
+  justify-content: center
 
 </style>

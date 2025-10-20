@@ -13,7 +13,8 @@
         <template v-if="formInfo">Выберите таблицу для создания формы</template>
       </div>
     </div>
-    <FormEditor v-model="values.fields" v-else :fields="fields" :body-modifiers="values.bodyModifiers" :systemTable="values.systemTable" class="form-item-page__form-editor"/>
+    <FormEditor v-model="values.fields" v-else :fields="fields" :systemTable="values.systemTable" class="form-item-page__form-editor"
+      :body-modifiers="values.bodyModifiers" :post-effect="values.postEffects" />
   </VLayout>
 </template>
 
@@ -35,14 +36,15 @@ const formId = computed(() => parseItemId(router.currentRoute.value.params.formI
 
 const { data: formInfo, setReturnData } = useRequestWatch(formsApi.getForm, formId)
 setReturnData(formId => {
-  if (formId === null) return { systemTable: null, name: "", fields: [], bodyModifiers: [] }
+  if (formId === null) return { systemTable: null, name: "", fields: [], bodyModifiers: [], postEffects: [] }
 })
 
 const { register, values, handleSubmit, hasChange, updateDefaultValues, updateDefaultValuesWatch } = useForm({
   systemTable: null as string | null,
   name: "",
   fields: [],
-  bodyModifiers: []
+  bodyModifiers: [],
+  postEffects: []
 })
 updateDefaultValuesWatch(formInfo)
 

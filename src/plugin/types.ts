@@ -54,7 +54,8 @@ export type Form = {
   name: string,
   systemTable: string,
   fields: FormField[],
-  bodyModifiers?: string[]
+  bodyModifiers?: string[],
+  postEffects?: string[]
 }
 
 export type Endpoint = {

@@ -3,7 +3,7 @@
     <template v-if="!props.item">
       <div class="subtitle">Данные формы</div>
       <ListEditor v-model="props.bodyModifiers" :items="bodyModifiers" addLabel="Добавить модификатор" label="Модификаторы объекта"/>
-      <ListEditor :items="[]" addLabel="Добавить хук" label="Хуки postEffect"/>
+      <ListEditor  v-model="props.postEffect" :items="postEffect" addLabel="Добавить хук" label="Хуки postEffect"/>
     </template>
     <template v-else-if="props.item && activeFormItemField">
       <div class="subtitle">Поле "{{ props.item.fieldId }}"</div>
@@ -78,7 +78,7 @@ import VCheckbox from '../VCheckbox.vue';
 import FormEditorTableValues from './FormEditorTableValues.vue';
 import FormEditorJsonListProps from './FormEditorJsonListProps.vue';
 
-const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[], systemTable: string }>()
+const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[], postEffect?: string[], systemTable: string }>()
 
 const customField: Field = { name: 'custom', type: 'custom', kind: 'custom' }
 
@@ -138,6 +138,10 @@ const fieldModifiers = computed(() => {
 const bodyModifiers = computed(() => {
   if (!hooksData.value) return []
   return hooksData.value.bodyModifier.map((item: any) => item.name)
+})
+const postEffect = computed(() => {
+  if (!hooksData.value) return []
+  return hooksData.value.postEffect.map((item: any) => item.name)
 })
 
 </script>

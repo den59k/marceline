@@ -105,9 +105,17 @@ export const createApp = async (opts?: FastifyServerOptions) => {
     create: { login: "root", password: rootPassword }
   })
 
-  app.marceline.registerAction({ table: "AdminUser", id: "sendMail", title: "Открыть профиль" }, user => {
+  app.marceline.registerAction({ table: "AdminUser", id: "sendMail", icon: "arrow-right" }, user => {
     return {
       href: `/${user.id}`
+    }
+  })
+
+  app.marceline.registerAction({ table: "AdminUser", id: "_delete", title: "Удалить профиль" }, user => {
+    return {
+      // relativeLink: "#test",
+      reload: true
+      // href: `/${user.id}`
     }
   })
 
