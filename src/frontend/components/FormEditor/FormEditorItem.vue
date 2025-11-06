@@ -32,17 +32,10 @@ import { computed } from 'vue';
 import { Field } from './FormEditor.vue';
 import { FormItem } from '../../api/formsApi';
 import VIconButton from '../VIconButton.vue';
-import VSelect from '../VSelect.vue'
 import VInput from '../VInput.vue'
 import { getItems } from '../../utils/getItems';
-import VFileUploader from '../VFileUploader.vue';
-import VFormEditorCheckbox from './VFormEditorCheckbox.vue'
 import VFormEditorConst from './VFormEditorConst.vue';
-import VFormEditorSubitems from '../VFormEditorSubitems.vue';
-import VGeoPicker from '../VGeoPicker.vue';
-import VListInput from '../VListInput.vue';
-import VInputJson from '../VInputJson.vue';
-import RichTextEditor from '../RichTextEditor.vue';
+import { getFormComponent } from '../Form/FormItem.vue';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
 
@@ -55,17 +48,9 @@ const getInputType = (item: FormItem) => {
 }
 
 const component = computed(() => {
+  if (!props.item.format) return VInput
   if (props.item.format === 'const') return VFormEditorConst
-  if (props.item.format === 'select' || props.item.format === 'multiselect') return VSelect
-  if (props.item.format === "file" || props.item.format === "files-group") return VFileUploader
-  if (props.item.format === "checkbox") return VFormEditorCheckbox
-  if (props.item.format === "subitems") return VFormEditorSubitems
-  if (props.item.format === "geo" || props.item.format === "geoRoute") return VGeoPicker
-  if (props.item.format === "listInput") return VListInput
-  if (props.item.format === "jsonInput") return VInputJson
-  if (props.item.format === "jsonList") return VFormEditorSubitems
-  if (props.item.format === 'richText') return RichTextEditor
-  return VInput
+  return getFormComponent(props.item.format) ?? VInput
 })
 
 const additionalProps = computed(() => {

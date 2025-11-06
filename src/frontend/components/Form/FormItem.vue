@@ -127,6 +127,10 @@ export const addFormComponent = (name: string, component: any) => {
   components[name] = component
 }
 
+export const getFormComponent = (name: string) =>{ 
+  return components[name]
+}
+
 </script>
 
 <style lang="sass">

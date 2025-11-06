@@ -209,6 +209,13 @@ export const getFormats = (item: Field) => {
     ]
   }
 
+  if (item.type === "DateTime") {
+    return [
+      { id: "date", title: "Календарь" },
+      { id: "input", title: "Ввод строкой" }
+    ]
+  }
+
   return [ 
     { id: "input", title: "Поле ввода" },
     { id: "password", title: "Скрытое поле" },

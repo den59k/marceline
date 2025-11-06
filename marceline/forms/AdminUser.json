@@ -21,6 +21,11 @@
           ]
         }
       ]
+    },
+    {
+      "fieldId": "createdAt",
+      "name": "createdAt",
+      "format": "date"
     }
   ],
   "bodyModifiers": []

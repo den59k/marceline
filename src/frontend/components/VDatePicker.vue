@@ -1,11 +1,13 @@
 <template>
   <VFormControl class="v-date-picker" outline>
+    <slot name="start-adornment"></slot>
     <VDateInput v-model="dateValue" />
     <VIconButton class="v-date-picker__activator" :class="{ opened }" icon="calendar" @click="openPopover"/>
 
     <VPopover v-model:open="opened" placement="bottom-start"  :offset="4" :element="el" class="v-date-picker__popover">
       <VCalendarSlider :start-date="dateValue" @itemclick="onDateClick" />
     </VPopover>
+     <slot name="end-adornment"></slot>
   </VFormControl>
 </template>
 
