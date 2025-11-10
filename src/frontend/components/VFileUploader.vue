@@ -29,15 +29,10 @@
             {{props.multiple? "Загрузить файлы": `Загрузить ${isImage? 'изображение': 'файл'}`}}
           </VButton>
         </slot>
-        </template>
+      </template>
       <slot name="end-adornment"></slot>
     </div>
-    <div v-if="props.multiple" class="v-image-uploader__files-row">
-      <div v-for="item in files" class="v-image-uploader__files-row-item" :class="{ temp: typeof item.progress === 'number' }"> 
-        <img :src="item.src" alt="Image"/>
-        <VIconButton icon="close" @click="deleteFileItem(item)"/>
-      </div>
-    </div>
+    <VFileUploaderRow v-if="props.multiple && modelValue" :files="modelValue" />
   </VFormControl>
 </template>
 
@@ -52,6 +47,7 @@ import VButton from './VButton.vue';
 import VSpinner from './VSpinner.vue';
 import { utilsApi } from '../api/utils';
 import VIcon from './VIcon.vue';
+import VFileUploaderRow from './VFileUploaderRow.vue';
 
 const props = defineProps<{ 
   modelValue?: FileEntry | FileEntry[],
@@ -63,7 +59,7 @@ const emit = defineEmits([ "update:modelValue" ])
 
 const isImage = computed(() => !props.accept || props.accept.startsWith('image'))
 
-type FileEntry = { id?: string, src: string, name?: string, type?: string, progress?: number, error?: string }
+export type FileEntry = { id?: string, src: string, name?: string, type?: string, progress?: number, error?: string }
 const files = reactive<FileEntry[]>([])
 
 const filesMap = new WeakMap<FileEntry, File>()
@@ -163,12 +159,6 @@ const deleteFile = () => {
   files.length = 0
 }
 
-const deleteFileItem = (item: FileEntry) => {
-  const index = files.indexOf(item)
-  if (index < 0) return
-  files.splice(index, 1)
-  emit("update:modelValue", files)
-}
 
 const fileDialog = useFileDialog({
   accept: props.accept ?? 'image/*',
@@ -239,39 +229,6 @@ button.v-image-uploader__delete-button
   &.temp
     opacity: 0.6
 
-.v-image-uploader__files-row
-  display: flex
-  gap: 8px
-  margin-top: 16px
-  
-.v-image-uploader__files-row-item
-  width: 60px
-  height: 60px
-  position: relative
-  img
-    width: 100%
-    height: 100%
-    display: block
-    object-fit: contain
-
-  &.temp
-    img
-      opacity: 0.6
-  
-  .v-icon-button
-    position: absolute
-    top: -4px
-    right: -4px
-    background-color: var(--paper-color)
-    width: 22px
-    height: 22px
-
-    svg 
-      width: 16px
-      height: 16px
-
-    &:hover
-      background-color: var(--primary-color)
 
 .v-image-uploader__file-preview
   display: flex
