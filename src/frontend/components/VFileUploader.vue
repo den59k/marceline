@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref, watch } from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 import lightIcon from '../assets/images/emptyFile.svg'
 import darkIcon from '../assets/images/emptyFileDark.svg'
@@ -117,6 +117,9 @@ watch(() => props.modelValue, () => {
     files.push(item)
   }
 }, { immediate: true })
+onMounted(() => {
+  skipUpdate = false
+})
 
 watch(files, () => {
   if (skipUpdate) {
