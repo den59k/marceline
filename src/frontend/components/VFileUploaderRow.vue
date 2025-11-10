@@ -67,6 +67,7 @@ const onDrag = (e: MouseEvent, currentIndex: number) => {
           targetItem = item as HTMLElement
           targetIndex = index
           left = e.clientX < (rect.left + rect.right) * 0.5
+          index++
           continue
         }
         if (distX < minDistanceX) {

@@ -32,7 +32,7 @@
       </template>
       <slot name="end-adornment"></slot>
     </div>
-    <VFileUploaderRow v-if="props.multiple && modelValue" :files="modelValue" />
+    <VFileUploaderRow v-if="props.multiple && modelValue" :files="files" />
   </VFormControl>
 </template>
 
