@@ -27,7 +27,7 @@
       @click="emit('itemclick', item)"
       @contextmenu="emit('itemcontext', $event, item)"
     >
-      <div v-if="props.checkable" @click.stop="checkItem(item)">
+      <div v-if="props.checkable" class="v-table__checkbox-cell" @click.stop="checkItem(item)">
         <div class="v-checkbox__icon" :class="{ active: checkedItems.has(item) }" >
           <VIcon icon="check"/>
         </div>
@@ -176,15 +176,26 @@ export type Columns<T> = Record<string, Column<T>>
   grid-column: 1 / -1
   align-items: center
 
-  &>div
-    height: 100%
-    display: flex 
-    align-items: center
-    padding-left: 16px
-    // border-left: 1px solid var(--border-color)
+.v-table__header>div
+  height: 100%
+  display: flex 
+  align-items: center
+  padding-left: 16px
 
-    // &:first-child
-    //   border-left: none
+.v-table__row>div
+  overflow: hidden
+  text-overflow: ellipsis
+  display: -webkit-box
+  -webkit-line-clamp: 2
+  -webkit-box-orient: vertical
+  white-space: pre-wrap
+  height: auto
+  padding-left: 16px
+
+  &.v-table__checkbox-cell
+    display: flex
+    align-items: center
+    height: 100%
 
 .v-table__header
   font-size: 13px
@@ -213,18 +224,19 @@ export type Columns<T> = Record<string, Column<T>>
       svg
         transform: rotate(180deg)
 
-.v-table__row .v-table__actions
+.v-table__row>div.v-table__actions
   padding: 0
   padding-right: 8px
   justify-content: flex-end
   align-items: center
   gap: 8px
   display: none
+  overflow: visible
 
   .v-button
     white-space: nowrap
 
-.v-table__row:hover .v-table__actions
+.v-table__row:hover>div.v-table__actions
   display: flex
 
 .v-table__row

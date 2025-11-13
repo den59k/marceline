@@ -27,6 +27,7 @@ type Hook = (req: FastifyRequest, reply: FastifyReply) => Promise<FastifyReply |
 type TableName = Exclude<keyof PrismaClient, `$${string}`>
 
 type Action<T extends Prisma.ModelName> = (item: Prisma.TypeMap["model"][T]["payload"]["scalars"]) => any | Promise<any>
+type BulkAction<T extends Prisma.ModelName> = (items: Array<Prisma.TypeMap["model"][T]["payload"]["scalars"]>) => any | Promise<any>
 
 type AddHookSettings = { table?: TableName | TableName[], allow?: "list" | "object" | "all" }
 
@@ -41,6 +42,7 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
   }
 
   const actions: { [key in Prisma.ModelName]: Record<string, { title?: string, callback: Action<key> }> } = {} as any
+  const bulkActions: { [key in Prisma.ModelName]: Record<string, { title?: string, callback: BulkAction<key> }> } = {} as any
     
   const views = new FlatDB<View>({ path: process.cwd() + "/marceline/views" })
   await views.init()
@@ -81,6 +83,9 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
 
   const registerAction = <K extends Prisma.ModelName>(options: AddActionOptions<K>, callback: Action<K>) => {
     actions[options.table] = { ...actions[options.table], [options.id]: { ...options, callback } }
+  }
+  const registerBulkAction = <K extends Prisma.ModelName>(options: AddActionOptions<K>, callback: BulkAction<K>) => {
+    bulkActions[options.table] = { ...bulkActions[options.table], [options.id]: { ...options, callback } }
   }
 
   const applyHooks = async (type: HookType, hookList: string[], req: FastifyRequest, reply: FastifyReply): Promise<void | FastifyReply> => {
@@ -143,7 +148,9 @@ const marcelinePlugin = async (fastify: FastifyInstance, options: Options) => {
     executePostCallbacks,
     registerScript,
     registerAction,
+    registerBulkAction,
     actions,
+    bulkActions,
     scripts,
     showDevUI: options.showDevUI ?? true
   }

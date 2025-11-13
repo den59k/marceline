@@ -20,18 +20,35 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   fastify.post("/actions/:tableName/:actionName", async (req, reply) => {
     const { tableName, actionName } = req.params as any
 
-    const action = fastify.marceline.actions[tableName as Prisma.ModelName]?.[actionName]
-    if (!action) {
-      return reply.code(400).send({ error: { actionName: { message: `Action ${actionName} for table ${tableName} not found` } } })
-    }
-
     const id = getIdField({ systemTable: tableName })
-    const item = await (fastify as any).prisma[tableName].findUnique({
-      where: { [id.name]: (req.body as any)[id.name] }
-    })
-    if (!item) return reply.code(400).send({ error: { [id.name]: { message: `Item with id ${(req.body as any)[id.name]} not found` } }})
+    if (Array.isArray(req.body)) {
+      const action = fastify.marceline.bulkActions[tableName as Prisma.ModelName]?.[actionName]
+      if (!action) {
+        return reply.code(400).send({ error: { actionName: { message: `Bulk Action ${actionName} for table ${tableName} not found` } } })
+      }
+  
+      const items = await (fastify as any).prisma[tableName].findMany({
+        where: { [id.name]: { in: (req.body as any) } }
+      })
+      if (items.length === 0) {
+        return reply.code(400).send({ error: { [id.name]: { message: `Items with ids ${(req.body as any).join(',')} not found` } }})
+      } 
+  
+      return await action.callback(items)
 
-    return await action.callback(item)
+    } else {
+      const action = fastify.marceline.actions[tableName as Prisma.ModelName]?.[actionName]
+      if (!action) {
+        return reply.code(400).send({ error: { actionName: { message: `Action ${actionName} for table ${tableName} not found` } } })
+      }
+  
+      const item = await (fastify as any).prisma[tableName].findUnique({
+        where: { [id.name]: (req.body as any)[id.name] }
+      })
+      if (!item) return reply.code(400).send({ error: { [id.name]: { message: `Item with id ${(req.body as any)[id.name]} not found` } }})
+  
+      return await action.callback(item)
+    }
   })
 
 }

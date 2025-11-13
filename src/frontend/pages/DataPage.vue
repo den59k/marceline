@@ -12,6 +12,12 @@
         <VIcon icon="add" /> Добавить элемент
       </VButton>
       <div style="flex: 1 1 auto"></div>
+      <template v-if="selectedItems.length > 0 && data?.view.bulkActions?.length > 0">
+        <VButton v-for="action in data.view.bulkActions" @click="actionInvoke($event, action.id, selectedItems)">
+          {{ action.title }}
+          <VIcon v-if="action.icon" :icon="action.icon"/>
+        </VButton>
+      </template>
       <template v-for="item in data?.view.filters">
         <VSelect v-if="item.format === 'select'" v-model="searchOptions.params[item.systemColumn]" :style="item.style"
           nullable :placeholder="item.name ?? item.systemColumn" :items="item.enum"/>
@@ -300,7 +306,7 @@ const onItemClick = (item: any) => {
   dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm, systemTable: data.value.view.systemTable })
 }
 
-const selectedItems = ref<any>([])
+const selectedItems = ref<any[]>([])
 watch(data, () => {
   selectedItems.value = []
 })
@@ -316,12 +322,13 @@ const deleteItems = () => {
   })
 }
 
-const actionInvoke = async (e: MouseEvent, action: string, item: any) => {
+const actionInvoke = async (e: MouseEvent, action: string, item: any | any[]) => {
   const button = (e.currentTarget as HTMLElement)
   const key = data.value.view.idField
+  const body = Array.isArray(item)? item.map(i => i[key]): { [key]: item[key] }
   button.classList.add("disabled")
   try {
-    const resp = await dataApi.invokeAction(data.value.view.systemTable, action, { [key]: item[key] })
+    const resp = await dataApi.invokeAction(data.value.view.systemTable, action, body)
     if (resp?.mutate || resp?.update) {
       mutateRequestFull(dataApi.getData)
     }

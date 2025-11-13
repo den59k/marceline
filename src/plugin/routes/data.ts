@@ -54,8 +54,9 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
 
     const tableName = capitalize(view.systemTable) as Prisma.ModelName
     const actions = view.actions?.map(key => fastify.marceline.actions[tableName]?.[key]).filter(item => !!item) ?? []
+    const bulkActions = view.actions?.map(key => fastify.marceline.bulkActions[tableName]?.[key]).filter(item => !!item) ?? []
 
-    req.view = { ...view, idField: getIdField(view)?.name, actions } as any
+    req.view = { ...view, idField: getIdField(view)?.name, actions, bulkActions } as any
   })
 
   const filesReg = /file/i
