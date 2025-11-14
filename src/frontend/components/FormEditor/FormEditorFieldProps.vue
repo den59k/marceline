@@ -20,7 +20,7 @@
         v-model="props.item.accept"
       />
       <FormEditorEnumValues 
-        v-if="props.item.format === 'select' && !props.item.relationType" 
+        v-if="(props.item.format === 'select' || props.item.format === 'listSelect') && !props.item.relationType" 
         v-model="props.item.enum"
         :editable="activeFormItemField?.kind !== 'enum'"
       />
@@ -149,6 +149,11 @@ const postEffect = computed(() => {
 <script lang="ts">
 
 export const getFormats = (item: Field) => {
+  if (item.isList && item.kind === "enum") {
+    return [ 
+      { id: "listSelect", title: "Выбор из вариантов" }
+    ]
+  }
   if (item.isList && item.kind !== "scalar") {
     return [
       { id: "multiselect", title: "Выбор из нескольких вариантов" },

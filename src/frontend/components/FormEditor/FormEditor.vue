@@ -97,7 +97,7 @@ const createFormItem = (item: Field): FormItem => {
     }
   }
   if (item.kind === "enum") {
-    return { fieldId: item.name, name: item.name, format: "select", enum: item.enum?.map(item => ({ id: item, title: item })) }
+    return { fieldId: item.name, name: item.name, format: item.isList? "listSelect": "select", enum: item.enum?.map(item => ({ id: item, title: item })) }
   }
   return  { fieldId: item.name, name: item.name, format: getFormats(item)[0].id }
 }
@@ -225,6 +225,7 @@ export class BlockDropEvent extends Event {
 <style lang="sass">
 .form-editor__layout
   display: flex
+  user-select: none
 
 .form-editor__available-fields
   display: flex

@@ -54,16 +54,18 @@ const component = computed(() => {
 })
 
 const additionalProps = computed(() => {
-  if (props.item.format === 'select') {
+  if (props.item.format === 'select' || props.item.format === 'listSelect') {
     if (props.item.relationType) {
       return {
         items: () => getItems(props.item.relationType!),
         nullable: true,
-        search: true
+        search: props.item.format === 'listSelect',
+        multiple: true,
       }
     }
     return { 
-      items: props.item.enum ?? [] 
+      items: props.item.enum ?? [],
+      multiple: props.item.format === 'listSelect'
     }
   }
   if (props.item.format === 'multiselect') {

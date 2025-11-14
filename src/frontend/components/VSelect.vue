@@ -53,7 +53,8 @@ const props = defineProps<{
   modelValue?: string | number | null | Array<Item>, 
   placeholder?: string,
   nullable?: boolean,
-  multiple?: boolean
+  multiple?: boolean,
+  returnId?: boolean
 } & VFormControlProps>()
 
 const emit = defineEmits([ "update:modelValue" ])
@@ -92,13 +93,17 @@ watch(selected, () => {
     preventUpdateModelValue = false 
     return 
   }
-  emit("update:modelValue", Array.from(selected.values())) 
+  if (props.returnId) {
+    emit("update:modelValue", Array.from(selected.values()).map(i => i.id)) 
+  } else {
+    emit("update:modelValue", Array.from(selected.values())) 
+  }
 })
-watch(items, () => {
+watch(items, (items) => {
   if (props.multiple && props.modelValue && Array.isArray(props.modelValue)) {
-    if (items.value.length > 0) {
-      const set = new Set(props.modelValue.map(item => item.id))
-      for (let item of items.value) {
+    if (items.length > 0) {
+      const set = new Set(props.returnId? props.modelValue as any[]: props.modelValue.map(item => item.id))
+      for (let item of items) {
         if (!set.has(item.id)) continue
         selected.set(item.id, item)
         preventUpdateModelValue = true

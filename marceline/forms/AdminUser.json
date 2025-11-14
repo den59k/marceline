@@ -26,6 +26,25 @@
       "fieldId": "createdAt",
       "name": "createdAt",
       "format": "date"
+    },
+    {
+      "fieldId": "access",
+      "name": "access",
+      "format": "listSelect",
+      "enum": [
+        {
+          "id": "full",
+          "title": "Полный доступ"
+        },
+        {
+          "id": "read",
+          "title": "Чтение"
+        },
+        {
+          "id": "write",
+          "title": "Запись"
+        }
+      ]
     }
   ],
   "bodyModifiers": []

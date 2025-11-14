@@ -7,12 +7,19 @@ generator client {
   provider        = "prisma-client-js"
 }
 
+enum Access {
+  full
+  read
+  write
+}
+
 model AdminUser {
   id                Int                 @id @default(autoincrement())
   createdAt         DateTime            @default(now())
   login             String              @unique
   password          Bytes
   token             String?             @unique
+  access            Access[]
 }
 
 enum UserType {
