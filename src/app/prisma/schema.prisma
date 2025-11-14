@@ -44,6 +44,7 @@ model User {
   telegramIds       Int[]               @default([])
   deleted           Boolean             @default(false)
   licenseFileId     String?             
+  articles          Article[]
 }
 
 
@@ -106,6 +107,8 @@ model Article {
   name              String
   content           Json
   createdAt         DateTime            @default(now())
+  authorId          Int?
+  author            User?              @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model File {

@@ -59,8 +59,8 @@ const additionalProps = computed(() => {
       return {
         items: () => getItems(props.item.relationType!),
         nullable: true,
-        search: props.item.format === 'listSelect',
-        multiple: true,
+        search: true,
+        multiple: props.item.format === 'listSelect',
       }
     }
     return { 

@@ -180,6 +180,8 @@ const deleteItem = (item: any) => {
 
   .v-table__row>div
     padding: 0
+    height: 100%
+    overflow: visible
   .v-table__row:last-child
     border-bottom: none
 
@@ -194,6 +196,9 @@ const deleteItem = (item: any) => {
 
 .form-editor-subitems__sort-column
   cursor: pointer
+  display: flex !important
+  align-items: center
+  justify-content: center
   &:hover
     background-color: var(--hover-color)
   svg

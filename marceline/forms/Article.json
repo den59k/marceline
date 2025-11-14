@@ -20,6 +20,13 @@
       "value": "docs"
     },
     {
+      "fieldId": "author",
+      "name": "Автор",
+      "format": "select",
+      "relationType": "User",
+      "aliasFieldId": "authorId"
+    },
+    {
       "children": [
         {
           "fieldId": "name",
