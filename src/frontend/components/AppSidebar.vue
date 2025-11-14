@@ -46,7 +46,7 @@ const pages = computed(() => {
   const arr: Array<{ title: string, icon: string, to?: string, onClick?: any } | string> = []
   arr.push(...customPages.value)
   if (views.value) {
-    arr.push(...views.value.map((item: any) => ({
+    arr.push(...views.value.filter((item: any) => item.show !== false).map((item: any) => ({
       title: item.name, icon: item.icon ?? "table", to: `/data/${item.id}`
     })))
   }
