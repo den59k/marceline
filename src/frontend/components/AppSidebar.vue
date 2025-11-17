@@ -143,6 +143,7 @@ addRegisterPageEvent(e => {
   display: flex
   flex-direction: column
   gap: 4px
+  overflow-y: auto
   flex: 1 1 auto
 
 .app-sidebar__item
