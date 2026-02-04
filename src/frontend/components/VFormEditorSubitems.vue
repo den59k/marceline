@@ -33,7 +33,7 @@ import VCheckbox from './VCheckbox.vue';
 import VIcon from './VIcon.vue';
 import { clamp, handleMove } from 'vuesix';
 
-type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean }
+type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean, width?: string }
 const props = defineProps<{ modelValue?: any[], columns?: Item[] }>()
 const emit = defineEmits([ "update:modelValue" ])
 
@@ -46,9 +46,9 @@ const columns = computed<Record<string, any>>(() => {
     .map(field => [
       field.fieldId,
       {
-        title: field.fieldId ?? field.name,
+        title: field.name ?? field.fieldId,
         sortable: false,
-        width: field.type === 'bool'? (Math.max(field.fieldId.length*9, 60)+'px'): undefined
+        width: field.width ?? (field.type === 'bool'? (Math.max(field.fieldId.length*9, 60)+'px'): undefined)
       }
     ])
   columns.unshift([

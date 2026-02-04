@@ -94,6 +94,7 @@ export const traverseFormFields = (form: Form["fields"], callback: (item: FormFi
 const insertSubitemsValues = (fastify: FastifyInstance, req: FastifyRequest, item: FormField, value: any[], systemTable: string) => {
   if (!req.postCallbacks) req.postCallbacks = []
   if (!item.relationType) return
+  if (!value || !Array.isArray(value)) return
   
   const idField = getIdField({ systemTable: item.relationType! })
   const sourceTable = Prisma.dmmf.datamodel.models.find(table => table.name === systemTable)!
