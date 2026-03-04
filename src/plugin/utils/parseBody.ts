@@ -11,6 +11,10 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
 
   for (let item of fields) {
     if (!item.fieldId) continue
+
+    if (item.format === "files-view") {
+      continue
+    }
     
     let value = body[item.fieldId]
     if (item.format === 'const') {
