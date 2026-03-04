@@ -108,7 +108,16 @@ model Article {
   content           Json
   createdAt         DateTime            @default(now())
   authorId          Int?
-  author            User?              @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  author            User?               @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  files             ArticleFile[]
+}
+
+model ArticleFile {
+  fileId            String
+  file              File                   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  articleId         Int
+  article           Article                @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  @@id([ articleId, fileId ])
 }
 
 model File {
@@ -119,4 +128,5 @@ model File {
   previewSrc        String?
   size              Int
   name              String?
+  articles          ArticleFile[]
 }

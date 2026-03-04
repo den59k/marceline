@@ -4,6 +4,11 @@
   "systemTable": "File",
   "fields": [
     {
+      "fieldId": "name",
+      "name": "Название файла",
+      "format": "input"
+    },
+    {
       "fieldId": "src",
       "name": "Путь к файлу",
       "format": "input"
@@ -12,13 +17,6 @@
       "fieldId": "size",
       "name": "Размер файла",
       "format": "inputNumber"
-    },
-    {
-      "fieldId": "author",
-      "name": "Автор",
-      "format": "select",
-      "relationType": "User",
-      "aliasFieldId": "authorId"
     }
   ],
   "bodyModifiers": []

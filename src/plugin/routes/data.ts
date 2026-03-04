@@ -92,13 +92,9 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
       traverseFormFields(editForm.fields, (field) => {
         if (field.jsonField) {
           select[field.jsonField] = true
-        } else if (field.fieldId && field.format === 'subitems') {
-          select[field.fieldId] = {
-            select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))
-          }
-        } else if (field.fieldId && field.relationBridgeFieldId) {
+        } else if (field.fieldId && field.relationBridgeFieldId && field.relationBridgeType) {
           const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
-          const keys = [ "name", "surname", "email", "id", "uuid" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
+          const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
           select[field.fieldId] = {
             select: { 
               [field.relationBridgeFieldId]: {
@@ -110,6 +106,10 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
           postCallbacks.push(item => {
             item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
           })
+        } else if (field.fieldId && field.format === 'subitems') {
+          select[field.fieldId] = {
+            select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))
+          }
         } else if (field.aliasFieldId) {
           select[field.aliasFieldId] = true 
         } else if (field.fileIdField) {

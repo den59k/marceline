@@ -100,7 +100,11 @@ const insertSubitemsValues = (fastify: FastifyInstance, req: FastifyRequest, ite
   const sourceTable = Prisma.dmmf.datamodel.models.find(table => table.name === systemTable)!
 
   req.postCallbacks.push(async (obj) => {
-  
+
+    if (item.relationBridgeType) {
+      throw new Error("Insert to relation subitems don't allowed")
+    }
+
     const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === item.relationType)!
     const sourceRelationField = sourceTable.fields.find(field => field.name === item.fieldId)!.relationName!
     const relationField = relationTable.fields.find(item => item.relationName === sourceRelationField)!

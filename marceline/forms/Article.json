@@ -36,6 +36,56 @@
       ]
     },
     {
+      "fieldId": "files",
+      "name": "files",
+      "format": "files-view",
+      "relationBridgeFieldId": "file",
+      "relationType": "File",
+      "relationBridgeType": "ArticleFile",
+      "columns": [
+        {
+          "fieldId": "id",
+          "name": "id",
+          "enabled": false
+        },
+        {
+          "fieldId": "createdAt",
+          "name": "createdAt",
+          "enabled": false
+        },
+        {
+          "fieldId": "src",
+          "name": "src",
+          "enabled": true
+        },
+        {
+          "fieldId": "type",
+          "name": "type",
+          "enabled": false
+        },
+        {
+          "fieldId": "previewSrc",
+          "name": "previewSrc",
+          "enabled": true
+        },
+        {
+          "fieldId": "size",
+          "name": "size",
+          "enabled": true
+        },
+        {
+          "fieldId": "name",
+          "name": "name",
+          "enabled": true
+        },
+        {
+          "fieldId": "articles",
+          "name": "articles",
+          "enabled": false
+        }
+      ]
+    },
+    {
       "fieldId": "content",
       "name": "Контент",
       "format": "richText"

@@ -103,7 +103,8 @@ const createFormItem = (item: Field): FormItem => {
 }
 
 const onBlockDrop = (e: BlockDropEvent) => {
-  state.value.push(createFormItem(e.item))
+  const formItem = createFormItem(e.item)
+  state.value.push(formItem)
 }
 
 const deleteItem = (item: FormItem, parent?: FormItem) => {
@@ -164,6 +165,7 @@ watch(dragMode, () => {
 
 const onPlaceBlockDrop = (e: BlockDropEvent, place: Place) => {
   const formItem: FormItem = createFormItem(e.item)
+  console.log(formItem)
   if (place.place === 'top') {
     state.value.splice(place.fieldIndex, 0, formItem)
   } else if (place.place === 'bottom') {

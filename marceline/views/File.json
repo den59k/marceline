@@ -9,9 +9,11 @@
       "systemColumn": "id"
     },
     {
-      "name": "Author Email",
+      "name": "Название",
       "format": "string",
-      "systemColumn": "author.email"
+      "systemColumn": "name",
+      "formula": "",
+      "size": null
     }
   ],
   "data": {
@@ -27,5 +29,6 @@
       "enabled": true
     }
   },
-  "icon": "code"
+  "icon": "code",
+  "actions": []
 }

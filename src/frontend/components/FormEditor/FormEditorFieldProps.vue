@@ -158,7 +158,8 @@ export const getFormats = (item: Field) => {
     return [
       { id: "multiselect", title: "Выбор из нескольких вариантов" },
       { id: "subitems", title: "Ввод значений" },
-      { id: "files-group", title: "Загрузка файлов" }
+      { id: "files-group", title: "Загрузка файлов" },
+      { id: "files-view", title: "Просмотр файлов" },
     ]
   }
 
