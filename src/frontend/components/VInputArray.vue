@@ -20,10 +20,15 @@ watch(() => props.modelValue, (val) => {
 }, { immediate: true })
 watch(innerModel, (innerModel) => {
   preventUpdate = true
+  const str = innerModel.trim()
+  if (!str) {
+    emit('update:modelValue', [])
+    return
+  }
   if (props.format === "number") {
-    emit('update:modelValue', innerModel.split(",").map(item => parseFloat(item)))
+    emit('update:modelValue', str.split(",").map(item => parseFloat(item)))
   } else {
-    emit('update:modelValue', innerModel.split(","))
+    emit('update:modelValue', str.split(","))
   }
 })
 
