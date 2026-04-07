@@ -30,6 +30,7 @@
       <div ref="tableWrapperRef" class="views-page__layout data-page__table">
         <VTable 
           v-if="data"
+          ref="tableRef"
           v-model:checked="selectedItems"
           :checkable="data.view.data.delete?.enabled"
           :columns="columns" 
@@ -37,19 +38,22 @@
           :row-component="data.editForm? 'button': 'div'" 
           @itemclick="onItemClick"
         >
-          <template v-for="(column, key) in Object.keys(columns).filter((key: any) => key.startsWith('column'))" #[key]="{ cell }">
-            <div class="data-page__data-cell">{{ cell }}</div>
-          </template>
-          <template #_actions="{ item }">
-            <VButton 
-              v-for="action in data.view.actions" 
-              class="v-table__action-button"
-              :class="{ 'v-table__action-icon-button': !action.title }" 
-              @click.stop="actionInvoke($event, action.id, item)"
-            >
-              {{ action.title }}
-              <VIcon v-if="action.icon" :icon="action.icon"/>
-            </VButton>
+          <template v-for="(column, key) of columns" #[key]="{ cell }">
+            <template v-if="key === '_actions'">
+              <VButton 
+                v-for="action in data.view.actions" 
+                class="v-table__action-button"
+                :class="{ 'v-table__action-icon-button': !action.title }" 
+                @click.stop="actionInvoke($event, action.id, cell)"
+              >
+                {{ action.title }}
+                <VIcon v-if="action.icon" :icon="action.icon"/>
+              </VButton>
+            </template>
+            <div v-else-if="column.format === 'order'">
+              <VIconButton icon="sort" class="data-page__sort-button" @mousedown="onMoveRow" @click.stop/>
+            </div>
+            <div v-else class="data-page__data-cell">{{ cell }}</div>
           </template>
         </VTable>
         <VPagination v-model="searchOptions.page" :page-count="data.totalPages"/>
@@ -67,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mutateRequest, mutateRequestFull, useDraggableItem, useRequestWatch } from 'vuesix';
+import { clamp, handleMove, mutateRequest, mutateRequestFull, useDraggableItem, useRequestWatch } from 'vuesix';
 import VInput from '../components/VInput.vue';
 import VButton from '../components/VButton.vue';
 import { useContextMenu } from '../components/VContextMenu.vue';
@@ -76,7 +80,7 @@ import VLayout from '../components/VLayout.vue';
 import VTable from '../components/VTable.vue';
 import { dataApi } from '../api/data';
 import { useRouter } from 'vue-router';
-import { computed, CSSProperties, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, CSSProperties, reactive, ref, shallowRef, triggerRef, watch } from 'vue';
 import AddColumnPopover from '../components/AddColumnPopover.vue';
 import { viewsApi } from '../api/views';
 import dayjs from 'dayjs';
@@ -89,6 +93,7 @@ import { addDelimiter, num } from '../utils/lang';
 import VPagination from '../components/VPagination.vue';
 import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
+import { nextTick } from 'process';
 
 const contextMenu = useContextMenu(() => [])
 const isDev = (window as any).isDev
@@ -107,6 +112,7 @@ const _searchOptions = computed(() => ({
   ...(Object.values(searchOptions.params).some(item => item !== "")? searchOptions.params: undefined)
 }))
 const { data, error } = useRequestWatch(dataApi.getData, viewId, _searchOptions)
+const tableRef = shallowRef<any>()
 
 const getByKey = (item: any, keys: string[]) => {
   let value = item
@@ -222,8 +228,10 @@ const columns = computed(() => {
       { 
         sortableKey: getSortableKey(column),
         title: column.name,
+        sortable: column.format !== 'order',
         map: getMapMethod(column),
         width: column.size,
+        format: column.format,
         headerProps: {
           class: "data-table__header",
           onContextmenu (e: MouseEvent) {
@@ -256,6 +264,7 @@ const columns = computed(() => {
   if ((window as any).isDev) {
     columns.push([ "_addColumn", { 
       sortable: false, 
+      title: "icon:add",
       headerProps: { 
         class: "data-page__add-column data-table__header", 
         onClick(e: MouseEvent) {
@@ -267,7 +276,7 @@ const columns = computed(() => {
       columnProps: { class: "data-page__more-cell" }
     }])
   }
-    
+
   return Object.fromEntries(columns)
 })
 
@@ -301,7 +310,9 @@ const addItem = () => {
   dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.createForm, systemTable: data.value.view.systemTable })
 }
 
+let hasMoveItem = false
 const onItemClick = (item: any) => {
+  if (hasMoveItem) return
   if (!data.value.editForm) return
   dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm, systemTable: data.value.view.systemTable })
 }
@@ -351,6 +362,68 @@ const actionInvoke = async (e: MouseEvent, action: string, item: any | any[]) =>
   }
 }
 
+const onMoveRow = (e: MouseEvent) => {
+  const item = (e.currentTarget as HTMLElement).parentElement!.parentElement!.parentElement!
+  ;(window.document.activeElement as HTMLElement)?.blur()
+
+  const children = Array.from(item.parentElement!.children) as HTMLElement[]
+  children.shift()
+  const index = children.indexOf(item)
+  const height = item.getBoundingClientRect().height
+
+  handleMove(e, {
+    onMove({ pos, startPos }) {
+      item.classList.add("drag")
+
+      const delta = clamp(pos.y - startPos.y, (-index) * height, (children.length - index - 1) * height);
+      item.classList.add("move"),
+      item.style.transform = `translateY(${delta}px)`
+
+      let newIndex = clamp(Math.round(index + (pos.y - startPos.y) / height), 0, children.length);
+      for (let i = 0; i < children.length; i++) {
+        if (i === index) continue
+        if (i > index && i <= newIndex) {
+          children[i].style.transform = `translateY(-${height}px)`
+        } else if (i < index && i >= newIndex) {
+          children[i].style.transform = `translateY(${height}px)`
+        } else {
+          children[i].style.transform = ""
+        }
+      }
+    },
+    onEnd({ pos, startPos }) {
+      
+      hasMoveItem = true
+      setTimeout(() => {
+        hasMoveItem = false
+      }, 50)
+
+      let newIndex = clamp(Math.round(index + (pos.y - startPos.y) / height), 0, children.length);
+      queueMicrotask(() =>  { 
+        for (let i = 0; i < children.length; i++) {
+          children[i].style.transform = ""
+        }
+        item.classList.remove("drag")
+      })
+
+      if (newIndex !== index) {
+        const tableData = tableRef.value.getData()
+        const k = tableData[index];
+        tableData.splice(index, 1);
+        tableData.splice(newIndex, 0, k);
+        tableRef.value.resetSort()
+
+        data.value.data = tableData
+        triggerRef(data)
+
+        const ids = tableData.map((item: any) => item[data.value.view.idField])
+        dataApi.updateOrder(viewId.value, ids)
+
+        // emit("update:modelValue", data.value!)
+      }
+    },
+  })
+}
 </script>
 
 <script lang="ts">
@@ -426,5 +499,13 @@ class ColumnDropEvent extends Event {
   display: flex
   align-items: center
   justify-content: center
+
+.data-page__sort-button
+  color: var(--text-secondary-color)
+  margin-left: -16px
+  &>svg
+    width: 20px
+    height: 20px
+    pointer-events: none
 
 </style>

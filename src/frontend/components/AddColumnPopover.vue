@@ -5,7 +5,7 @@
     :placement="props.column? 'bottom-start': 'bottom-end'" 
     class="add-column-popover"
   >
-    <VInput v-bind="register('name')" placeholder="Название столбца" autofocus/>
+    <VInput v-bind="register('name')" :disabled="values.format === 'order'" placeholder="Название столбца" autofocus/>
 
     <VFormControl v-if="values.selectedItem" outline class="v-select" label="Системное поле">
       <button class="v-select__activator" @click="setField(null)">
@@ -25,9 +25,9 @@
       </VButton>
     </div>
     <template v-if="values.selectedItem" >
-      <VSelect v-bind="register('format')" :items="formats" label="Формат отображения"  />
+      <VSelect v-bind="register('format')" :items="formats" label="Формат отображения"  @update:model-value="onUpdateFormat"/>
       <VInput v-if="values.format === 'formula'" v-bind="register('formula')" label="Выражение" />
-      <VSelect v-bind="register('size')" :items="sizeItems" label="Размер столбца"/>
+      <VSelect v-bind="register('size')"  :disabled="values.format === 'order'" :items="sizeItems" label="Размер столбца"/>
     </template>
     <div class="add-column-popover__actions">
       <VButton v-if="props.column" outline class="delete-button" @click="deleteColumn"><VIcon icon="delete" /></VButton>
@@ -50,7 +50,7 @@ import VFormControl from './VFormControl.vue';
 import VIcon from './VIcon.vue';
 import VSelect from './VSelect.vue';
 
-const { register, values, updateDefaultValues, setError } = useForm({
+const { register, values, updateDefaultValues } = useForm({
   name: "",
   selectedItem: null as any,
   format: null as string | null,
@@ -118,6 +118,13 @@ const setField = (item: any) => {
 
 const formats = computed(() => {
   if (!values.selectedItem) return []
+  if (values.selectedItem.type === "Float") {
+    return [
+      { id: "string", title: "Строка" },
+      { id: "decimal", title: "Число с разделителями" },
+      { id: "order", title: "Ручная сортировка" }
+    ]
+  }
   if (values.selectedItem.type === "Int" || values.selectedItem.type === "Float") {
     return [
       { id: "string", title: "Строка" },
@@ -164,7 +171,7 @@ const apply = () => {
     // return setError("formula", { message: "Неверный формат выражения" })
   }
   const systemColumn = [ ...relationItem, values.selectedItem ].map(item => item.name).join(".")
-  const name = values.name.trim() || values.selectedItem.name
+  const name =  values.format === 'order'? "": values.name.trim() || values.selectedItem.name
   emit("addcolumn", { name, format: values.format, systemColumn, formula: values.formula, size: values.size })
   close()
 }
@@ -183,6 +190,13 @@ const sizeItems = [
   { id: "1fr", title: "1fr" },
   { id: "2fr", title: "2fr" },
 ]
+
+const onUpdateFormat = () => {
+  if (values.format === 'order') {
+    values.name = ' '
+    values.size = "40px"
+  }
+}
 
 </script>
 

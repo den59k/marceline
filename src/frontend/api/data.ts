@@ -13,5 +13,7 @@ export const dataApi = {
   updateElement: (viewId: string, itemId: string, values: any) => request(`/api/admin/data/${viewId}/items/${itemId}`, values),
   deleteElements: (viewId: string, itemIds: string[]) => request(`/api/admin/data/${viewId}/items/${itemIds.join(",")}`, {}, { method: "DELETE" }),
 
+  updateOrder: (viewId: string, itemIds: { id: any, order: number }[]) => request(`/api/admin/data/${viewId}/items/order`, itemIds),
+
   invokeAction: (systemTable: string, actionName: string, item: any) => request(`/api/admin/actions/${systemTable}/${actionName}`, item)
 }

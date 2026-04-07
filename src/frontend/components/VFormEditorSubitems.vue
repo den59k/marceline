@@ -4,14 +4,14 @@
       <slot name="start-adornment"></slot>
       <VTable :columns="columns" :data="data ?? []">
         <template #_remove="{ item }">
-          <VIconButton icon="close" class="remove-item-button" @click="deleteItem(item)"/>
+          <VIconButton icon="close" class="form-editor-subitems__remove-btn" @click="deleteItem(item)"/>
         </template>
         <template #_sort="{ item }">
           <VIcon icon="sort" />
         </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
           <VSelect v-if="column.type === 'select'" v-model="item[column.fieldId]" :items="column.enum!" />
-          <VCheckbox v-else-if="column.type === 'bool'" v-model="item[column.fieldId]"/>
+          <VCheckbox v-else-if="column.type === 'bool'" v-model="item[column.fieldId]" class="form-editor-subitems__checkbox"/>
           <input v-else v-model="item[column.fieldId]"  />
         </template>
       </VTable>
@@ -145,12 +145,6 @@ const deleteItem = (item: any) => {
     align-self: flex-start
     margin-top: 12px
 
-  .remove-item-button
-    color: var(--error-color)
-    opacity: 0.5
-    &:hover
-      opacity: 1
-    
   .v-table 
     td
       padding: 0
@@ -206,5 +200,17 @@ const deleteItem = (item: any) => {
     height: 20px
     margin-left: 8px
     opacity: 0.4
+
+
+.form-editor-subitems__remove-btn
+  color: var(--error-color)
+  opacity: 0.5
+  margin-top: 4px
+  &:hover
+    opacity: 1
+  
+
+.form-editor-subitems__checkbox
+  margin-top: 16px
 
 </style>

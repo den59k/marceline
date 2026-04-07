@@ -24,11 +24,13 @@
       "form": "Request"
     },
     "edit": {
-      "enabled": false
+      "enabled": true,
+      "form": "Request"
     },
     "delete": {
       "enabled": true
     }
   },
-  "icon": "table"
+  "icon": "table",
+  "actions": []
 }

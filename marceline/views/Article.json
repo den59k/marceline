@@ -2,7 +2,7 @@
   "id": "Article",
   "name": "Статьи",
   "systemTable": "Article",
-  "sortBy": "-type",
+  "sortBy": "+order",
   "filters": [
     {
       "systemColumn": "id",
@@ -22,6 +22,13 @@
     }
   ],
   "columns": [
+    {
+      "name": "",
+      "format": "order",
+      "systemColumn": "order",
+      "formula": "",
+      "size": "40px"
+    },
     {
       "name": "ID",
       "format": "string",
@@ -57,5 +64,6 @@
       "enabled": true
     }
   },
-  "icon": "note-edit"
+  "icon": "note-edit",
+  "actions": []
 }

@@ -8,8 +8,8 @@
         </div>
       </div>
       <div v-for="(item, key) in columns" v-bind="item.headerProps">
-        {{ item.title }}
-        <VIcon v-if="key === '_addColumn'" icon="add" />
+        <VIcon v-if="item.title?.startsWith('icon:')" :icon="item.title.slice(5)" class="v-table__header-icon"/>
+        <template v-else>{{ item.title }}</template>
         <VIconButton 
           v-if="item.sortable !== false"
           icon="arrow-up" 
@@ -143,6 +143,11 @@ watch(() => props.checked, () => {
   }
 }, { immediate: true })
 
+defineExpose({
+  getData: () => data.value,
+  resetSort: () => sortedColumn.value = null
+})
+
 </script>
 
 <script lang="ts">
@@ -253,7 +258,7 @@ export type Columns<T> = Record<string, Column<T>>
   box-sizing: border-box
 
   &.drag
-    background-color: var(--paper-color)
+    background-color: var(--paper-color) !important
     position: relative
     z-index: 2
     box-shadow: 0 2px 4px #0003
@@ -266,5 +271,6 @@ button.v-table__row, a.v-table__row
 
 a.v-table__row
   text-decoration: none
+
 
 </style>

@@ -302,4 +302,28 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
     })
   })
 
+  const orderBody = schema({ type: "array" })
+  /** Update data order */
+  fastify.post("/data/:viewId/items/order", sc(params, orderBody), async (_req, reply) => {
+    const req = _req as FastifyRequestExt
+    const ids = req.body as any[]
+    const orderColumn = req.view.columns.find(i => i.format === 'order')
+    if (!orderColumn) {
+      return reply.code(400).send(`Order column not found in view ${req.view.name}`) 
+    }
+    
+    const placeholders = ids
+        .map((_, i) => `($${i * 2 + 1}, $${i * 2 + 2}::float)`)
+        .join(', ');
+
+    const params = ids.flatMap((id, i) => [id, i + 1]);
+
+    await fastify.prisma.$executeRawUnsafe(`
+        UPDATE "${req.view.systemTable}" i
+        SET "order" = data.pos
+        FROM (VALUES ${placeholders}) AS data(id, pos)
+        WHERE i."${req.view.idField!}" = data.id
+    `, ...params);
+  })
+
 }

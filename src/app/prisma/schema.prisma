@@ -106,6 +106,7 @@ model Article {
   type              ArticleType         
   name              String
   content           Json
+  order             Float               @default(0)
   createdAt         DateTime            @default(now())
   authorId          Int?
   author            User?               @relation(fields: [authorId], references: [id], onDelete: SetNull)
