@@ -99,12 +99,24 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
             select: { 
               [field.relationBridgeFieldId]: {
                 select: Object.fromEntries(keys.map(item => [ item, true ]))
-              } 
+              },
             },
             take: 100
           }
+          if (field.relationBridgeOrderField) {
+            (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
+            (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
+          }
           postCallbacks.push(item => {
-            item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
+            if (field.relationBridgeOrderField) {
+              item[field.fieldId!] = item[field.fieldId!].map((item: any) => {
+                const resp = item[field.relationBridgeFieldId!]
+                resp[field.relationBridgeOrderField!] = item[field.relationBridgeOrderField!]
+                return resp
+              })
+            } else {
+              item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
+            }
           })
         } else if (field.fieldId && field.format === 'subitems') {
           select[field.fieldId] = {
@@ -318,7 +330,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
 
     const params = ids.flatMap((id, i) => [id, i + 1]);
 
-    await fastify.prisma.$executeRawUnsafe(`
+    await (fastify as any).prisma.$executeRawUnsafe(`
         UPDATE "${req.view.systemTable}" i
         SET "order" = data.pos
         FROM (VALUES ${placeholders}) AS data(id, pos)

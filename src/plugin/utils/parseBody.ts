@@ -30,10 +30,10 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
       value = req.currentField
     }
 
-    if (item.format === "multiselect" && item.relationType && Array.isArray(value)) {
+    if ((item.format === "multiselect" || item.format === "multisearch") && item.relationType && Array.isArray(value)) {
       insertMultiselectValues(fastify, req, item, value, form.systemTable)
       continue
-    }
+    }          
 
     if (item.format === 'subitems'&& item.relationType) {
       insertSubitemsValues(fastify, req, item, value, form.systemTable)
@@ -150,24 +150,39 @@ const insertSubitemsValues = (fastify: FastifyInstance, req: FastifyRequest, ite
 }
 
 
-const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, item: FormField, value: any[], systemTable: string) => {
+const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, field: FormField, value: any[], systemTable: string) => {
   if (!req.postCallbacks) req.postCallbacks = []
         
-  const idField = getIdField({ systemTable: item.relationType! })
+  const idField = getIdField({ systemTable: field.relationType! })
   const sourceTable = Prisma.dmmf.datamodel.models.find(table => table.name === systemTable)!
 
-  if (item.relationBridgeType) {
+  if (field.relationBridgeType) {
     req.postCallbacks.push(async (obj) => {
 
-      const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === item.relationBridgeType)!
-      const sourceRelationField = sourceTable.fields.find(field => field.name === item.fieldId)!.relationName!
-      const relationField = relationTable.fields.find(field => field.relationName === sourceRelationField)!    
-      const oppositeField = relationTable.fields.find(field => field.name === item.relationBridgeFieldId)!
+      const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === field.relationBridgeType)!
+      const sourceRelationField = sourceTable.fields.find(srcField => srcField.name === field.fieldId)!.relationName!
+      const relationField = relationTable.fields.find(relField => relField.relationName === sourceRelationField)!    
+      const oppositeField = relationTable.fields.find(relField => relField.name === field.relationBridgeFieldId)!
 
       const data = Object.fromEntries(relationField.relationFromFields!.map((item, index) => 
         [ item, obj[relationField.relationToFields![index]] ]))
 
-      const existingItems = await (fastify as any).prisma[item.relationBridgeType!].findMany({
+      if (field.relationBridgeOrderField) {
+        await (fastify as any).prisma[field.relationBridgeType!].deleteMany({
+          where: data
+        })
+        await (fastify as any).prisma[field.relationBridgeType!].createMany({
+          data: value.map((item, index) => ({
+            ...data,
+            [ field.relationBridgeOrderField! ]: index + 1,
+            [ oppositeField.relationFromFields![0] ]: item[idField.name]
+          }))
+        })
+
+        return
+      }
+
+      const existingItems = await (fastify as any).prisma[field.relationBridgeType!].findMany({
         where: data
       })
 
@@ -181,7 +196,7 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
         }
       }
       if (set.size > 0) {
-        await (fastify as any).prisma[item.relationBridgeType!].deleteMany({
+        await (fastify as any).prisma[field.relationBridgeType!].deleteMany({
           where: {
             ...data,
             [ oppositeField.relationFromFields![0] ]: { in: Array.from(set.values()) }
@@ -190,7 +205,7 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
       }
 
       if (newItemIds.length > 0) {
-        await (fastify as any).prisma[item.relationBridgeType!].createMany({
+        await (fastify as any).prisma[field.relationBridgeType!].createMany({
           data: newItemIds.map(itemId => ({
             ...data,
             [ oppositeField.relationFromFields![0] ]: itemId
@@ -201,8 +216,8 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
     return
   }
   req.postCallbacks.push(async (obj) => {
-    const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === item.relationType)!
-    const sourceRelationField = sourceTable.fields.find(field => field.name === item.fieldId)!.relationName!
+    const relationTable = Prisma.dmmf.datamodel.models.find(table => table.name === field.relationType)!
+    const sourceRelationField = sourceTable.fields.find(srcField => srcField.name === field.fieldId)!.relationName!
     const relationField = relationTable.fields.find(item => item.relationName === sourceRelationField)!
 
     const data = Object.fromEntries(relationField.relationFromFields!.map((item, index) => 
@@ -211,13 +226,13 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
       [ item, null ]))
 
     if (value.length > 0) {
-      await (fastify as any).prisma[item.relationType!].updateMany({
+      await (fastify as any).prisma[field.relationType!].updateMany({
         data,
         where: { [idField.name]: { in: value.map((item: any) => item[idField.name]) } }
       })
     }
     if (!relationField.isRequired) {
-      await (fastify as any).prisma[item.relationType!].updateMany({
+      await (fastify as any).prisma[field.relationType!].updateMany({
         data: nullData,
         where: { 
           [idField.name]: { notIn: value.map((item: any) => item[idField.name]) } ,

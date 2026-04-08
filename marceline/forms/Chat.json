@@ -10,11 +10,12 @@
     },
     {
       "fieldId": "users",
-      "name": "Пользователи",
-      "format": "multiselect",
+      "name": "users",
+      "format": "multisearch",
       "relationBridgeFieldId": "user",
       "relationType": "User",
-      "relationBridgeType": "UserChat"
+      "relationBridgeType": "UserChat",
+      "relationBridgeOrderField": "order"
     },
     {
       "fieldId": "features",

@@ -160,6 +160,10 @@ watch(open, (open) => {
 
 const activatorProps = {
   onmousedown: (e: MouseEvent) => {
+    if ((e.target as HTMLElement).tagName === "INPUT" && open.value) {
+      e.stopPropagation()
+      return
+    }
     open.value = !open.value
     if (open.value) {
       activatorElement.value = e.currentTarget as HTMLElement

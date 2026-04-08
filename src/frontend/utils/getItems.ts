@@ -11,3 +11,13 @@ export const getItems = async (systemTable: string) => {
   const idKey = keys.find(item => item !== titleKey) ?? keys[0]
   return resp.map((item: any) => ({ id: item[idKey], title: item[titleKey] }))
 }
+
+export const mapItem = (item: any) => {
+  if (item.id && item.title) {
+    return item
+  }
+  const keys = Object.keys(item)
+  const titleKey = keys.find(item => item !== 'id' && item !== 'uuid') ?? keys[0]
+  const idKey = keys.find(item => item !== titleKey) ?? keys[0]
+  return { id: item[idKey], title: item[titleKey] }
+}

@@ -68,6 +68,13 @@ const additionalProps = computed(() => {
       multiple: props.item.format === 'listSelect'
     }
   }
+  if (props.item.format === 'multisearch') {
+    return {
+      items: () => getItems(props.item.relationType!),
+      hasOrder: !!props.item.relationBridgeOrderField
+      // hasOrder: props.item.
+    } 
+  }
   if (props.item.format === 'multiselect') {
     if (props.item.relationType) {
       return {

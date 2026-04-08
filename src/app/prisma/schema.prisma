@@ -87,6 +87,7 @@ model UserChat {
   chatId            BigInt
   chat              Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
   role              UserChatRole       @default(default)
+  order             Float              @default(0)
   @@id([ userId, chatId ])
 }
 

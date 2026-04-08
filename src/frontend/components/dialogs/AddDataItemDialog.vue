@@ -35,6 +35,7 @@ import VInputArray from '../VInputArray.vue';
 import VDateRangePicker from '../VDateRangePicker.vue';
 import VDatePicker from '../VDatePicker.vue';
 import VFilesView from '../VFilesView.vue';
+import MultiSelectSearch from '../MultiSelectSearch.vue';
 
 const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
 
@@ -84,6 +85,7 @@ addFormComponent("select", VSelect)
 addFormComponent("listSelect", VSelect)
 addFormComponent("file", VFileUploader)
 addFormComponent("multiselect", VSelect)
+addFormComponent("multisearch", MultiSelectSearch)
 addFormComponent("checkbox", VCheckbox)
 addFormComponent("subitems", VFormEditorSubitems)
 addFormComponent("geo", VGeoPicker)

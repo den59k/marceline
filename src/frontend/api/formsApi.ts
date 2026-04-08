@@ -22,6 +22,7 @@ export type FormItem = {
   relationType?: string,
   relationBridgeType?: string,
   relationBridgeFieldId?: string,
+  relationBridgeOrderField?: string,
   aliasFieldId?: string,
   multiple?: boolean,
   accept?: string,

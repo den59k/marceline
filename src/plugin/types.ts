@@ -45,6 +45,7 @@ export type FormField = {
   aliasFieldId?: string,
   relationBridgeType?: string,
   relationBridgeFieldId?: string
+  relationBridgeOrderField?: string,
   value?: any
   columns: Array<{ enabled: boolean, fieldId: string }>
 }

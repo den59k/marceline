@@ -157,6 +157,7 @@ export const getFormats = (item: Field) => {
   if (item.isList && item.kind !== "scalar") {
     return [
       { id: "multiselect", title: "Выбор из нескольких вариантов" },
+      { id: "multisearch", title: "Выбор из вариантов с поиском" },
       { id: "subitems", title: "Ввод значений" },
       { id: "files-group", title: "Загрузка файлов" },
       { id: "files-view", title: "Просмотр файлов" },
