@@ -1,0 +1,21 @@
+{
+  "id": "ArticleCategory",
+  "name": "Категория статей",
+  "systemTable": "ArticleCategory",
+  "fields": [
+    {
+      "fieldId": "name",
+      "name": "Название",
+      "format": "input"
+    },
+    {
+      "fieldId": "articles",
+      "name": "Статьи в категории",
+      "format": "multisearch",
+      "relationType": "Article",
+      "relationBridgeFieldId": "category",
+      "relationBridgeOrderField": "order"
+    }
+  ],
+  "bodyModifiers": []
+}

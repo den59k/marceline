@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Form, FormField } from "../types";
 import { getIdField, parseIdField } from "./getIdField";
 import { Prisma } from "@prisma/client";
+import { insertWithOrder } from "./insertOrder";
 
 export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, reply: FastifyReply, form: Form, body: any) => {
   
@@ -226,10 +227,15 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
       [ item, null ]))
 
     if (value.length > 0) {
-      await (fastify as any).prisma[field.relationType!].updateMany({
-        data,
-        where: { [idField.name]: { in: value.map((item: any) => item[idField.name]) } }
-      })
+      if (field.relationBridgeOrderField) {
+        const ids = value.map((item: any) => item[idField.name]);
+        await insertWithOrder((fastify as any).prisma, field.relationType!, ids, data, idField)
+      } else {
+        await (fastify as any).prisma[field.relationType!].updateMany({
+          data,
+          where: { [idField.name]: { in: value.map((item: any) => item[idField.name]) } }
+        })
+      }
     }
     if (!relationField.isRequired) {
       await (fastify as any).prisma[field.relationType!].updateMany({

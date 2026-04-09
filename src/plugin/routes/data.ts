@@ -118,6 +118,17 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
               item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
             }
           })
+        } else if (field.fieldId && field.relationBridgeFieldId && field.relationType) {
+          const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
+          const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
+          select[field.fieldId] = {
+            select: Object.fromEntries(keys.map(item => [ item, true ])),
+            take: 100
+          }
+          if (field.relationBridgeOrderField) {
+            (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
+            (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
+          }
         } else if (field.fieldId && field.format === 'subitems') {
           select[field.fieldId] = {
             select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))

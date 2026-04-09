@@ -91,12 +91,13 @@ const createFormItem = (item: Field): FormItem => {
       const oppositeField = relationTable.fields.find(item => item.relationFromFields?.includes(oppositeFieldId.name))!
       
       const bridgeTable = tablesData.value?.models.find(model => model.name === item.type)
-      const relationBridgeOrderField = bridgeTable?.fields.find(i => i.name.match(/order/i))?.name
+      const relationBridgeOrderField = bridgeTable?.fields.find(i => (i.type === "Float" || i.type === "Double") && i.name.match(/order/i))?.name
 
       return { fieldId: item.name, name: item.name, format: "multiselect", relationBridgeFieldId: oppositeField.name, 
         relationType: oppositeField.type, relationBridgeType: item.type, relationBridgeOrderField }
     } else {
-      return { fieldId: item.name, name: item.name, format: "multiselect", relationType: item.type, relationBridgeFieldId: sourceField?.name }
+      const relationBridgeOrderField = relationTable.fields.find(i => (i.type === "Float" || i.type === "Double") && i.name.match(/order/i))?.name
+      return { fieldId: item.name, name: item.name, format: "multiselect", relationType: item.type, relationBridgeFieldId: sourceField?.name, relationBridgeOrderField }
     }
   }
   if (item.kind === "enum") {

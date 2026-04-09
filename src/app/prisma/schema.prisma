@@ -105,6 +105,8 @@ enum ArticleType {
 model Article {
   id                Int                 @id @default(autoincrement())
   type              ArticleType         
+  categoryId        Int?
+  category          ArticleCategory?    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   name              String
   content           Json
   order             Float               @default(0)
@@ -112,6 +114,12 @@ model Article {
   authorId          Int?
   author            User?               @relation(fields: [authorId], references: [id], onDelete: SetNull)
   files             ArticleFile[]
+}
+
+model ArticleCategory {
+  id                Int                 @id @default(autoincrement())
+  articles          Article[]
+  name              String
 }
 
 model ArticleFile {

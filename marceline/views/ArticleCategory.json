@@ -1,0 +1,43 @@
+{
+  "id": "ArticleCategory",
+  "name": "Категории статей",
+  "systemTable": "ArticleCategory",
+  "columns": [
+    {
+      "name": "ID",
+      "format": "string",
+      "systemColumn": "id",
+      "formula": "",
+      "size": "60px"
+    },
+    {
+      "name": "Название",
+      "format": "string",
+      "systemColumn": "name",
+      "formula": "",
+      "size": null
+    },
+    {
+      "name": "Статей",
+      "format": "count",
+      "systemColumn": "articles",
+      "formula": "",
+      "size": null
+    }
+  ],
+  "data": {
+    "create": {
+      "enabled": true,
+      "form": "ArticleCategory"
+    },
+    "edit": {
+      "enabled": true,
+      "form": "ArticleCategory"
+    },
+    "delete": {
+      "enabled": true
+    }
+  },
+  "icon": "table",
+  "actions": []
+}

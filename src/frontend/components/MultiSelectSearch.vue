@@ -1,7 +1,9 @@
 <template>
   <VFormControl>
-    <div class="multiselect__items" :class="{ isEmpty: modelValue.length === 0 }">
+    <div v-if="$slots['end-adornment']" style="position: relative">
       <slot name="end-adornment"></slot>
+    </div>
+    <div v-if="modelValue.length > 0" class="multiselect__items" >
       <div v-for="item in modelValue" class="multiselect__item">
         <VIconButton v-if="props.hasOrder" icon="sort" class="multiselect__sort-btn" @mousedown="onMoveRow"/>
         <div class="multiselect__item-title">{{ mapItem(item).title }}</div>
@@ -106,7 +108,6 @@ const onMoveRow = (e: MouseEvent) => {
       }
     },
     onEnd({ pos, startPos }) {
-
       let newIndex = clamp(Math.round(index + (pos.y - startPos.y) / height), 0, children.length);
       queueMicrotask(() =>  { 
         for (let i = 0; i < children.length; i++) {
@@ -116,7 +117,6 @@ const onMoveRow = (e: MouseEvent) => {
       })
 
       if (newIndex !== index) {
-
         const k = modelValue.value[index];
         modelValue.value.splice(index, 1);
         modelValue.value.splice(newIndex, 0, k);
