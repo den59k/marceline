@@ -229,7 +229,7 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
     if (value.length > 0) {
       if (field.relationBridgeOrderField) {
         const ids = value.map((item: any) => item[idField.name]);
-        await insertWithOrder((fastify as any).prisma, field.relationType!, ids, data, idField)
+        await insertWithOrder((fastify as any).prisma, field.relationType!, field.relationBridgeOrderField, ids, data, idField)
       } else {
         await (fastify as any).prisma[field.relationType!].updateMany({
           data,

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-export const insertWithOrder = async (prisma: PrismaClient, model: string, ids: any[], data: any, idField: { name: string, type: string }) => {
+export const insertWithOrder = async (prisma: PrismaClient, model: string, orderField: string, ids: any[], data: any, idField: { name: string, type: string }) => {
 
   // (id, order)
   const placeholders = ids
@@ -26,7 +26,7 @@ export const insertWithOrder = async (prisma: PrismaClient, model: string, ids: 
   await prisma.$executeRawUnsafe(`
     UPDATE "${model}" t
     SET
-      "order" = v.pos,
+      "${orderField}" = v.pos,
       ${dataSetSql}
     FROM (VALUES ${placeholders}) AS v(id, pos)
     WHERE 
