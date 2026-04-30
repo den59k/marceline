@@ -38,13 +38,13 @@
           :row-component="data.editForm? 'button': 'div'" 
           @itemclick="onItemClick"
         >
-          <template v-for="(column, key) of columns" #[key]="{ cell }">
+          <template v-for="(column, key) of columns" #[key]="{ cell, item }">
             <template v-if="key === '_actions'">
               <VButton 
                 v-for="action in data.view.actions" 
                 class="v-table__action-button"
                 :class="{ 'v-table__action-icon-button': !action.title }" 
-                @click.stop="actionInvoke($event, action.id, cell)"
+                @click.stop="actionInvoke($event, action.id, item)"
               >
                 {{ action.title }}
                 <VIcon v-if="action.icon" :icon="action.icon"/>
