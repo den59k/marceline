@@ -16,6 +16,7 @@
         v-for="(item, index) in state" 
         :item="item" :index="index" 
         :fieldsMap="fieldsMap"
+        :values="values"
         @delete-item="deleteItem" 
         @setActiveItem="setActiveItem"
       />
@@ -35,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CSSProperties, Ref, computed, ref, watch } from 'vue';
+import { CSSProperties, Ref, computed, reactive, ref, watch } from 'vue';
 import { useDraggableItem, useRequest } from 'vuesix';
 import FormEditorItem from './FormEditorItem.vue';
 import { useVModel } from '@vueuse/core';
@@ -46,6 +47,8 @@ import { utilsApi } from '../../api/utils';
 
 const props = defineProps<{ modelValue?: FormItem[], fields: Field[], bodyModifiers?: string[], systemTable: string }>()
 const emit = defineEmits([ "update:modelValue" ])
+
+const values = reactive({})
 
 const fieldsMap = computed(() => {
   return new Map(props.fields.map(item => [ item.name, item ]))

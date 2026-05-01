@@ -24,7 +24,8 @@
           "id": "manager",
           "title": "manager"
         }
-      ]
+      ],
+      "conditions": null
     },
     {
       "children": [
@@ -41,14 +42,29 @@
           "format": "files-group",
           "isCustom": true,
           "fileIdField": "fileIds",
-          "accept": null
+          "accept": null,
+          "conditions": [
+            {
+              "field": "type",
+              "value": [
+                "designer",
+                "manager"
+              ]
+            }
+          ]
         }
       ]
     },
     {
       "fieldId": "telegramIds",
       "name": "telegramIds",
-      "format": "inputArrayNumber"
+      "format": "inputArrayNumber",
+      "conditions": [
+        {
+          "field": "type",
+          "value": "manager"
+        }
+      ]
     },
     {
       "fieldId": "license",

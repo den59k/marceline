@@ -7,7 +7,7 @@
     />
   </div>
   <component 
-    v-else
+    v-else-if="!disabled"
     :is="component" 
     v-model="model"
     :label="props.item.name" 
@@ -45,6 +45,18 @@ const component = computed(() => {
   const component = components[props.item.format]
   if (component === null) return null
   return component ?? components["input"]
+})
+
+const disabled = computed(() => {
+  if (!props.item.conditions) return false
+  for (let item of props.item.conditions) {
+    if (Array.isArray(item.value)) {
+      if (!item.value.includes(props.modelValue[item.field])) return true
+    } else {
+      if (props.modelValue[item.field] !== item.value) return true
+    }
+  }
+  return false
 })
 
 const additionalProps = computed(() => {

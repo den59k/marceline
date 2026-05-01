@@ -60,6 +60,13 @@
         addLabel="Добавить модификатор поля" 
         label="Модификаторы поля"
       />
+      <FormEditorConditionControl 
+        v-if="props.item.name" 
+        :key="props.item.name" 
+        label="Условия отображения" 
+        :fieldsMap="props.fieldsMap" 
+        :item="props.item"
+      />
     </template>
   </div>
 </template>
@@ -77,6 +84,7 @@ import { utilsApi } from '../../api/utils';
 import VCheckbox from '../VCheckbox.vue';
 import FormEditorTableValues from './FormEditorTableValues.vue';
 import FormEditorJsonListProps from './FormEditorJsonListProps.vue';
+import FormEditorConditionControl from './FormEditorConditionControl.vue';
 
 const props = defineProps<{ item: FormItem | null, fieldsMap: Map<string, Field>, bodyModifiers?: string[], postEffect?: string[], systemTable: string }>()
 

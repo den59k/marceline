@@ -4,16 +4,19 @@
       v-for="child in props.item.children" 
       :item="child"
       :fieldsMap="fieldsMap"
+      :values="props.values"
       @delete-item="emit('deleteItem', $event, props.item)"
       @setActiveItem="emit('setActiveItem', $event)"
     />
   </div>
   <component :is="component" 
     v-else
+    v-model="props.values[props.item.fieldId ?? '-']"
     v-bind="additionalProps"
     :label="props.item.name" 
     :data-field-id="index" 
     :placeholder="props.item.placeholder" 
+    :class="{ 'form-editor-item__disabled': disabled }"
     @click="emit('setActiveItem', props.item)"
   >
     <template #end-adornment>
@@ -37,7 +40,7 @@ import { getItems } from '../../utils/getItems';
 import VFormEditorConst from './VFormEditorConst.vue';
 import { getFormComponent } from '../Form/FormItem.vue';
 
-const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field> }>()
+const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field>, values: any }>()
 
 const emit = defineEmits([ "deleteItem", "setActiveItem" ])
 
@@ -51,6 +54,18 @@ const component = computed(() => {
   if (!props.item.format) return VInput
   if (props.item.format === 'const') return VFormEditorConst
   return getFormComponent(props.item.format) ?? VInput
+})
+
+const disabled = computed(() => {
+  if (!props.item.conditions) return false
+  for (let item of props.item.conditions) {
+    if (Array.isArray(item.value)) {
+      if (!item.value.includes(props.values[item.field])) return true
+    } else {
+      if (props.values[item.field] !== item.value) return true
+    }
+  }
+  return false
 })
 
 const additionalProps = computed(() => {
@@ -125,5 +140,6 @@ const additionalProps = computed(() => {
 </script>
 
 <style lang="sass">
-
+.form-editor-item__disabled
+  opacity: 0.35
 </style>

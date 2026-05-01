@@ -8,6 +8,11 @@ export type Form = {
   fields: FormItem[]
 }
 
+type FormItemCondition = {
+  field: string,
+  value: any
+}
+
 export type FormItem = {
   format?: string,
   enum?: { id: string, title: string }[],
@@ -27,7 +32,8 @@ export type FormItem = {
   multiple?: boolean,
   accept?: string,
   value?: any,
-  children?: FormItem[]
+  children?: FormItem[],
+  conditions?: FormItemCondition[] | null,
   columns?: Array<{ fieldId: string, name: string, type: string, enum?: { id: string, title: string }[], enabled: boolean }>
 }
 
