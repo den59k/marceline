@@ -86,7 +86,9 @@ const additionalProps = computed(() => {
   if (props.item.format === 'multisearch') {
     return {
       items: () => getItems(props.item.relationType!),
-      hasOrder: !!props.item.relationBridgeOrderField
+      hasOrder: !!props.item.relationBridgeOrderField,
+      subform: props.item.subform,
+      subformField: props.item.subformField
       // hasOrder: props.item.
     } 
   }

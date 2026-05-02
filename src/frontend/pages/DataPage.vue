@@ -307,14 +307,14 @@ const editTable = () => {
 }
 
 const addItem = () => {
-  dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.createForm, systemTable: data.value.view.systemTable })
+  dialogStore.open(AddDataItemDialog, { viewId: viewId.value, form: data.value.createForm })
 }
 
 let hasMoveItem = false
 const onItemClick = (item: any) => {
   if (hasMoveItem) return
   if (!data.value.editForm) return
-  dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm, systemTable: data.value.view.systemTable })
+  dialogStore.open(AddDataItemDialog, { item, viewId: viewId.value, form: data.value.editForm })
 }
 
 const selectedItems = ref<any[]>([])

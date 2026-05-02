@@ -1,0 +1,20 @@
+{
+  "id": "UserChatSubinfo",
+  "name": "subinfo",
+  "systemTable": "UserChatSubinfo",
+  "fields": [
+    {
+      "fieldId": "alterName",
+      "name": "Альтернативное имя",
+      "format": "input"
+    },
+    {
+      "fieldId": "photos",
+      "name": "Фото",
+      "format": "files-group",
+      "isCustom": true,
+      "fileIdField": "photoIds"
+    }
+  ],
+  "bodyModifiers": []
+}

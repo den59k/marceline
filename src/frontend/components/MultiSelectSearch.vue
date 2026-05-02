@@ -7,6 +7,13 @@
       <div v-for="item in modelValue" class="multiselect__item">
         <VIconButton v-if="props.hasOrder" icon="sort" class="multiselect__sort-btn" @mousedown="onMoveRow"/>
         <div class="multiselect__item-title">{{ mapItem(item).title }}</div>
+        <VIconButton 
+          v-if="props.subform" 
+          icon="edit" 
+          class="multiselect__subinfo-btn" 
+          :class="{ active: item[props.subformField ?? '_sub'] }" 
+          @click="editSubInfo(item)"
+        />
         <VIconButton icon="close" class="multiselect__remove-btn" @click="deleteItem(item)"/>
       </div>
     </div>
@@ -34,11 +41,14 @@ import { computed, shallowRef, triggerRef, watch } from 'vue';
 import VFormControl from './VFormControl.vue';
 import VIcon from './VIcon.vue';
 import VPopover from './VPopover.vue';
-import { clamp, handleMove, useSearch } from 'vuesix';
+import { clamp, handleMove, makeRequest, useSearch } from 'vuesix';
 import VIconButton from './VIconButton.vue';
 import { mapItem } from '../utils/getItems'
+import { formsApi } from '../api/formsApi';
+import { useDialogStore } from '../stores/dialogStore';
+import AddDataItemDialog from './dialogs/AddDataItemDialog.vue';
 
-const props = defineProps<{ items: () => Promise<any>, hasOrder?: boolean }>()
+const props = defineProps<{ items: () => Promise<any>, hasOrder?: boolean, subform?: string, subformField?: string }>()
 const modelValue = defineModel<any[]>({ default: [] })
 
 const popoverOpen = shallowRef(false)
@@ -126,6 +136,18 @@ const onMoveRow = (e: MouseEvent) => {
   })
 }
 
+const dialog = useDialogStore()
+const editSubInfo = async (item: any) => {
+  const form = await makeRequest(formsApi.getForm, props.subform!)
+  dialog.open(AddDataItemDialog, { 
+    form, 
+    item: item[props.subformField ?? "_sub"],
+    onComplete(values: any) {
+      item[props.subformField ?? "_sub"] = values
+    } 
+  })
+}
+
 </script>
 
 <style lang="sass">
@@ -204,5 +226,10 @@ const onMoveRow = (e: MouseEvent) => {
   margin-right: 2px
   &:hover
     opacity: 1
+
+.multiselect__subinfo-btn
+  color: var(--text-secondary-color)
+  &.active
+    color: var(--text-color)
 
 </style>

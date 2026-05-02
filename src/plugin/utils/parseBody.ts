@@ -74,6 +74,30 @@ export const parseBody = async (fastify: FastifyInstance, req: FastifyRequest, r
   }
 }
 
+const parseBodyInternal = (fields: FormField[], body: any) => {
+  const _body: any = {}
+  for (let item of fields) {
+    if (!item.fieldId) continue
+    if (item.fileIdField && item.fieldId in body) {
+      if (item.format === "files-group") {
+        _body[item.fileIdField] = body[item.fieldId].map((item: any) => item.id)
+      } else {
+        _body[item.fileIdField] = body[item.fieldId]?.id ?? null
+      }
+      continue
+    }
+
+    let value = body[item.fieldId]
+    if (item.format === 'const') {
+      value = item.value
+    }
+    if (value !== undefined) {
+      _body[item.aliasFieldId ?? item.fieldId] = value
+    }
+  }
+  return _body
+}
+
 const getFlatFields = (form: Form["fields"]): FormField[] => {
   const arr: FormField[] = []
   for (let item of form) {
@@ -150,6 +174,12 @@ const insertSubitemsValues = (fastify: FastifyInstance, req: FastifyRequest, ite
   })
 }
 
+const wrapValue = (item: any, field: FormField) => {
+  if (field.subform && !field.subformField && item["_sub"]) {
+    return item["_sub"]
+  }
+  return { }
+}
 
 const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, field: FormField, value: any[], systemTable: string) => {
   if (!req.postCallbacks) req.postCallbacks = []
@@ -172,13 +202,26 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
         await (fastify as any).prisma[field.relationBridgeType!].deleteMany({
           where: data
         })
+
         await (fastify as any).prisma[field.relationBridgeType!].createMany({
           data: value.map((item, index) => ({
             ...data,
             [ field.relationBridgeOrderField! ]: index + 1,
-            [ oppositeField.relationFromFields![0] ]: item[idField.name]
+            [ oppositeField.relationFromFields![0] ]: item[idField.name],
+            ...wrapValue(item, field)
           }))
         })
+        
+        if (field.subform && field.subformField) {
+          const form = fastify.marceline.forms.getItem(field.subform)!
+          await (fastify as any).prisma[form.systemTable].createMany({
+            data: value.map((item, index) => item[field.subformField!]? ({
+              ...data,
+              [ oppositeField.relationFromFields![0] ]: item[idField.name],
+              ...parseBodyInternal(form.fields, item[field.subformField!])
+            }): null).filter(i => !!i)
+          })
+        }
 
         return
       }
@@ -211,6 +254,20 @@ const insertMultiselectValues = (fastify: FastifyInstance, req: FastifyRequest, 
             ...data,
             [ oppositeField.relationFromFields![0] ]: itemId
           }))
+        })
+      }
+
+      if (field.subform && field.subformField) {
+        const form = fastify.marceline.forms.getItem(field.subform)!
+        await (fastify as any).prisma[form.systemTable].deleteMany({ 
+          where: data
+        })
+        await (fastify as any).prisma[form.systemTable].createMany({
+          data: value.map((item, index) => item[field.subformField!]? ({
+            ...data,
+            [ oppositeField.relationFromFields![0] ]: item[idField.name],
+            ...parseBodyInternal(form.fields, item[field.subformField!])
+          }): null).filter(i => !!i)
         })
       }
     })

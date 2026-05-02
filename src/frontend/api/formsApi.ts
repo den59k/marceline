@@ -32,6 +32,8 @@ export type FormItem = {
   multiple?: boolean,
   accept?: string,
   value?: any,
+  subform?: string,
+  subformField?: string,
   children?: FormItem[],
   conditions?: FormItemCondition[] | null,
   columns?: Array<{ fieldId: string, name: string, type: string, enum?: { id: string, title: string }[], enabled: boolean }>

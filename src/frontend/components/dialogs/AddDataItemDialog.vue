@@ -5,7 +5,7 @@
     </template>
     <Form v-model="data" :fields="props.form.fields" />
     <template #actions>
-      <VButton outline @click="dialogStore.close">Отмена</VButton>
+      <VButton outline @click="dialogStore.back">Отмена</VButton>
       <VButton :disabled="pending" @click="apply">{{ props.item? "Сохранить": "Добавить"}}</VButton>
     </template>
   </VDialog>
@@ -37,7 +37,7 @@ import VDatePicker from '../VDatePicker.vue';
 import VFilesView from '../VFilesView.vue';
 import MultiSelectSearch from '../MultiSelectSearch.vue';
 
-const props = defineProps<{ viewId: string, form: FormType, systemTable: string, item?: any }>()
+const props = defineProps<{ viewId?: string, form: FormType, item?: any, onComplete?: (values: any) => void }>()
 
 const dialogStore = useDialogStore()
 
@@ -65,10 +65,16 @@ const apply = handlePending(async () => {
     await upload()
   }
 
+  if (props.onComplete) {
+    props.onComplete(cloneDeep(data.value))
+    dialogStore.back()
+    return
+  }
+
   if (props.item) {
-    await dataApi.updateElement(props.viewId, props.item.id, data.value)
+    await dataApi.updateElement(props.viewId!, props.item.id, data.value)
   } else {
-    await dataApi.createElement(props.viewId, data.value)
+    await dataApi.createElement(props.viewId!, data.value)
   }
   mutateRequestFull(dataApi.getData)
   dialogStore.close()

@@ -46,6 +46,8 @@ export type FormField = {
   relationBridgeType?: string,
   relationBridgeFieldId?: string
   relationBridgeOrderField?: string,
+  subform?: string,
+  subformField?: string,
   value?: any
   columns: Array<{ enabled: boolean, fieldId: string }>
 }

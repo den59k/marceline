@@ -67,6 +67,17 @@
       ]
     },
     {
+      "fieldId": "chats",
+      "name": "Чат",
+      "format": "multisearch",
+      "relationBridgeFieldId": "chat",
+      "relationType": "Chat",
+      "relationBridgeType": "UserChat",
+      "relationBridgeOrderField": "order",
+      "subform": "UserChatSubinfo",
+      "subformField": "subinfo"
+    },
+    {
       "fieldId": "license",
       "name": "Пользовательское соглашение",
       "format": "file",

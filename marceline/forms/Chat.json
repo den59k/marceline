@@ -15,7 +15,8 @@
       "relationBridgeFieldId": "user",
       "relationType": "User",
       "relationBridgeType": "UserChat",
-      "relationBridgeOrderField": "order"
+      "subform": "UserChatSubinfo",
+      "subformField": "subinfo"
     },
     {
       "fieldId": "features",

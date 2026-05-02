@@ -69,6 +69,78 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
     }
   })
 
+  const processForm = (editForm: Form, postCallbacks: Array<(item: any) => void>, fileFields: FormField[]) => {
+    const select: any = {}
+    traverseFormFields(editForm.fields, (field) => {
+      if (field.jsonField) {
+        select[field.jsonField] = true
+      } else if (field.fieldId && field.relationBridgeFieldId && field.relationBridgeType) {
+        const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
+        const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
+        select[field.fieldId] = {
+          select: { 
+            [field.relationBridgeFieldId]: {
+              select: Object.fromEntries(keys.map(item => [ item, true ]))
+            },
+          },
+          take: 100
+        }
+        if (field.relationBridgeOrderField) {
+          (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
+          (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
+        }
+        if (field.subform && field.subformField) {
+          const form = fastify.marceline.forms.getItem(field.subform)!;
+          const internalFileFields: any[] = [];
+          (select[field.fieldId] as any).select[field.subformField] = {
+            select: processForm(form, [], internalFileFields)
+          }
+          for (let item of internalFileFields) {
+            item.path = [ field.name, field.subformField ]
+          }
+          fileFields.push(...internalFileFields)
+        }
+
+        postCallbacks.push(item => {
+          item[field.fieldId!] = item[field.fieldId!].map((item: any) => {
+            const resp = item[field.relationBridgeFieldId!]
+            if (field.relationBridgeOrderField) {
+              resp[field.relationBridgeOrderField!] = item[field.relationBridgeOrderField!]
+            }
+            if (field.subformField) {
+              resp[field.subformField] = item[field.subformField]
+            }
+            return resp
+          })
+        })
+      } else if (field.fieldId && field.format === 'subitems') {
+        select[field.fieldId] = {
+          select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))
+        }
+      } else if (field.fieldId && field.relationBridgeFieldId && field.relationType) {
+        const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
+        const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
+        select[field.fieldId] = {
+          select: Object.fromEntries(keys.map(item => [ item, true ])),
+          take: 100
+        }
+        if (field.relationBridgeOrderField) {
+          (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
+          (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
+        }
+      } else if (field.aliasFieldId) {
+        select[field.aliasFieldId] = true 
+      } else if (field.fileIdField) {
+        select[field.fileIdField] = true
+        fileFields.push(field)
+      } else if (field.fieldId && field.format !== 'password') {
+        select[field.fieldId] = true
+      }
+    })
+
+    return select
+  }
+
   const getDataQuery = schema({ page: "number?", search: "string?" })
   /** Get data */
   fastify.get("/data/:viewId/items", sc(params, getDataQuery, "query"), async (_req, reply) => {
@@ -89,59 +161,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
 
     if (editForm) {
       // Add some select fields for object edit feature
-      traverseFormFields(editForm.fields, (field) => {
-        if (field.jsonField) {
-          select[field.jsonField] = true
-        } else if (field.fieldId && field.relationBridgeFieldId && field.relationBridgeType) {
-          const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
-          const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
-          select[field.fieldId] = {
-            select: { 
-              [field.relationBridgeFieldId]: {
-                select: Object.fromEntries(keys.map(item => [ item, true ]))
-              },
-            },
-            take: 100
-          }
-          if (field.relationBridgeOrderField) {
-            (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
-            (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
-          }
-          postCallbacks.push(item => {
-            if (field.relationBridgeOrderField) {
-              item[field.fieldId!] = item[field.fieldId!].map((item: any) => {
-                const resp = item[field.relationBridgeFieldId!]
-                resp[field.relationBridgeOrderField!] = item[field.relationBridgeOrderField!]
-                return resp
-              })
-            } else {
-              item[field.fieldId!] = item[field.fieldId!].map((item: any) => item[field.relationBridgeFieldId!])
-            }
-          })
-        } else if (field.fieldId && field.format === 'subitems') {
-          select[field.fieldId] = {
-            select: Object.fromEntries(field.columns.filter(item => item.enabled !== false).map(item => [ item.fieldId, true ]))
-          }
-        } else if (field.fieldId && field.relationBridgeFieldId && field.relationType) {
-          const relationTable = Prisma.dmmf.datamodel.models.find(item => item.name === field.relationType!)!
-          const keys = [ "name", "surname", "email", "id", "uuid", "src", "size" ].filter(fieldId => relationTable.fields.find(item => item.name === fieldId))
-          select[field.fieldId] = {
-            select: Object.fromEntries(keys.map(item => [ item, true ])),
-            take: 100
-          }
-          if (field.relationBridgeOrderField) {
-            (select[field.fieldId] as any).select[field.relationBridgeOrderField] = true;
-            (select[field.fieldId] as any).orderBy = { [field.relationBridgeOrderField]: "asc" };
-          }
-        } else if (field.aliasFieldId) {
-          select[field.aliasFieldId] = true 
-        } else if (field.fileIdField) {
-          select[field.fileIdField] = true
-          fileFields.push(field)
-        } else if (field.fieldId && field.format !== 'password') {
-          select[field.fieldId] = true
-        }
-      })
+      Object.assign(select, processForm(editForm, postCallbacks, fileFields))
     }
 
     const idField = getIdField(req.view)
@@ -263,6 +283,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
 
     const idField = getIdField(req.view)
     const resp = await parseBody(fastify, req, reply, form, body)
+
     if (typeof resp === "object" && resp === reply) return resp
 
     const newObject = await (fastify as any).prisma[req.view.systemTable].create({

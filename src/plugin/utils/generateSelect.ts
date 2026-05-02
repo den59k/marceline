@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { ViewColumn } from "../types";
+import { FormField, ViewColumn } from "../types";
 
 type Select = Record<string, boolean | { select: Select, take?: number }>
 
@@ -36,10 +36,57 @@ export const generateSelect = (columns: ViewColumn[], postCallbacks: ((item: any
   return targetObject
 }
 
-export const attachFiles = async (prisma: PrismaClient, filesTable: string, items: any, fileFields: { fileIdField: string, fieldId: string }[]) => {
+type InternalField = { fileIdField: string, fieldId: string, path?: string[] }
+const collectIds = (path: string[], item: any, fileIds: string[], field: InternalField) => {
+  if (!item) return
+  if (path.length === 0) {
+    if (Array.isArray(item[field.fileIdField!])) {
+      fileIds.push(...item[field.fileIdField!])
+      item[field.fieldId!] = []
+    } else {
+      fileIds.push(item[field.fileIdField!])
+      item[field.fieldId!] = null
+    }
+    return
+  }
+  const child = item[path[0]]
+  if (Array.isArray(child)) {
+    for (let childItem of child) {
+      collectIds(path.slice(1), childItem, fileIds, field)
+    }
+  } else {
+    collectIds(path.slice(1), child, fileIds, field)
+  }
+}
+
+const applyFiles = (path: string[], item: any, field: InternalField, filesMap: Map<string,any>) => {
+  if (!item) return
+  if (path.length === 0) {
+    if (Array.isArray(item[field.fileIdField!])) {
+      item[field.fieldId!] = item[field.fileIdField!].map((item: string) => filesMap.get(item))
+    } else {
+      item[field.fieldId!] = filesMap.get(item[field.fileIdField!]) ?? null
+    }
+    return
+  }
+  const child = item[path[0]]
+  if (Array.isArray(child)) {
+    for (let childItem of child) {
+      applyFiles(path.slice(1), childItem, field, filesMap)
+    }
+  } else {
+    applyFiles(path.slice(1), child, field, filesMap)
+  }
+}
+
+export const attachFiles = async (prisma: PrismaClient, filesTable: string, items: any, fileFields: InternalField[]) => {
   const fileIds: string[] = []
   for (let item of items) {
     for (let field of fileFields) {
+      if (field.path) {
+        collectIds(field.path, item, fileIds, field)
+        continue
+      }
       if (!item[field.fileIdField!]) continue
       if (Array.isArray(item[field.fileIdField!])) {
         fileIds.push(...item[field.fileIdField!])
@@ -54,9 +101,13 @@ export const attachFiles = async (prisma: PrismaClient, filesTable: string, item
     const files = await (prisma as any)[filesTable].findMany({
       where: { id: { in: fileIds }}
     })
-    const filesMap = new Map(files.map((item: any) => [ item.id, item ]))
+    const filesMap = new Map<string,any>(files.map((item: any) => [ item.id, item ]))
     for (let item of items) {
       for (let field of fileFields) {
+        if (field.path) {
+          applyFiles(field.path, item, field, filesMap)
+          continue
+        }
         if (!item[field.fileIdField!]) continue
         if (Array.isArray(item[field.fileIdField!])) {
           item[field.fieldId!] = item[field.fileIdField!].map((item: string) => filesMap.get(item))

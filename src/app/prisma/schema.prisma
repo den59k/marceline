@@ -88,6 +88,16 @@ model UserChat {
   chat              Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
   role              UserChatRole       @default(default)
   order             Float              @default(0)
+  subinfo           UserChatSubinfo?
+  @@id([ userId, chatId ])
+}
+
+model UserChatSubinfo {
+  userId            Int
+  chatId            BigInt
+  userChat          UserChat            @relation(fields: [userId,chatId], references: [userId,chatId], onDelete: Cascade)
+  alterName         String
+  photoIds          String[]            @default([])
   @@id([ userId, chatId ])
 }
 
