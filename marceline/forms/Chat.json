@@ -19,6 +19,13 @@
       "subformField": "subinfo"
     },
     {
+      "fieldId": "photos",
+      "name": "Фото",
+      "format": "files-group",
+      "isCustom": true,
+      "fileIdField": "photoIds"
+    },
+    {
       "fieldId": "features",
       "name": "Дополнительные функции",
       "format": "subitems",

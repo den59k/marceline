@@ -61,6 +61,7 @@ model Chat {
   name              String?
   users             UserChat[]
   features          ChatFeature[]
+  photoIds          String[]
 }
 
 model Request {

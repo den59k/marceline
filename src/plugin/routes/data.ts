@@ -96,7 +96,7 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
             select: processForm(form, [], internalFileFields)
           }
           for (let item of internalFileFields) {
-            item.path = [ field.name, field.subformField ]
+            item.path = [ field.fieldId, field.subformField ]
           }
           fileFields.push(...internalFileFields)
         }
