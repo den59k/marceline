@@ -6,7 +6,7 @@ type Options = {
 }
 
 export const dataApi = {
-  getDataByTable: (systemTable: string) => request(`/api/admin/raw-data/${systemTable}`),
+  getDataByTable: (systemTable: string, enableFilter?: boolean) => request(`/api/admin/raw-data/${systemTable}${query({ enableFilter })}`),
   
   getData: (viewId: string, options: Options) => request(`/api/admin/data/${viewId}/items${query(options)}`),
   createElement: (viewId: string, values: any) => request(`/api/admin/data/${viewId}/items`, values),

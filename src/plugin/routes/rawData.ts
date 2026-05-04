@@ -10,10 +10,12 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
   if (onRequest) {
     fastify.addHook("onRequest", onRequest)
   }
-
+  
+  const querySchema = schema({ enableFilter: "boolean?" })
   const getRawDataSchema = schema({ systemTable: "string" })
-  fastify.get("/raw-data/:systemTable", sc(getRawDataSchema), async (req, reply) => {
+  fastify.get("/raw-data/:systemTable", sc(getRawDataSchema, querySchema, "query"), async (req, reply) => {
     const { systemTable } = req.params as SchemaType<typeof getRawDataSchema>
+    const { enableFilter } = req.query as SchemaType<typeof querySchema>
 
     const table = Prisma.dmmf.datamodel.models.find(item => item.name === systemTable)
     if (!table) return reply.code(400).send(`Table ${table} not found`)
@@ -31,10 +33,19 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
       select[nameField.name] = true
     }
 
+    let where: any = undefined
+    if (enableFilter) {
+      if (idField.type === "Int") {
+        where = { [idField.name]: { gt: 0 } }
+      } else if (idField.type === "String") {
+        where = { [idField.name]: { startsWith: "_" } }
+      }
+    }
+
     const resp = await (fastify as any).prisma[systemTable].findMany({
       select: select,
       orderBy: { [idField.name]: "asc" },
-      where: idField.type === "Int"? { [idField.name]: { gt: 0 } }: undefined,
+      where,
       take: 500
     })
 

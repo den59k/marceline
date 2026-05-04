@@ -1,8 +1,8 @@
 import { makeRequest } from "vuesix"
 import { dataApi } from "../api/data"
 
-export const getItems = async (systemTable: string) => {
-  const resp = await makeRequest(dataApi.getDataByTable, systemTable)
+export const getItems = async (systemTable: string, enableFilter?: boolean) => {
+  const resp = await makeRequest(dataApi.getDataByTable, systemTable, enableFilter)
   if (resp.length === 0) return []
   const item = resp[0]
   const keys = Object.keys(item)
