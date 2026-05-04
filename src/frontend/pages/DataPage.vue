@@ -53,6 +53,9 @@
             <div v-else-if="column.format === 'order'">
               <VIconButton icon="sort" class="data-page__sort-button" @mousedown="onMoveRow" @click.stop/>
             </div>
+            <div v-else-if="column.format === 'checkbox'">
+              <VCheckbox :model-value="cell" style="pointer-events: none;" />
+            </div>
             <div v-else class="data-page__data-cell">{{ cell }}</div>
           </template>
         </VTable>
@@ -94,6 +97,7 @@ import VPagination from '../components/VPagination.vue';
 import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
 import { nextTick } from 'process';
+import VCheckbox from '../components/VCheckbox.vue';
 
 const contextMenu = useContextMenu(() => [])
 const isDev = (window as any).isDev

@@ -24,6 +24,13 @@
       "systemColumn": "location",
       "formula": "",
       "size": null
+    },
+    {
+      "name": "Удален",
+      "format": "checkbox",
+      "systemColumn": "deleted",
+      "formula": "",
+      "size": null
     }
   ],
   "data": {
@@ -39,5 +46,6 @@
       "enabled": true
     }
   },
-  "icon": "table"
+  "icon": "table",
+  "actions": []
 }

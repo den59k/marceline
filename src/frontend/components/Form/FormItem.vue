@@ -63,7 +63,7 @@ const additionalProps = computed(() => {
   if (props.item.format === 'select' || props.item.format === 'listSelect') {
     if (props.item.relationType) {
       return {
-        items: () => getItems(props.item.relationType!),
+        items: () => getItems(props.item.relationType!, props.item.enableFilter),
         nullable: true,
         multiple: props.item.format === 'listSelect',
         search: true,
@@ -87,7 +87,7 @@ const additionalProps = computed(() => {
   if (props.item.format === 'multiselect') {
     if (props.item.relationType) {
       return {
-        items: () => getItems(props.item.relationType!),
+        items: () => getItems(props.item.relationType!, props.item.enableFilter),
         multiple: true,
         search: true
       }

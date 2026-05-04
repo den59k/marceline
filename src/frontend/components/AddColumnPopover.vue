@@ -155,6 +155,13 @@ const formats = computed(() => {
     ]
   }
 
+  if (values.selectedItem.type === "Boolean") {
+    return [
+      { id: "string", title: "Строка" },
+      { id: "checkbox", title: "Чекбокс" },
+    ]
+  }
+
   return [
     { id: "string", title: "Строка" }
   ]
