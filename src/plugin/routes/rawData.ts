@@ -34,6 +34,7 @@ export default async (fastify: FastifyInstance, { onRequest }: any) => {
     const resp = await (fastify as any).prisma[systemTable].findMany({
       select: select,
       orderBy: { [idField.name]: "asc" },
+      where: idField.type === "Int"? { [idField.name]: { gt: 0 } }: undefined,
       take: 500
     })
 
