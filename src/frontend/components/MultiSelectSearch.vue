@@ -72,8 +72,8 @@ const filteredData = useSearch(searchValue, data, item => item.title)
 const modelValueSet = computed(() => new Set(modelValue.value?.map(i => i.id)))
 const showData = computed(() => {
   const set = modelValueSet.value;
-  if (set.size === 0) return filteredData.value
-  return filteredData.value.filter((item) => !set.has(item.id))
+  if (set.size === 0) return filteredData.value ?? []
+  return filteredData.value?.filter((item) => !set.has(item.id)) ?? []
 })
 
 const addItem = (item: any) => {
