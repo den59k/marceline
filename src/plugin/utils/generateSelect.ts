@@ -92,7 +92,7 @@ export const attachFiles = async (prisma: PrismaClient, filesTable: string, item
         fileIds.push(...item[field.fileIdField!].filter((id: any) => !!id))
         item[field.fieldId!] = []
       } else {
-        if (field.fileIdField) {
+        if (item[field.fileIdField!]) {
           fileIds.push(item[field.fileIdField!])
         }
         item[field.fieldId!] = null
