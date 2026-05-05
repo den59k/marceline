@@ -41,10 +41,12 @@ const collectIds = (path: string[], item: any, fileIds: string[], field: Interna
   if (!item) return
   if (path.length === 0) {
     if (Array.isArray(item[field.fileIdField!])) {
-      fileIds.push(...item[field.fileIdField!])
+      fileIds.push(...item[field.fileIdField!].filter((id: any) => !!id))
       item[field.fieldId!] = []
     } else {
-      fileIds.push(item[field.fileIdField!])
+      if (item[field.fileIdField!]) {
+        fileIds.push(item[field.fileIdField!])
+      }
       item[field.fieldId!] = null
     }
     return
