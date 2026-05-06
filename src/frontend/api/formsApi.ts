@@ -37,6 +37,7 @@ export type FormItem = {
   children?: FormItem[],
   enableFilter?: boolean,
   conditions?: FormItemCondition[] | null,
+  setEmptyNull?: boolean,
   columns?: Array<{ fieldId: string, name: string, type: string, enum?: { id: string, title: string }[], enabled: boolean }>
 }
 

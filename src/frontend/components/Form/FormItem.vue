@@ -131,6 +131,7 @@ const additionalProps = computed(() => {
   }
   return { 
     multiline: props.item.format === 'multiline', 
+    setEmptyNull: props.item.setEmptyNull,
     type: getInputType(props.item) 
   }
 })

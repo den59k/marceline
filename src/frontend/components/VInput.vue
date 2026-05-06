@@ -40,12 +40,16 @@ const props = defineProps<{
   large?: boolean,
   maxLength?: number,
   nullable?: boolean,
+  setEmptyNull?: boolean,
   validator?: (inputValue: string) => null | any
 } & VFormControlProps>()
 
 const emit = defineEmits(["update:modelValue"])
 
 const parse = (value: string) => {
+  if (!value && props.setEmptyNull) {
+    return null
+  }
   if (props.validator) {
     return props.validator(value)
   }

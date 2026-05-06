@@ -6,7 +6,8 @@
     {
       "fieldId": "name",
       "name": "Название чата",
-      "format": "input"
+      "format": "input",
+      "setEmptyNull": true
     },
     {
       "fieldId": "users",
