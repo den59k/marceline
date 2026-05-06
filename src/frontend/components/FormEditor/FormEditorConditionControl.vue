@@ -3,14 +3,15 @@
     <div v-if="props.label" class="list-editor__title">{{ props.label }}</div>
 
     <div v-for="item in conditions" class="form-editor-condition__row">
-      <VSelect v-model="item.field" :items="items" placeholder="Поле" style="flex-grow: 0.6;"/>
+      <VInput v-if="Array.isArray(item.field)" :model-value="item.field.join('.')" disabled style="flex-grow: 0.6;" />
+      <VSelect v-else v-model="item.field" :items="items" placeholder="Поле" style="flex-grow: 0.6;"/>
       =
       <VSelect v-if="item.field && getValues(item.field)" v-model="item.value" multiple :items="getValues(item.field)!" placeholder="Значение"/>
       <VCheckbox v-else-if="item.field && fieldsMap.get(item.field)?.type === 'Boolean'" v-model="item.value"/>
-      <VInput v-else v-model="item.value"/>
+      <VInput v-else v-model="item.value" :type="item.isNumber? 'number': undefined"/>
     </div>
 
-     <button class="list-editor__add-button" @click="addCondition()">
+    <button class="list-editor__add-button" @click="addCondition()">
       <VIcon icon="add"/> Добавить условие
     </button>
   </div>
@@ -27,9 +28,13 @@ import VCheckbox from '../VCheckbox.vue';
 
 const props = defineProps<{ item: FormItem, label?: string, fieldsMap: Map<string, Field> }>()
 
-const conditions = reactive<{ field: string | null, value: any }[]>([])
+const conditions = reactive<{ field: string | null, value: any, isNumber?: boolean }[]>([])
 if (props.item.conditions) {
   for (let item of props.item.conditions) {
+    if (Array.isArray(item.field)) {
+      conditions.push({ field: item.field, value: item.value, isNumber: typeof item.value === 'number' })
+      continue
+    }
     const field = props.fieldsMap.get(item.field)
     if (field?.enum) {
       if (Array.isArray(item.value)) {

@@ -23,7 +23,16 @@
       "name": "Фото",
       "format": "files-group",
       "isCustom": true,
-      "fileIdField": "photoIds"
+      "fileIdField": "photoIds",
+      "conditions": [
+        {
+          "field": [
+            "users",
+            "id"
+          ],
+          "value": 1
+        }
+      ]
     },
     {
       "fieldId": "features",

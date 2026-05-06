@@ -39,6 +39,7 @@ import VInput from '../VInput.vue'
 import { getItems } from '../../utils/getItems';
 import VFormEditorConst from './VFormEditorConst.vue';
 import { getFormComponent } from '../Form/FormItem.vue';
+import { checkComplexCondition, checkConditions } from '../../utils/formCondition';
 
 const props = defineProps<{ item: FormItem, index?: number, fieldsMap: Map<string, Field>, values: any }>()
 
@@ -56,17 +57,7 @@ const component = computed(() => {
   return getFormComponent(props.item.format) ?? VInput
 })
 
-const disabled = computed(() => {
-  if (!props.item.conditions) return false
-  for (let item of props.item.conditions) {
-    if (Array.isArray(item.value)) {
-      if (!item.value.includes(props.values[item.field])) return true
-    } else {
-      if (props.values[item.field] !== item.value) return true
-    }
-  }
-  return false
-})
+const disabled = computed(() => !checkConditions(props.item, props.values))
 
 const additionalProps = computed(() => {
   if (props.item.format === 'select' || props.item.format === 'listSelect') {

@@ -50,6 +50,7 @@ import AddDataItemDialog from './dialogs/AddDataItemDialog.vue';
 
 const props = defineProps<{ items: () => Promise<any>, hasOrder?: boolean, subform?: string, subformField?: string }>()
 const modelValue = defineModel<any[]>({ default: [] })
+const emit = defineEmits([ "update:modelValue" ])
 
 const popoverOpen = shallowRef(false)
 const searchValue = shallowRef("")
@@ -80,6 +81,7 @@ const addItem = (item: any) => {
   modelValue.value.push(item)
   triggerRef(modelValue)
   popoverOpen.value = false
+  emit("update:modelValue", modelValue.value)
 }
 
 const deleteItem = (item: any) => {

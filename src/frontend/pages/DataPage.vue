@@ -96,7 +96,6 @@ import { addDelimiter, num } from '../utils/lang';
 import VPagination from '../components/VPagination.vue';
 import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
-import { nextTick } from 'process';
 import VCheckbox from '../components/VCheckbox.vue';
 
 const contextMenu = useContextMenu(() => [])
@@ -107,9 +106,12 @@ const viewId = computed(() => router.currentRoute.value.params.viewId as string)
 
 const searchOptions = reactive({ page: 0, search: "", params: {} as Record<string, string | number> })
 const _searchValue = ref()
+
 watchDebounced(_searchValue, _searchValue => {
   searchOptions.search = _searchValue
+  searchOptions.page = 0
 }, { debounce: 400 })
+
 const _searchOptions = computed(() => ({ 
   page: searchOptions.page === 0? undefined: searchOptions.page,
   search: searchOptions.search === ''? undefined: searchOptions.search,

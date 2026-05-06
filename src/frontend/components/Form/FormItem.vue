@@ -20,6 +20,7 @@
 import { FormItem as FormItemType } from '../../api/formsApi';
 import { computed } from 'vue';
 import { getItems } from '../../utils/getItems';
+import { checkConditions } from '../../utils/formCondition';
 
 const props = defineProps<{ item: FormItemType, modelValue?: any }>()
 const emit = defineEmits([ "update:modelValue" ])
@@ -47,17 +48,7 @@ const component = computed(() => {
   return component ?? components["input"]
 })
 
-const disabled = computed(() => {
-  if (!props.item.conditions) return false
-  for (let item of props.item.conditions) {
-    if (Array.isArray(item.value)) {
-      if (!item.value.includes(props.modelValue[item.field])) return true
-    } else {
-      if (props.modelValue[item.field] !== item.value) return true
-    }
-  }
-  return false
-})
+const disabled = computed(() => !checkConditions(props.item, props.modelValue))
 
 const additionalProps = computed(() => {
   if (props.item.format === 'select' || props.item.format === 'listSelect') {

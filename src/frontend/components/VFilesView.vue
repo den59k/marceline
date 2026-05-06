@@ -50,7 +50,7 @@ const props = defineProps<{ modelValue: any }>()
     overflow: hidden
 
   &>a
-    color: var(--primary-color)
+    color: var(--text-accent-color)
     cursor: pointer
 
 </style>

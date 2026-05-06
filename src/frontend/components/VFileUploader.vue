@@ -18,6 +18,7 @@
         <div v-else class="v-image-uploader__file-preview">
           <VIcon icon="file" />
           {{ files[0].name }}
+          <a :href="files[0].src" :download="files[0].name" class="v-file-uploader__file-download">Скачать файл</a>
         </div>
         <VSpinner v-if="(typeof files[0].progress === 'number')" :progress="files[0].progress" :radius="20" :width="4"/>
       </template>
@@ -240,4 +241,7 @@ button.v-image-uploader__delete-button
   text-align: center
   gap: 6px
   
+.v-file-uploader__file-download
+  color: var(--text-accent-color)
+
 </style>
