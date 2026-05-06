@@ -17,27 +17,27 @@ export const checkConditions = (item: FormItem, values: any): boolean => {
   return true
 }
 
-export const checkSimpleCondition = (item: any, value: any): boolean => {
-  if (Array.isArray(value)) {
-    return value.includes(item)
+export const checkSimpleCondition = (requiredValue: any, currentValue: any): boolean => {
+  if (Array.isArray(requiredValue)) {
+    return requiredValue.includes(currentValue)
   } else {
-    return item === value
+    return requiredValue === currentValue
   }
 }
 
-export const checkComplexCondition = (item: any, path: string[], value: any): boolean => {
+export const checkComplexCondition = (item: any, path: string[], currentValue: any): boolean => {
   if (path.length === 0) {
-    return checkSimpleCondition(item, value)
+    return checkSimpleCondition(item, currentValue)
   }
   if (!item) return false
   if (Array.isArray(item)) {
     for (let i of item) {
-      if (checkComplexCondition(i, path, value)) {
+      if (checkComplexCondition(i, path, currentValue)) {
         return true
       }
     }
   } else {
-    return checkComplexCondition(item[path[0]], path.slice(1), value)
+    return checkComplexCondition(item[path[0]], path.slice(1), currentValue)
   }
   return false
 }
