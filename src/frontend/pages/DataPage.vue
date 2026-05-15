@@ -20,7 +20,7 @@
       </template>
       <template v-for="item in data?.view.filters">
         <VSelect v-if="item.format === 'select'" v-model="searchOptions.params[item.systemColumn]" :style="item.style"
-          nullable :placeholder="item.name ?? item.systemColumn" :items="item.enum"/>
+          nullable :placeholder="item.name ?? item.systemColumn" :items="typeof item.enum === 'string'? () => getItems(item.enum): item.enum"/>
       </template>
       <VInput v-model="_searchValue" placeholder="Поиск..."/>
     </div>
@@ -97,6 +97,7 @@ import VPagination from '../components/VPagination.vue';
 import { watchDebounced } from '@vueuse/core';
 import VSelect from '../components/VSelect.vue';
 import VCheckbox from '../components/VCheckbox.vue';
+import { getItems } from '../utils/getItems';
 
 const contextMenu = useContextMenu(() => [])
 const isDev = (window as any).isDev

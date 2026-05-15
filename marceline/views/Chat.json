@@ -36,5 +36,14 @@
       "enabled": true
     }
   },
+  "filters": [
+    {
+      "systemColumn": "users.some.userId",
+      "format": "select",
+      "name": "Пользователь",
+      "style": "width: 200px",
+      "enum": "User"
+    }
+  ],
   "icon": "mail"
 }

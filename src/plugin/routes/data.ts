@@ -179,7 +179,22 @@ export default async (fastify: FastifyInstance, { onRequest, files, advancedSear
           where[filter.systemColumn] = filter.value
         }
         if (filter.format === 'select' && value) {
-          where[filter.systemColumn] = parseIdField(viewColumn!, value)
+          if (filter.systemColumn.includes(".")) {
+            let obj = where
+            const items = filter.systemColumn.split('.')
+            for (let item of items.slice(0, -1)) {
+              const newObj = {}
+              obj[item] = newObj
+              obj = newObj
+            }
+            if (isNaN(parseInt(value))) {
+              obj[items[items.length-1]] = value
+            } else {
+              obj[items[items.length-1]] = parseInt(value)
+            }
+          } else {
+            where[filter.systemColumn] = parseIdField(viewColumn!, value)
+          }
         }
       }
     }
