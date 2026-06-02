@@ -130,12 +130,17 @@ const getByKey = (item: any, keys: string[]) => {
   return value
 }
 
-const getByFormula = (value: any, formula: string): string => {
+const getByFormula = (value: any, formula: string, enumObj?: any): string => {
 
   if (Array.isArray(value)) {
     return value.map((item: any) => getByFormula(item, formula)).join(", ")
   }
-
+  if (formula === "") {
+    if (enumObj) {
+      return enumObj[value] ?? value
+    }
+    return value
+  }
   const borders: { start: number, end: number }[] = []
   for (let i = 0; i < formula.length; i++) {
     if (formula[i] === "{" && formula[i-1] != "\\") {
@@ -171,7 +176,7 @@ const getMapMethod = (column: any) => {
     const value = getByKey(item, keys)
 
     if (value === null || value === undefined) return "-"
-    if (column.format === "formula") return getByFormula(value, column.formula)
+    if (column.format === "formula") return getByFormula(value, column.formula, column.enum)
     if (column.format === "decimal") return addDelimiter(value.toString())
     if (column.format === "string") return value
     if (column.format === "date") return dayjs(value).format("D MMMM - YYYY")
