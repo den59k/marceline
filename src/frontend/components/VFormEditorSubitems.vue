@@ -36,7 +36,7 @@ import { clamp, handleMove } from 'vuesix';
 import VDatePicker from './VDatePicker.vue';
 
 type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean, width?: string }
-const props = defineProps<{ modelValue?: any[], columns?: Item[] }>()
+const props = defineProps<{ modelValue?: any[], columns?: Item[], hasOrder?: boolean }>()
 const emit = defineEmits([ "update:modelValue" ])
 
 const data = useVModel(props, "modelValue", emit, { passive: true, defaultValue: [] })
@@ -53,15 +53,18 @@ const columns = computed<Record<string, any>>(() => {
         width: field.width ?? (field.type === 'bool'? (Math.max(field.fieldId.length*9, 60)+'px'): undefined)
       }
     ])
-  columns.unshift([
-    "_sort",
-    {
-      columnProps: { class: "form-editor-subitems__sort-column", onMousedown: onMoveRow },
-      title: "",
-      sortable: false,
-      width: "36px"
-    }
-  ])
+
+  if (props.hasOrder) {
+    columns.unshift([
+      "_sort",
+      {
+        columnProps: { class: "form-editor-subitems__sort-column", onMousedown: onMoveRow },
+        title: "",
+        sortable: false,
+        width: "36px"
+      }
+    ])
+  }
   columns.push([
     "_remove",
     {

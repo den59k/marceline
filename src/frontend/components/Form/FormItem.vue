@@ -115,7 +115,8 @@ const additionalProps = computed(() => {
   }
   if (props.item.format === 'subitems') {
     return {
-      columns: props.item.columns
+      columns: props.item.columns,
+      hasOrder: !props.item.relationType
     }
   }
   if (props.item.format === "jsonList") {
