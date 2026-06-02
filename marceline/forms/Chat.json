@@ -37,20 +37,26 @@
     },
     {
       "fieldId": "features",
-      "name": "Дополнительные функции",
+      "name": "Доп. функции",
       "format": "subitems",
       "relationType": "ChatFeature",
       "relationBridgeFieldId": "chat",
       "columns": [
         {
           "fieldId": "id",
-          "name": "ID",
+          "name": "id",
           "enabled": false
         },
         {
           "fieldId": "name",
-          "name": "Название",
+          "name": "name",
           "enabled": true
+        },
+        {
+          "fieldId": "date",
+          "name": "date",
+          "enabled": true,
+          "type": "date"
         }
       ]
     }

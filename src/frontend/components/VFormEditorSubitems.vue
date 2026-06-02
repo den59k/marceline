@@ -11,6 +11,7 @@
         </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
           <VSelect v-if="column.type === 'select'" v-model="item[column.fieldId]" :items="column.enum!" />
+          <VDatePicker v-if="column.type === 'date'" v-model="item[column.fieldId]" />
           <VCheckbox v-else-if="column.type === 'bool'" v-model="item[column.fieldId]" class="form-editor-subitems__checkbox"/>
           <input v-else v-model="item[column.fieldId]"  />
         </template>
@@ -32,6 +33,7 @@ import VSelect from './VSelect.vue';
 import VCheckbox from './VCheckbox.vue';
 import VIcon from './VIcon.vue';
 import { clamp, handleMove } from 'vuesix';
+import VDatePicker from './VDatePicker.vue';
 
 type Item = { fieldId: string, name: string, type?: string, enum?: any[], enabled: boolean, width?: string }
 const props = defineProps<{ modelValue?: any[], columns?: Item[] }>()
@@ -155,6 +157,7 @@ const deleteItem = (item: any) => {
       outline: none
       width: 100%
       padding: 0 16px
+      box-sizing: border-box
 
       &:focus
         box-shadow: 0 0 0 1px var(--primary-color)
@@ -178,6 +181,19 @@ const deleteItem = (item: any) => {
     overflow: visible
   .v-table__row:last-child
     border-bottom: none
+
+  .v-date-picker
+    height: 100%
+    &>.v-form-control__outline
+      height: 100%
+      border: none
+      border-radius: 0
+
+      &:focus-within
+        box-shadow: 0 0 0 1px var(--primary-color)
+      
+      input
+        box-shadow: none
 
 .form-editor-subitems__content
   position: relative
