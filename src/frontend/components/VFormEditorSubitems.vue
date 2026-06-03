@@ -11,7 +11,7 @@
         </template>
         <template v-for="column in props.columns" v-slot:[column.fieldId]="{ item }">
           <VSelect v-if="column.type === 'select'" v-model="item[column.fieldId]" :items="column.enum!" />
-          <VDatePicker v-if="column.type === 'date'" v-model="item[column.fieldId]" />
+          <VDatePicker v-else-if="column.type === 'date'" v-model="item[column.fieldId]" />
           <VCheckbox v-else-if="column.type === 'bool'" v-model="item[column.fieldId]" class="form-editor-subitems__checkbox"/>
           <input v-else v-model="item[column.fieldId]"  />
         </template>
