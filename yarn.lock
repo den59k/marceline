@@ -2390,20 +2390,12 @@ vuesix@^1.0.48:
   resolved "https://registry.npmjs.org/vuesix/-/vuesix-1.0.48.tgz#0171e3f6e377eeba356f1497ad5b904269d267b6"
   integrity sha512-bzWz3QkUI6CEJS11qUlsu2uVez3GkQWLQqOHCkAIcoJ6nT9cjKwpS/YProV31RZAjxyYIKzsems+fBT6FIU2EA==
 
-vuewrite@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/vuewrite/-/vuewrite-0.0.19.tgz#a70faf9a7d2dc73ae17b45113d493234c267062b"
-  integrity sha512-NHKmI+SYc6WDtkI9s9nWVp6/QVyq0hYp5hXq0ywkTCo7acgXs3XF24BiXYiqezX0VvojwmG1TaJvp5t0VhU73Q==
+vuewrite@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/vuewrite/-/vuewrite-1.0.1.tgz#586c8819d595e73b64bd72b386c0053f9b983eef"
+  integrity sha512-xaYbeGrUKJeJqXC7hTZrRAbyfZKaMXqCzTK1Ot3pwnFjOLV0vIsALsJNO+TUNXUM7A6YNxa71LmOUG+d/zHz4A==
   dependencies:
     vue "^3"
-
-vuewrite@^0.0.22-b:
-  version "0.0.22-b"
-  resolved "https://registry.yarnpkg.com/vuewrite/-/vuewrite-0.0.22-b.tgz#842fa75743ab039bed5be491fee97bc40b5cc9fb"
-  integrity sha512-EFSzgyirsupGJ63yioYhQgnevXRw3xUH40aMEXEH1CUmNgIEFcg6F+7v5eLZb1R+vTJDfBWQcVhfwfevvafQUQ==
-  dependencies:
-    vue "^3"
-    vuewrite "^0.0.19"
 
 which@^2.0.1:
   version "2.0.2"

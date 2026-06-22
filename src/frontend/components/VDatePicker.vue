@@ -36,11 +36,15 @@ const onDateClick = (date: Dayjs) => {
 }
 
 watch(dateValue, (dateValue) => {
-  if (dateValue) {
-    model.value = dateValue.toISOString()
-  } else {
-    model.value = null
-  }
+  const value = dateValue? dateValue.toISOString(): null
+  if (value === model.value) return
+  model.value = value
+})
+
+watch(model, (value) => {
+  const current = dateValue.value? dateValue.value.toISOString(): null
+  if (value === current) return
+  dateValue.value = value? dayjs(value): null
 })
 
 </script>

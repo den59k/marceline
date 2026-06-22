@@ -1,6 +1,6 @@
 {
   "name": "marceline",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "main": "dist/plugin/index.js",
   "license": "MIT",
   "type": "module",
@@ -47,7 +47,7 @@
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29",
     "vuesix": "^1.0.48",
-    "vuewrite": "^0.0.22-b"
+    "vuewrite": "^1.0.1"
   },
   "dependencies": {
     "@fastify/send": "^3.1.0",
