@@ -112,6 +112,7 @@ const getDefaultValue = (type?: string) => {
   if (type === 'number') return 0
   if (type === 'bool') return false
   if (type === 'select') return null
+  if (type === 'date') return null
   return ""
 }
 

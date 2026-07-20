@@ -2,6 +2,7 @@
   "id": "File",
   "name": "Файлы",
   "systemTable": "File",
+  "group": "Контент",
   "columns": [
     {
       "name": "ID",

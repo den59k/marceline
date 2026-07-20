@@ -3,6 +3,7 @@
   "name": "Статьи",
   "systemTable": "Article",
   "sortBy": "+order",
+  "group": "Контент",
   "filters": [
     {
       "systemColumn": "id",

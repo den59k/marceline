@@ -16,6 +16,8 @@ export type ViewFilter = {
 export type View = {
   id: string,
   name: string,
+  icon?: string,
+  group?: string,
   systemTable: string,
   idField?: string,
   actions?: string[],

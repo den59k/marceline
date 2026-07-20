@@ -8,6 +8,13 @@
         <VInput v-bind="register('name')" label="Название таблицы" />
         <VIconsSelector v-bind="register('icon')" style="margin-top: 20px"/>
       </div>
+      <VInput v-bind="register('group')" label="Группа в меню"
+        :placeholder="groupsHint" />
+      <div v-if="existingGroups.length > 0" class="table-settings__groups">
+        <button v-for="group in existingGroups" :key="group" type="button" @click="values.group = group">
+          {{ group }}
+        </button>
+      </div>
       <VSelect v-if="actionsData && actionsData.length > 0" v-model="values.actions" label="Действия" multiple :items="actionsData" />
       <VCheckbox v-model="values.data.create.enabled" label="Разрешить создание объекта" style="margin-bottom: -8px"/>
       <VSelect v-model="values.data.create.form" :items="availableForms" 
@@ -55,6 +62,7 @@ setReturnData((tableName) => {
 const { register, handleSubmit, values, updateDefaultValuesWatch } = useForm({
   name: "",
   icon: "table",
+  group: "",
   systemTable: null as string | null,
   columns: [],
   actions: [] as any[],
@@ -75,8 +83,19 @@ const { register, handleSubmit, values, updateDefaultValuesWatch } = useForm({
 
 updateDefaultValuesWatch(data, obj => ({
   ...obj,
+  group: obj.group ?? "",
   actions: obj.actions?.map((item: string) => ({ id: item, title: item })) ?? []
 }))
+
+const { data: viewsData } = useRequest(viewsApi.getViews)
+const existingGroups = computed(() => {
+  if (!viewsData.value) return []
+  return [ ...new Set(viewsData.value.map((item: any) => item.group).filter(Boolean)) ] as string[]
+})
+const groupsHint = computed(() => {
+  if (existingGroups.value.length === 0) return "Без группы"
+  return `Без группы, например «${existingGroups.value[0]}»`
+})
 
 const { data: modelsData } = useRequest(utilsApi.getModels)
 const models = computed(() => {
@@ -104,5 +123,21 @@ const availableForms = computed(() => {
 </script>
 
 <style lang="sass">
+.table-settings__groups
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+  margin-top: -8px
 
+  button
+    background: none
+    border: 1px solid var(--border-color)
+    border-radius: 6px
+    padding: 3px 8px
+    font-size: 12px
+    color: var(--text-secondary-color)
+    cursor: pointer
+
+    &:hover
+      color: var(--text-color)
 </style>
